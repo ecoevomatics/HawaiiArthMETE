@@ -1,4 +1,4 @@
-Question: Is theer a pattern in deviation from MaxEnt? 
+Question: Is there a pattern in deviation from MaxEnt? 
 Hypothesis: Local speciation and adaptation drive divergence at intermediate time scales 
 
 Plots: 
