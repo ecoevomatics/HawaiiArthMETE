@@ -1,8 +1,12 @@
-**Question:** Is there a pattern in deviation from MaxEnt?
+# Analysis plan
+
+## Guiding questions
+
+Is there a pattern in deviation from MaxEnt across the Hawaiian chronosequence? We know there is, so why does that pattern exist?
 
 **Hypothesis:** Local speciation and adaptation drive divergence at intermediate time scales
 
-Plots:
+## Planned visualizations
 
 -   Deviation vs. proportion that are single island endemic
 -   Deviation vs. proportion that are invasive
