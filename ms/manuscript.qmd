@@ -3,23 +3,37 @@ title: "Analysis of arthopod communites in Hawaii using METE Theory"
 format: pdf
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+## Setup 
 
 ```{r}
-1 + 1
+library(meteR)
+library(ggplot2)
+library(dplyr)
+
+#load data 
+load("../data/arth.rda")
+
+#create column for abundance, each row is an individual, therefore abundance = 1
+arth$abundance <- 1
+
+#create column for metabolic rates, assuming 3/4 scaling 
+arth$metabolic_rate <- arth$individual_biomass_g^0.75
+
 ```
 
-You can add options to executable code like this
-
+## Calculate Deviation from METE
 ```{r}
-#| echo: false
-2 * 2
-```
+arth_meter <- group_by(arth, site, tree)
+arth_meter <- summarise(arth_meter, 
+                          llz = {
+                            arth_esf <- meteESF(spp = species_code,
+                                                 abund = abundance,
+                                                 power = metabolic_rate)
+                            
+                            arth_sad <- sad(arth_esf)
+                            logLikZ(arth_sad)$z 
+                            
+                          }) 
 
-The `echo: false` option disables the printing of code (only output is displayed).
+arth_2_meter <- ungroup(arth_2_meter)
+arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", "KA" ))
