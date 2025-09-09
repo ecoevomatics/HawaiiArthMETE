@@ -41,6 +41,18 @@ arthopod_checklist <- arthopod_checklist[,c("Genus","Species","endemic_status")]
  #Finding what genera in arth don't match arthopod_checklist 
 unique(arth$genus[!(arth$genus %in% arthopod_checklist$Genus)])
 
+#correcting misspellings + check endemic status 
+arth$status[arth$genus == "Valenzuela"]
+
+
+# to figure out correct spelling
+agrep("Valenzuela", arthopod_checklist$Genus,value = TRUE)
+arth$genus[arth$genus == "Platosciara"] <- "Plastosciara"
+
+arth$species[arth$genus == "Greenidea"]
+"nr_Gastrancistrus" %in% arth$genus
+"Leiophron" %in% arthopod_checklist$Genus
+
 #joining df by genus and species
 comb_data <- left_join(arth, arthopod_checklist, join_by(genus == Genus, 
                                                           species == Species))
