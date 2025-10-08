@@ -37,3 +37,5 @@ arth_meter <- summarise(arth_meter,
 
 arth_2_meter <- ungroup(arth_2_meter)
 arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", "KA" ))
+
+```
