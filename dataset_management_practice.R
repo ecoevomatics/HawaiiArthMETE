@@ -1,11 +1,9 @@
+library(dplyr)
 
 #setup
 load("data/arth.rda")
 
-library(meteR)
-library(ggplot2)
-library(dplyr)
-library(tidyverse)
+
 
 arthopod_checklist<-read.csv("inst/raw_data/hawaii_arthropod_checklist.csv")
 
@@ -32,21 +30,19 @@ endemic_status[!grepl("end|ind", arthopod_checklist$Status)] <-
  
 #adding status column
 arthopod_checklist$endemic_status <- endemic_status
- View(arthopod_checklist)
+
 
 #subset arthopod checklist 
 arthopod_checklist <- arthopod_checklist[,c("Genus","Species","endemic_status")]
 
 
- #Finding what genera in arth don't match arthopod_checklist 
-unique(arth$genus[!(arth$genus %in% arthopod_checklist$Genus)])
+#Finding what genera in arth don't match arthopod_checklist 
+sort(unique(arth$genus[!(arth$genus %in% arthopod_checklist$Genus)]))
 
 #correcting misspellings + check endemic status 
-arth$status[arth$genus == "Valenzuela"]
-
 
 # to figure out correct spelling
-agrep("Valenzuela", arthopod_checklist$Genus,value = TRUE)
+agrep("Valenzuela", arthopod_checklist$Genus, value = TRUE)
 arth$genus[arth$genus == "Platosciara"] <- "Plastosciara"
 
 arth$species[arth$genus == "Greenidea"]

@@ -3,7 +3,8 @@ library(dplyr)
 #setup
 load("data/arth.rda")
 
-
+# add the full binomial for each spp
+arth$species_binom <- paste(arth$genus, arth$species)
 
 arthopod_checklist<-read.csv("inst/raw_data/hawaii_arthropod_checklist.csv")
 
@@ -35,20 +36,30 @@ arthopod_checklist$endemic_status <- endemic_status
 #subset arthopod checklist 
 arthopod_checklist <- arthopod_checklist[,c("Genus","Species","endemic_status")]
 
-# extract names in arth that donʻt match to arthropod_checklist
-bad_names <- unique(arth$genus[!(arth$genus %in% arthopod_checklist$Genus)])
-bad_names <- bad_names[!grepl("_g", bad_names)]
+# add species binomial
+arthopod_checklist$species_binom <- paste(arthopod_checklist$Genus, 
+                                          arthopod_checklist$Species)
 
+# extract names in arth that donʻt match to arthropod_checklist
+bad_names <- unique(arth$species_binom[!(arth$species_binom %in% 
+                                           arthopod_checklist$species_binom)])
+bad_names <- bad_names[!grepl("_g|s.*p_|nr_", bad_names)]
 
 
 bad_name_match <- character(length(bad_names))
 
 for(i in 1:length(bad_names)) {
-  m <- agrep(bad_names[i], arthopod_checklist$Genus, value = TRUE)
-  bad_name_match[i] <- paste(unique(m), collapse = ", ")
+    m <- agrep(bad_names[i], arthopod_checklist$species_binom, value = TRUE)
+    bad_name_match[i] <- paste(unique(m), collapse = ", ")
 }
 
-cbind(bad_names, bad_name_match)
+bad_name_match <- cbind(bad_names, bad_name_match)
+
+write.csv(bad_name_match, file = "inst/raw_data/bad_name_match.csv", 
+          row.names = FALSE)
+
+
+View(arthopod_checklist[grep("fasciata", arthopod_checklist$Species), ])
 
 
 #Plagiomeris appears as Plagiomerus (which exists..) when running agrep function. 
