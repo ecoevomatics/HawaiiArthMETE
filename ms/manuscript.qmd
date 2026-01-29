@@ -10,32 +10,78 @@ library(meteR)
 library(ggplot2)
 library(dplyr)
 
-#load data 
+# load data 
 load("../data/arth.rda")
 
-#create column for abundance, each row is an individual, therefore abundance = 1
+# create column for abundance, each row is an individual, therefore abundance = 1
 arth$abundance <- 1
 
-#create column for metabolic rates, assuming 3/4 scaling 
+# create column for metabolic rates, assuming 3/4 scaling 
 arth$metabolic_rate <- arth$individual_biomass_g^0.75
 
+# make sites factors with levels following chronosequence
+arth$site <- factor(arth$site, levels = c("VO","LA","KH", "MO", "KA"))
 ```
 
 ## Calculate Deviation from METE
-```{r}
-arth_meter <- group_by(arth, site, tree)
-arth_meter <- summarise(arth_meter, 
-                          llz = {
-                            arth_esf <- meteESF(spp = species_code,
-                                                 abund = abundance,
-                                                 power = metabolic_rate)
-                            
-                            arth_sad <- sad(arth_esf)
-                            logLikZ(arth_sad)$z 
-                            
-                          }) 
 
-arth_2_meter <- ungroup(arth_2_meter)
-arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", "KA" ))
+```{r}
+# holds deviation from METE 
+arth_meter <- group_by(arth, site, tree) |> 
+    summarise(llz = {
+        arth_esf <- meteESF(spp = species_code,
+                            abund = abundance,
+                            power = metabolic_rate)
+        
+        arth_sad <- sad(arth_esf)
+        logLikZ(arth_sad)$z 
+        
+    }) |> 
+    ungroup()
+
+
+```
+
+## Visualizing deviations from METE across chronosequence
+
+## How do METE and the real data differ
+
+Which one over-predicts rarity?
+
+## Comparing deviations from METE with potential explanatory variables
+
+### Single island endemism
+
+```{r}
+# hold data on proportion of endemics 
+arth_end <- group_by(arth, site, tree, species_binom) |> 
+    summarise(spp_end = any(endemic_status == "Endemic"), 
+              spp_abund = sum(abundance), 
+              spp_metab = sum(metabolic_rate)) |> 
+    ungroup() |> 
+    group_by(site, tree) |> 
+    summarise(spp_prop_end = mean(spp_end), 
+              ind_prop_end = sum(spp_end * spp_abund / sum(spp_abund)), 
+              met_prop_end = sum(spp_end * spp_metab / sum(spp_metab))) |> 
+    ungroup()
+
+dat <- full_join(arth_meter, arth_end)
+
+ggplot(dat, aes(spp_prop_end, llz)) +
+    geom_point()
+
+
+
+mean(unique(arth[, c("species_binom", "endemic_status")])[, 2] == "Endemic")
+
+arth[, c("species_binom", "endemic_status")] |> 
+    unique() |> 
+    select(2) |> 
+    (function(y) y == "Endemic")() |> 
+    mean()
+
+arth_2_meter <- ungroup(arth_meter)
+arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", "KA"))
+
 
 ```
