@@ -63,5 +63,8 @@ arth$species_binom[ibad] <- name_corr$bad_name_match
 arth <- left_join(arth, arthropod_checklist, by = "species_binom", 
                   relationship = "many-to-many")
 
+# change NA endemic status to unknown
+arth$endemic_status[is.na(arth$endemic_status)] <- "Unknown"
+
 # write out the data
 save(arth, file = "data/arth.rda")
