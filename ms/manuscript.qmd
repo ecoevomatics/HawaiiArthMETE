@@ -40,9 +40,16 @@ arth_meter <- group_by(arth, site, tree) |>
     ungroup()
 
 
+
+
 ```
 
 ## Visualizing deviations from METE across chronosequence
+
+```{r}
+ggplot(arth_meter, aes(site, llz)) +
+    geom_boxplot()
+```
 
 ## How do METE and the real data differ
 
@@ -67,8 +74,10 @@ arth_end <- group_by(arth, site, tree, species_binom) |>
 
 dat <- full_join(arth_meter, arth_end)
 
-ggplot(dat, aes(spp_prop_end, llz)) +
-    geom_point()
+ggplot(dat, aes(ind_prop_end, llz, color = site)) +
+    geom_point() +
+    scale_color_viridis_d(option = "magma") +
+    scale_x_log10()
 
 
 
@@ -85,3 +94,6 @@ arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", 
 
 
 ```
+
+### Deviation vs. proportion that are invasive
+
