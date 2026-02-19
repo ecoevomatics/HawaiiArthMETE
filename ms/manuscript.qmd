@@ -106,16 +106,25 @@ arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", 
 ```{r}
 #| label: dev_inv
 
-arth_inv <- group_by(arth, site, tree, species_binom) |>
-    summarise(spp_inv = any(endemic_status == "non-native"), 
+arth_inv <- group_by(arth, site, tree, species_binom) |> 
+    summarize(spp_inv = any(origin == "non-native"), 
               spp_abund = sum(abundance), 
               spp_metab = sum(metabolic_rate)) |> 
-    ungroup() |>
-    group_by(site, tree) |> 
-    summarise(spp_prop_inv= mean(spp_inv),
+    ungroup(species_binom) |> 
+    summarize(spp_prop_inv= mean(spp_inv), 
               ind_prop_inv = sum(spp_inv* spp_abund / sum(spp_abund)), 
               met_prop_inv=  sum(spp_inv* spp_metab / sum(spp_metab))) |> 
     ungroup()
-```
 
+ggplot(arth_inv, aes(site, spp_prop_inv)) +
+    geom_boxplot()
+
+
+dat <- full_join(arth_meter, arth_inv)
+
+ggplot(dat, aes(ind_prop_inv, llz, color = site)) +
+    geom_point() +
+    scale_color_viridis_d(option = "magma")
+
+```
 
