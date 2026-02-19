@@ -1,0 +1,16 @@
+Package: HawaiiArthMETE
+Type: Package
+Title: Studying arthropod diversity in Hawai\`i with the Maximum Entropy Theory of Ecology
+Version: 0.1.0
+Date: 2026-02-19
+Author: Andrew Rominger, Katie Thai
+LazyData: true
+Encoding: UTF-8
+Depends:
+    R (>= 3.5.0)
+Imports: 
+    meteR,
+    dplyr, 
+    ggplot2
+RoxygenNote: 7.3.2
+VignetteBuilder: knitr
