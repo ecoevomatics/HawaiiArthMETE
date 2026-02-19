@@ -124,6 +124,8 @@ dat <- full_join(arth_meter, arth_inv)
 
 ggplot(dat, aes(ind_prop_inv, llz, color = site)) +
     geom_point() +
+    scale_x_log10() +
+    scale_y_log10()+
     scale_color_viridis_d(option = "magma")
 
 ```
