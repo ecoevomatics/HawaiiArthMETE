@@ -22,3 +22,9 @@ chklist_lng <- pivot_longer(arthropod_checklist, Kauai:HawaiiIsland,
     ungroup() |> 
     mutate(sie = num_islands == 1 & grepl("end", Status))
 
+group_by(chklist_lng, island) |> 
+    summarize(nspp = n_distinct(species_binom), 
+              nsie = n_distinct(species_binom[sie])) |> 
+    ggplot(aes(island, nspp)) +
+    geom_point()
+
