@@ -79,7 +79,25 @@ state_dev<-group_by(arth,site,tree) |>
         nspp=n_distinct(species_code),
         n=sum(abundance),
         tmet=sum(metabolic_rate)
-    ) |>  ungroup()
+    ) |>  
+    ungroup() |> 
+    full_join(arth_meter)
+
+
+ggplot(state_dev, aes(nspp, llz, color = site)) +
+    geom_point() +
+    scale_color_viridis_d(option = "magma", direction = -1)
+
+ggplot(state_dev, aes(n, llz, color = site)) +
+    geom_point() +
+    scale_color_viridis_d(option = "magma", direction = -1)
+
+ggplot(state_dev, aes(tmet, llz, color = site)) +
+    geom_point() +
+    scale_color_viridis_d(option = "magma", direction = -1)
+
+
+
 
 ```
 
