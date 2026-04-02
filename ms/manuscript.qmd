@@ -54,8 +54,15 @@ arth_meter <- group_by(arth, site, tree) |>
 ## Visualizing deviations from METE across chronosequence
 
 ```{r}
-ggplot(arth_meter, aes(site, llz)) +
-    geom_boxplot()
+ggplot(arth_meter, aes(site, llz, color = site)) +
+    # geom_boxplot() +
+    geom_jitter(width = 0.1) +
+    scale_color_viridis_d(option = "magma")
+
+sum(arth_meter$site == "LA")
+
+
+unique(arth[, c("site", "tree")])
 ```
 
 ## How do METE and the real data differ
@@ -63,6 +70,14 @@ ggplot(arth_meter, aes(site, llz)) +
 Which one over-predicts rarity?
 
 ## Comparing deviations from METE with potential explanatory variables
+
+### Compare deviations to state variables
+
+```{r}
+
+
+```
+
 
 ### Single island endemism
 
@@ -103,6 +118,7 @@ arth_2_meter$site <- factor(arth_2_meter$site, levels = c("VO","LA","KH", "MO", 
 ```
 
 ### Deviation vs. proportion that are invasive
+
 ```{r}
 #| label: dev_inv
 
@@ -124,8 +140,8 @@ dat <- full_join(arth_meter, arth_inv)
 
 ggplot(dat, aes(ind_prop_inv, llz, color = site)) +
     geom_point() +
-    scale_x_log10() +
-    scale_y_log10()+
+    # scale_x_log10() +
+    # scale_y_log10()+
     scale_color_viridis_d(option = "magma")
 
 ```
