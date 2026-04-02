@@ -74,7 +74,12 @@ Which one over-predicts rarity?
 ### Compare deviations to state variables
 
 ```{r}
-
+state_dev<-group_by(arth,site,tree) |> 
+    summarise(
+        nspp=n_distinct(species_code),
+        n=sum(abundance),
+        tmet=sum(metabolic_rate)
+    ) |>  ungroup()
 
 ```
 
