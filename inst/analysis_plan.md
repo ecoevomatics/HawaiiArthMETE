@@ -19,6 +19,7 @@ Is there a pattern in deviation from MaxEnt across the Hawaiian chronosequence? 
     - no pattern
     - done
 - Comparing ecological similarity and deviation from MaxEnt between sites
+    - more dissimilarity (compared to null) <==> more MaxEnt deviation
 - Deviation in the number of rare species in data vs. MaxEnt compared across sites (age)
 
 ![](img/analysis_plan.png)
