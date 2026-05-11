@@ -6,26 +6,35 @@ format: pdf
 
 ## Introduction
 
-Biodiversity patterns are 
+Biodiversity patterns are bound by two seemingly contradictory states: they show striking consistency in form across systems, and yet also must emerge in spite of, or because of, the constant flux and dynamic change of ecology and evolution. The near universality of biodiversity patterns includes the scaling of species richness with area, the ubiquity of rare spaces and scarcity of common species, and the highly skewed distribution of biomass or metabolic resource use across organisms. Debate has persisted for over a century as to whether these consistent patterns form because of ecological and evolutionary drivers that force systems into these configurations, or are largely the outcome of chance acting on large systems of constituent parts. The former gives rise to niche-based theories of coexistence, while that later has produced a number of neutral-like models.
 
-universal patterns
-non-equilibrium
-eco-evo and Hawaii chrono
-use METE to see how systems approach or depart from non-equilib
+Both deterministic and stochastic perspectives on the generation of universal biodiversity patterns most often make the choice of considering an ecosystem at "equilibrium" or steady state. However, ecosystems are known to be dynamic both through intrinsic eco-evolutionary processes and due to recent anthropogenic perturbation. Whether universal patterns are insensitive to non-steady-state processes or are a result of those processes remains addressed. To better understand the interaction of non-steady-state processes and universal patterns, we combine data from the highly dynamic ecosystems of the Hawaiian Archipelago with the intentionally minimalist steady state predictions of the Maximum Entropy Theory of Ecology.
+
+### The Hawaiian Chronosequence 
+
+- world famous adaptive ration
+- arthropods as diverse and useful study system
+- age differences are snapshots in eco-evolutionary process
+
+### The Maximum Entropy Theory of Ecology
+
+- METE posits: if state variables are in steady state, all biodiversity patterns are statistical outcomes from those macroscopic variables
+- departures from METE represent departures from steady state
+
+We find departures from steady state at middle aged sites. Departures are predicted by community dissimilarity which peaks at middle aged sites. This suggests these communities are unstable, perhaps due to their age being the right time for adaptive radiation to take off for arthropods. More work connecting departure from eco steady state and evo steady state would be needed to further test this possibility.
 
 
 ## Methods
 
 ## Results
 
-- deviations for SAD peak at middle age
-- deviations are from more unevenness (more singletons and more hyper abundnat)
-- outlier is from too much abundance of most abundant spp
-- deviations not predicted by non-natives
+- deviations for SAD and IPD peak at middle age
+- deviations for IPD larger overall
+- deviations of SAD are because of more unevenness (more singletons and more hyper abundant species)
+- no consistent relationship between IDP deviations and the extremes of the distribution (deviation is in the middle)
+- deviations not predicted by proportion of non-natives
 - deviations *are* predicted by dissimilarity
-- deviations for IPD less clear
-    - but generally correlated with SAD
-    - bigger deviations overall
+
 
 ## Discussion
 
