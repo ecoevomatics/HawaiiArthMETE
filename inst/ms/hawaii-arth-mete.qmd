@@ -3,6 +3,21 @@ title: "Eco-evolutionary deviations from steady state across the Hawaiian chrono
 format: pdf
 ---
 
+```{r}
+#| label: setup
+#| include: false
+
+
+library(ggplot2)
+library(cowplot)
+library(grid)
+library(sf)
+library(dplyr)
+library(HawaiiArthMETE)
+
+knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
+
+```
 
 ## Introduction
 
@@ -15,6 +30,101 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 - world famous adaptive ration
 - arthropods as diverse and useful study system
 - age differences are snapshots in eco-evolutionary process
+
+
+```{r}
+#| label: fig-chrono
+#| include: false
+#| cache: true
+#| fig-cap: |
+#|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
+#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
+#|     sites are indicated with dots on the map and arrows indicating their
+#|     flow ages on the legend. From oldest to youngest (west to east) sites 
+#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
+
+
+x <- st_read("hi_geol/hawaii_state_geol_ageClean.shp") |> 
+    filter(!is.na(age_mid)) 
+hi <- st_read("hi_geol/hi_outline.shp")
+
+
+m <- 0.7 / diff(range(arth$flow_age_my))
+0.9 + (max(x$age_mid) - max(arth$flow_age_my)) * m
+0.2 + (min(x$age_mid) - min(arth$flow_age_my)) * m
+
+
+p <- ggplot(hi) +
+    geom_sf(color = "gray30", fill = "gray30", linewidth = 0.1) +
+    geom_sf(data = x, 
+            aes(fill = age_mid, color = age_mid), 
+            linewidth = 0.0001,
+            inherit.aes = FALSE) +
+    scale_fill_viridis_c(option = "magma", begin = 0.2, end = 1,
+                         transform = c("log10", "reverse")) +
+    scale_color_viridis_c(option = "magma", begin = 0.2, end = 1, 
+                         transform = c("log10", "reverse")) +
+    theme_cowplot() + 
+    theme(legend.position = "none", 
+          axis.line = element_blank(), 
+          axis.text = element_blank(), 
+          axis.ticks = element_blank())
+
+
+log_age_range <- range(log(x$age_mid, 10))
+log_age <- pretty(log_age_range) |> 
+    (\(x) x[x > log_age_range[1] & x < log_age_range[2]])()
+
+
+l <- data.frame(y = seq(log_age_range[1], 
+                   log_age_range[2], 
+                   length.out = 500), 
+           z = 1) |> 
+    mutate(u = 10^y) |>
+    ggplot(aes(z, y, fill = u, color = u)) +
+    geom_tile() +
+    scale_fill_viridis_c(option = "magma", begin = 0.2, end = 1, 
+                         transform = c("log10", "reverse")) +
+    scale_color_viridis_c(option = "magma", begin = 0.2, end = 1, 
+                         transform = c("log10", "reverse")) +
+    annotate("segment",
+        x = rep(c(0.47, 1.53), each = length(log_age)),
+        xend = rep(c(0.7, 1.3), each = length(log_age)),
+        y = rep(log_age, 2),
+        yend = rep(log_age, 2), 
+        color = "white", linewidth = 0.5) +
+    annotate("segment",
+        x = rep(-0.1, length(unique(arth$flow_age_my))),
+        xend = rep(0.49, length(unique(arth$flow_age_my))),
+        y = log(unique(arth$flow_age_my), 10),
+        yend = log(unique(arth$flow_age_my), 10), 
+        arrow = arrow(length = unit(0.25, "npc"))) +
+    annotate("text", 
+             x = 0.75, y = 1.5, 
+             label = "Age (mya)") +
+    scale_x_continuous(expand = FALSE) +
+    scale_y_continuous(
+        expand = FALSE,
+        limits = c(-10, 5),
+        sec.axis = sec_axis(
+            ~ ., 
+            breaks = rev(log_age),
+            labels = sapply(rev(log_age), function(a) bquote(10^.(a)))
+        )
+    ) +
+    theme_cowplot() +
+    theme(legend.position = "none",
+          axis.ticks = element_blank(), 
+          axis.line = element_blank(), 
+          axis.title.y = element_blank(), 
+          axis.title.x.bottom = element_blank(),
+          axis.text.x = element_blank(), 
+          axis.text.y.left = element_blank(), 
+          axis.text.y.right = element_text(size = 10)) + 
+    coord_cartesian(clip = "off")
+
+```
+
 
 ### The Maximum Entropy Theory of Ecology
 
