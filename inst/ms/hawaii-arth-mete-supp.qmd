@@ -8,16 +8,27 @@ format:
                 \newunicodechar{ʻ}{`} 
 ---
 
-## Setup
+
+This supplement walks through the steps of recreating the entire analysis presented in the main text. It also provided further analysis in support of and to contextualize results in the main text. 
+
+## Computing setup
+
+Analyses are supported by a custom R package *HawaiiArthMETE* [@foo] which can be installed from github. 
 
 ```{r}
-#| label: knitr-setup
-#| include: false
+#| label: pkg-install
+#| eval: false
 
-knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
+devtools::install_github("ecoevomatics/HawaiiArthMETE")
 ```
 
+The quarto [@quarto] document used to generate this supplement can be found with the R command `system.file("ms/hawaii-arth-mete-supp.qmd", package = "HawaiiArthMETE")`.
+
+The following R computing environment is used for all analyses:
+
 ```{r}
+#| label: setup
+
 library(meteR)
 library(ggplot2)
 library(dplyr)
@@ -26,13 +37,31 @@ library(vegan)
 library(metafor)
 library(HawaiiArthMETE)
 
+
+knitr::opts_chunk$set(
+    # default figure dims
+    fig.width = 5.5, fig.height = 4, 
+    # caching is default for all subsequent chunks
+    cache = TRUE
+)
+
 # load data 
 data(arth)
+
+sessionInfo() |> 
+    print(locale = FALSE)
 ```
 
 
 ## METE calculations
 
+Comparison of the observed data to predictions from the Maximum Entropy Theory of Ecology (METE) is performed with package *meteR* [@rominger-merow2016]. The following code records information about each sample (name, flow age, proportion non-native presence) as well as several metrics of deviation between theory and observation:
+
+- a $z^2$ value measuring a normalized difference in likelihoods between observed data and theoretical expectation
+- differences in proportion of rarity observed and expected
+- differences in proportion of dominance observed and expected
+
+All metrics are calculated for both the species abundance distribution (SAD) and individual metabolic rate (or power) distribution (IPD).
 
 ```{r}
 #| label: mete-calc
@@ -87,15 +116,63 @@ arth_mete <- do.call(rbind, arth_mete)
 
 ```
 
+An initial investigation of patterns in the SAD reveal two clear outliers in terms of deviation from theory and proportion of non-native individuals (@fig-z2-out). 
 
-### What are the highly invaded, highly dominated samples?
+
+### Investigating highly invaded, highly dominated samples
+
+The two outlier samples both show a difference (theory - observed) in maximum abundance of over -300 (@fig-z2-out). 
 
 ```{r}
 outliers <- filter(arth_mete, nmax_diff < -300)
-
 ```
 
-Two samples stand out as clear outliers both in terms of deviation from SAD predictions and being the most highly invaded. The two samples come from the Laupāhoehoe and Kohala sites. To further understand these two samples and determine if they should remain in the analyses we look at their composition. @tbl-out1 shows the three most abundant species for the Laupāhoehoe outlier sample while @tbl-out2 shows the three most abundant species for the `r Kohala outlier sample.
+```{r}
+#| label: fig-z2-out
+#| fig-width: 7
+
+pivot_longer(outliers, 
+             c(prop_n_non_nat, nmax_diff), 
+             names_to = "metric")
+
+select(arth_mete, site_name, prop_n_non_nat, nmax_diff, z2_sad) |> 
+    # pivot so both metrics are plotted in faceted panels
+    pivot_longer(prop_n_non_nat:nmax_diff, names_to = "metric") |> 
+    ggplot(aes(value, z2_sad, color = site_name)) +
+    geom_point() +
+    
+    # add arrows pointing to outliers
+    geom_segment(
+        data = pivot_longer(outliers, 
+                            c(prop_n_non_nat, nmax_diff), 
+                            names_to = "metric"), 
+        aes(x = value * 0.8, y = z2_sad * 0.9, 
+            xend = value * 0.97, yend = z2_sad * 0.99), 
+        arrow = arrow(length = unit(1, "char")),
+        inherit.aes = FALSE
+    ) +
+    
+    # facet by metric and trick strip labels into being
+    # axis labels
+    facet_grid(
+        cols = vars(metric), scales = "free_x", 
+        labeller = as_labeller(
+            c(nmax_diff = "Diff. in maximum abundance", 
+              prop_n_non_nat = "Prop. non-native individuals")
+        ), 
+        switch = "x"
+    ) +
+    ylab(expression("SAD"~z^2*"-value")) +
+    this_ms_look() +
+    theme(strip.background = element_blank(), 
+          strip.placement = "outside", 
+          panel.border = element_rect(colour = "black", 
+                                      fill = NA, 
+                                      linewidth = 1), 
+          axis.title.x = element_blank())
+```
+
+These two outlier samples come from the Laupāhoehoe and Kohala sites. To further understand these two samples and determine if they should remain in the analyses we look at their composition. @tbl-out1 shows the three most abundant species for the Laupāhoehoe outlier sample while @tbl-out2 shows the three most abundant species for the `r Kohala outlier sample.
 
 
 ```{r}
@@ -186,23 +263,144 @@ arth <- filter(arth,
 
 ## Deviations from METE across the chronosequence
 
+Now we analyze how deviations from METE behave across the chronosequence. The following code produces the analysis of a hump-shaped versus flat relationship between METE deviation and flow age.
+
 ```{r}
-#| fig-width: 4.5
-#| fig-height: 3
+#| label: z2-chrono-lm
 
-ggplot(arth_mete, aes(flow_age_my, z2_sad, color = site_name)) +
-    geom_jitter(width = 0.1) +
-    this_ms_look(log_x = TRUE, log_y = TRUE) 
+# site-level means and sd for meta regression
+site_summ <- summarize(arth_mete, 
+                       site_log_age = first(log(flow_age_my)),
+                       sad_m = mean(log(z2_sad)), 
+                       sad_sd = sd(log(z2_sad)),
+                       ipd_m = mean(log(z2_ipd)), 
+                       ipd_sd = sd(log(z2_ipd)),
+                       n = n(),
+                       .by = site)
+
+# full model
+sad_rma_chrono <- rma(yi = sad_m, 
+                      vi = sad_sd^2 / n, 
+                      mods = ~ site_log_age + I(site_log_age^2), 
+                      data = site_summ, 
+                      method = "FE")
+# reduced model (for likelihood ratio test)
+sad_rma_0 <- rma(yi = sad_m, 
+                 vi = sad_sd^2 / n, 
+                 mods = ~ 1, 
+                 data = site_summ, 
+                 method = "FE")
 
 
+# full, reduced as with SAD
+ipd_rma_chrono <- rma(yi = ipd_m, 
+                      vi = ipd_sd^2 / n, 
+                      mods = ~ site_log_age + I(site_log_age^2), 
+                      data = site_summ, 
+                      method = "FE")
 
-ggplot(arth_mete, aes(flow_age_my, z2_ipd, color = site_name)) +
-    geom_jitter(width = 0.1) +
-    scale_x_log10() +
-    scale_y_log10() + 
-    scale_color_viridis_d(option = "magma") 
+ipd_rma_0 <- rma(yi = ipd_m, 
+                 vi = ipd_sd^2 / n, 
+                 mods = ~ 1, 
+                 data = site_summ, 
+                 method = "FE")
+
 
 ```
+
+Likelihood ratio tests (LRT) can evaluate the significance of the quadratic model
+
+
+```{r}
+#| label: z2-chrono-lrt
+
+# likelihood ratio test for sad across chrono
+sad_lrt_chrono <- anova(sad_rma_0, sad_rma_chrono)
+sad_lrt_chrono
+
+ipd_lrt_chrono <- anova(ipd_rma_0, ipd_rma_chrono)
+ipd_lrt_chrono
+```
+
+The quadratic model for SAD $z^2$-values is supported by the LRT with a $P$-value < 0.0001, but the quadratic model for IPD $z^2$-values did not have a significant $P$-value. However, the 95% CI for the quadratic term in the IPD $z^2$-values model has the majority of its range below zero, indicating the data do tend toward a quadratic shape, just with greater variance compared to the quadratic model for SAD $z^2$-values.
+
+```{r}
+ipd_rma_chrono
+
+```
+
+
+The following code produces the visualization reported in the main text of deviation from METE across flow ages.
+
+```{r}
+#| label: fig-z2-chrono
+#| fig-height: 7
+#| fig-cap: |
+#|     Deviations from METE as measured by $z^2$ across the chronosequence. 
+#|     Discussed in more detail in the main text.
+
+
+# prepare data frame of predicted values for plotting
+x <- seq(min(site_summ$site_log_age), 
+         max(site_summ$site_log_age), 
+         length.out = 50)
+
+newx <- cbind(1, x, x^2)
+sad_hat <- predict(sad_rma_chrono, newmods = newx)
+ipd_hat <- predict(ipd_rma_chrono, newmods = newx)
+
+z2_chrono_pred <- rbind(
+    data.frame(flow_age_my = exp(x), 
+               z2 = exp(sad_hat$pred), 
+               z2_lo = exp(sad_hat$ci.lb), 
+               z2_hi = exp(sad_hat$ci.ub), 
+               metric = "z2_sad"), 
+    data.frame(flow_age_my = exp(x), 
+               z2 = exp(ipd_hat$pred), 
+               z2_lo = exp(ipd_hat$ci.lb), 
+               z2_hi = exp(ipd_hat$ci.ub), 
+               metric = "z2_ipd")
+)
+
+# plotting
+fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd), 
+             names_to = "metric", values_to = "z2") |> 
+    ggplot(aes(flow_age_my, z2, color = site_name)) +
+    geom_jitter(width = 0.1) +
+    # confidence envelope 
+    geom_ribbon(data = z2_chrono_pred, 
+                mapping = aes(x = flow_age_my, 
+                              ymin = z2_lo, 
+                              ymax = z2_hi), 
+                color = "gray", linewidth = 0.0001, alpha = 0.25) +
+    # central tendency 
+    geom_line(data = z2_chrono_pred, 
+              mapping = aes(flow_age_my, z2), 
+              color = "black") +
+    # facet by IPD or SAD and trick strip label into axis label
+    facet_grid(
+        rows = vars(metric), 
+        labeller = as_labeller(
+            c(z2_ipd = "\"IPD\"~z^2*\"-value\"", 
+              z2_sad = "\"SAD\"~z^2*\"-value\""),
+            label_parsed
+        ), 
+        switch = "y"
+    ) +
+    this_ms_look(log_x = TRUE, log_y = TRUE) +
+    theme(axis.title.y = element_blank(),
+          strip.background = element_blank(), 
+          strip.placement = "outside", 
+          panel.border = element_rect(colour = "black", 
+                                      fill = NA, 
+                                      linewidth = 1))
+
+fig_z2_chrono
+
+```
+
+
+
 
 ## How do observed patterns deviate from METE?
 
