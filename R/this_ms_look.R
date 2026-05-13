@@ -10,7 +10,8 @@
 
 this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
     l <- list(
-        scale_color_viridis_d(option = "magma", 
+        scale_color_viridis_d(name = "Site",
+                              option = "magma", 
                               begin = 0.2, end = 0.9), 
         cowplot::theme_cowplot()
     )
