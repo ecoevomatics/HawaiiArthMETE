@@ -6,6 +6,9 @@
 #' @param log_x boolean, if the x-axis is to be logged, default is FALSE
 #' @param log_y boolean, if the y-axis is to be logged, default is FALSE
 #'
+#' @importFrom ggplot2 scale_color_viridis_d theme element_blank element_rect
+#' @importFrom ggplot2 scale_x_log10 scale_y_log10 guides guide_axis_logticks
+#'
 #' @export
 
 this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
@@ -13,16 +16,15 @@ this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
         scale_color_viridis_d(name = "Site",
                               option = "magma", 
                               begin = 0.2, end = 0.9), 
-        cowplot::theme_cowplot()
+        cowplot::theme_cowplot(), 
+        theme(axis.line = element_blank(), 
+              panel.border = element_rect(colour = "black", 
+                                          fill = NA, 
+                                          linewidth = 1))
     )
     
-    
-    lfun <- function(x) {
+    lfun <- function(x, clip = TRUE, print = TRUE) {
         10^seq(floor(log10(x[1])), ceiling(log10(x[2])))
-    }
-    
-    lmfun <- function(x) {
-        outer(2:9, lfun(x)) |> as.numeric()
     }
     
     if(log_x) {
@@ -31,8 +33,7 @@ this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
             list(
                 scale_x_log10(
                     breaks = lfun,
-                    labels = scales::label_log(), 
-                    minor_breaks = lmfun
+                    labels = scales::label_log()
                 ), 
                 guides(x = guide_axis_logticks(long = 1.75,
                                                mid = 0.75, 
@@ -47,8 +48,7 @@ this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
             list(
                 scale_y_log10(
                     breaks = lfun,
-                    labels = scales::label_log(), 
-                    minor_breaks = lmfun
+                    labels = scales::label_log()
                 ), 
                 guides(y = guide_axis_logticks(long = 1.75, 
                                                mid = 0.75, 
@@ -59,3 +59,5 @@ this_ms_look <- function(log_x = FALSE, log_y = FALSE) {
     
     return(l)
 }
+
+
