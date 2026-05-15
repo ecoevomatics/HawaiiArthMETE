@@ -270,51 +270,23 @@ Now we analyze how deviations from METE behave across the chronosequence. The fo
 ```{r}
 #| label: z2-chrono-lm
 
-# site-level means and sd for meta regression
-site_summ <- summarize(arth_mete, 
-                       site_log_age = first(log(flow_age_my)),
-                       sad_m = mean(log(z2_sad)), 
-                       sad_sd = sd(log(z2_sad)),
-                       ipd_m = mean(log(z2_ipd)), 
-                       ipd_sd = sd(log(z2_ipd)),
-                       n = n(),
-                       .by = site)
-
-# full model
-
-foo_foo_fooooo <- site_means_lm(log(z2_sad) ~ 
+# full z2_sad model
+sad_rma_chrono <- site_means_lm(log(z2_sad) ~ 
                                     log(flow_age_my) + I(log(flow_age_my)^2) + 
                                     (1 | site),
                                 data = arth_mete)
 
-boo <- site_means_lm(log(z2_sad) ~ (1 | site), data = arth_mete)
-
-sad_rma_chrono <- rma(yi = sad_m, 
-                      vi = sad_sd^2 / n, 
-                      mods = ~ site_log_age + I(site_log_age^2), 
-                      data = site_summ, 
-                      method = "FE")
-# reduced model (for likelihood ratio test)
-sad_rma_0 <- rma(yi = sad_m, 
-                 vi = sad_sd^2 / n, 
-                 mods = ~ 1, 
-                 data = site_summ, 
-                 method = "FE")
+# reduced z2_sad model (for likelihood ratio test)
+sad_rma_0 <- site_means_lm(log(z2_sad) ~ (1 | site), data = arth_mete)
 
 
 # full, reduced as with SAD
-ipd_rma_chrono <- rma(yi = ipd_m, 
-                      vi = ipd_sd^2 / n, 
-                      mods = ~ site_log_age + I(site_log_age^2), 
-                      data = site_summ, 
-                      method = "FE")
+ipd_rma_chrono <- site_means_lm(log(z2_ipd) ~ 
+                                    log(flow_age_my) + I(log(flow_age_my)^2) + 
+                                    (1 | site),
+                                data = arth_mete)
 
-ipd_rma_0 <- rma(yi = ipd_m, 
-                 vi = ipd_sd^2 / n, 
-                 mods = ~ 1, 
-                 data = site_summ, 
-                 method = "FE")
-
+ipd_rma_0 <- site_means_lm(log(z2_ipd) ~ (1 | site), data = arth_mete)
 
 ```
 
@@ -324,7 +296,7 @@ Likelihood ratio tests (LRT) can evaluate the significance of the quadratic mode
 ```{r}
 #| label: z2-chrono-lrt
 
-# likelihood ratio test for sad across chrono
+# likelihood ratio tests for sad and ipd across chrono
 sad_lrt_chrono <- anova(sad_rma_0, sad_rma_chrono)
 sad_lrt_chrono
 
