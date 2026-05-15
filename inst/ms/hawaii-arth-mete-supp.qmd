@@ -6,10 +6,14 @@ format:
             text: |
                 \usepackage{newunicodechar}
                 \newunicodechar{ʻ}{`} 
+knitr:
+    opts_chunk: 
+        dev: cairo_pdf
 ---
 
 
 This supplement walks through the steps of recreating the entire analysis presented in the main text. It also provided further analysis in support of and to contextualize results in the main text. 
+
 
 ## Computing setup
 
@@ -31,6 +35,7 @@ The following R computing environment is used for all analyses:
 
 library(meteR)
 library(ggplot2)
+library(ggh4x)
 library(dplyr)
 library(tidyr)
 library(vegan)
@@ -58,8 +63,8 @@ sessionInfo() |>
 Comparison of the observed data to predictions from the Maximum Entropy Theory of Ecology (METE) is performed with package *meteR* [@rominger-merow2016]. The following code records information about each sample (name, flow age, proportion non-native presence) as well as several metrics of deviation between theory and observation:
 
 - a $z^2$ value measuring a normalized difference in likelihoods between observed data and theoretical expectation
-- differences in proportion of rarity observed and expected
-- differences in proportion of dominance observed and expected
+- differences in proportion of rarity (number of singletons or normalized metabolic rate $\leq 2$) observed and expected
+- differences in proportion of dominance (sum of top three most abundant species or sum of top three highest normalized metabolic rates) observed and expected
 
 All metrics are calculated for both the species abundance distribution (SAD) and individual metabolic rate (or power) distribution (IPD).
 
@@ -102,10 +107,10 @@ arth_mete <- split(arth, arth[, c("site", "tree")], drop = TRUE) |>
                 sum(x$metabolic_rate),
             
             # differences in extreme values
-            n1_diff = mean(meteDist2Rank(s) == 1) - mean(s$data == 1),
-            nmax_diff = sum(meteDist2Rank(s)[1:3]) - sum(s$data[1:3]),
-            p1_diff = mean(meteDist2Rank(p) <= 2) - mean(p$data <= 2),
-            pmax_diff = sum(meteDist2Rank(p)[1:3]) - sum(p$data[1:3])
+            n1_diff = log(mean(meteDist2Rank(s) == 1) / mean(s$data == 1)),
+            nmax_diff = log(sum(meteDist2Rank(s)[1:10]) / sum(s$data[1:10])),
+            p1_diff = log(mean(meteDist2Rank(p) <= 3) / mean(p$data <= 3)),
+            pmax_diff = log(sum(meteDist2Rank(p)[1:10]) / sum(p$data[1:10]))
         )
     })
 
@@ -166,9 +171,6 @@ select(arth_mete, site_name, prop_n_non_nat, nmax_diff, z2_sad) |>
     this_ms_look() +
     theme(strip.background = element_blank(), 
           strip.placement = "outside", 
-          panel.border = element_rect(colour = "black", 
-                                      fill = NA, 
-                                      linewidth = 1), 
           axis.title.x = element_blank())
 ```
 
@@ -279,6 +281,14 @@ site_summ <- summarize(arth_mete,
                        .by = site)
 
 # full model
+
+foo_foo_fooooo <- site_means_lm(log(z2_sad) ~ 
+                                    log(flow_age_my) + I(log(flow_age_my)^2) + 
+                                    (1 | site),
+                                data = arth_mete)
+
+boo <- site_means_lm(log(z2_sad) ~ (1 | site), data = arth_mete)
+
 sad_rma_chrono <- rma(yi = sad_m, 
                       vi = sad_sd^2 / n, 
                       mods = ~ site_log_age + I(site_log_age^2), 
@@ -349,6 +359,8 @@ newx <- cbind(1, x, x^2)
 sad_hat <- predict(sad_rma_chrono, newmods = newx)
 ipd_hat <- predict(ipd_rma_chrono, newmods = newx)
 
+
+
 z2_chrono_pred <- rbind(
     data.frame(flow_age_my = exp(x), 
                z2 = exp(sad_hat$pred), 
@@ -361,6 +373,7 @@ z2_chrono_pred <- rbind(
                z2_hi = exp(ipd_hat$ci.ub), 
                metric = "z2_ipd")
 )
+
 
 # plotting
 fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd), 
@@ -390,10 +403,7 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
     this_ms_look(log_x = TRUE, log_y = TRUE) +
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
-          strip.placement = "outside", 
-          panel.border = element_rect(colour = "black", 
-                                      fill = NA, 
-                                      linewidth = 1))
+          strip.placement = "outside")
 
 fig_z2_chrono
 
@@ -404,45 +414,119 @@ fig_z2_chrono
 
 ## How do observed patterns deviate from METE?
 
+Next we determine how the observed data deviate from the METE predictions. To begin we look at two exemplar SADs and two exemplar IPDs representing low and high deviation from theory (@fig-how-diff).
+
+```{r}
+#| label: fig-how-diff
+#| fig-cap: |
+#|     Two exemplar IPDs and SADs showing high and low deviation from METE.
+#|     The low deviation distributions come from the same sample at the 
+#|     Alakaʻi site while the high deviation distributions come from the
+#|     same sample at the Kamakou site. Samples were choosen to represent
+#|     ranges of deviation while still being similar in state variables
+
+# function to summarize theoretical and observed distributions
+# given one sample `x`
+
+mk_summ <- function(x) {
+    esf <- meteESF(x$species_code, x$abundance, x$metabolic_rate)
+    
+    list(sad = sad(esf),
+         ipd = ipd(esf)) |> 
+        lapply(function(x) {
+            thr <- samp_mete(x, n = 1000) |> 
+                summarize_samp_mete()
+            
+            obs <- data.frame(rank = seq_along(x$data), 
+                              abund_obs = x$data)
+            
+            full_join(thr, obs)
+        }) |> 
+        bind_rows(.id = "dist")
+}
+
+
+
+expl_samps <- data.frame(site = c("KA", "MO"), 
+                         tree = c(5, 9), 
+                         deviation = c("lo", "hi")) |> 
+    left_join(arth) |> 
+    (\(x) split(x, x$deviation, drop = TRUE))() |> 
+    lapply(mk_summ) |> 
+    bind_rows(.id = "deviation")
+
+
+fig_how_diff <- ggplot(expl_samps, aes(rank, m)) +
+    geom_point(aes(rank, abund_obs)) +
+    geom_ribbon(aes(ymin = lo, ymax = hi), 
+                fill = "#489BC5", alpha = 0.75) +
+    geom_line(color = "#489BC5") +
+    facet_grid2(
+        rows = vars(dist), cols = vars(deviation), 
+        scales = "free", independent = "x", 
+        labeller = as_labeller(
+            c(hi = "High deviation", lo = "Low deviation", 
+              ipd = "Metabolic rate", sad = "Abundance")
+        ), 
+        switch = "y"
+    ) +
+    xlab("Rank") +
+    ylab("") +
+    this_ms_look(log_y = TRUE) +
+    theme(strip.background.y = element_blank(), 
+          strip.placement.y = "outside",
+          strip.text.y = element_text(size = 14))
+
+fig_how_diff
+```
+
+
+Looking across all samples (@fig-how-z2) we see that deviations between observed and theoretical SADs is consistently in the direction of under-predicted both rarity and dominance (i.e. observed SADs have more rarity and greater dominance than theoretical predictions). 
 @fig-sad-how shows that when METE predictions deviate from observed SADs, METE under-predicts both rarity and dominance compared to observed SADs. This means that observed SADs are more uneven than the METE prediction. 
 
 
 ```{r}
+#| label: fig-how-z2
+#| fig-width: 7.5
+#| fig-height: 6
+#| fig-cap: |
+#|     Relationship between $z^2$ measure of deviation from METE and different
+#|     metrics describing how observed data and METE predictions diverge.
 
-ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site)) +
+
+fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name, 
+                       z2 = z2_sad, rar_diff = n1_diff, dom_diff = nmax_diff),
+          ipd = select(arth_mete, site_name, 
+                       z2 = z2_ipd, rar_diff = p1_diff, dom_diff = pmax_diff),
+          .id = "dist") |> 
+    pivot_longer(ends_with("diff"), 
+                 names_to = c("comp", ".value"), 
+                 names_sep = "_") |> 
+    ggplot(aes(diff, z2, color = site_name)) +
     geom_point() +
-    scale_x_log10(limits = range(select(arth_mete, starts_with("z2")))) +
-    scale_y_log10(limits = range(select(arth_mete, starts_with("z2")))) +
-    scale_color_viridis_d(option = "magma") +
-    geom_abline(slope = 1, intercept = 0)
+    facet_grid2(rows = vars(dist), cols = vars(comp), 
+                scales = "free", independent = "x", 
+                labeller = as_labeller(
+                    c(ipd = "\"IPD\"~z^2*\"-value\"", 
+                      sad = "\"SAD\"~z^2*\"-value\"", 
+                      dom = "\"Diff. in dominance\"", 
+                      rar = "\"Diff. in rarity\""),
+                    label_parsed
+                ), 
+                switch = "both") +
+    xlab("") +
+    ylab("") +
+    this_ms_look(log_y = TRUE) +
+    geom_vline(xintercept = 0, color = "gray") +
+    theme(strip.background = element_blank(), 
+          strip.placement = "outside",
+          strip.text.y = element_text(size = 14))
 
 
-ggplot(arth_mete, aes(z2_sad, n1_diff, color = site)) +
-    geom_point() +
-    scale_color_viridis_d(option = "magma") 
-
-ggplot(arth_mete, aes(nmax_diff, z2_sad, color = site)) +
-    geom_point() +
-    scale_y_log10() +
-    scale_color_viridis_d(option = "magma") 
-
-ggplot(arth_mete, aes(p1_diff, z2_ipd, color = site)) +
-    geom_point() +
-    scale_y_log10() +
-    scale_color_viridis_d(option = "magma") 
-
-ggplot(arth_mete, aes(pmax_diff, z2_ipd, color = site)) +
-    geom_point() +
-    scale_y_log10() +
-    scale_color_viridis_d(option = "magma") 
-
-
-
+fig_how_z2
 ```
 
-## How do METE and the real data differ
 
-Which one over-predicts rarity?
 
 ## Comparing deviations from METE with potential explanatory variables
 
@@ -453,18 +537,17 @@ Which one over-predicts rarity?
 ```{r}
 #| label: fig-dev-non
 
+mete_by_non <- summarize(
+    arth, 
+    prop_nspp_non_nat = n_distinct(
+        species_code[!(origin %in% c("endemic", "indigneous"))]) / 
+        n_distinct(species_code),
+    .by = c(site_name)) |> 
+    full_join(arth_mete)
 
-ggplot(arth_mete, aes(prop_n_non_nat, z2_sad, color = site)) +
+ggplot(mete_by_non, aes(prop_nspp_non_nat, z2_ipd, color = site_name)) +
     geom_point() +
-    scale_y_log10() +
-    scale_color_viridis_d(option = "magma")
-
-
-ggplot(arth_mete, aes(prop_p_non_nat, z2_ipd, color = site)) +
-    geom_point() +
-    scale_y_log10() +
-    scale_color_viridis_d(option = "magma")
-
+    this_ms_look(log_y = TRUE)
 
 
 
@@ -509,6 +592,9 @@ mete_by_diss <- mutate(arth_mete,
 
 
 ggplot(mete_by_diss, aes(mean_diss, z2_sad, color = site)) +
+    geom_jitter(width = 0.25) +
+    this_ms_look(log_y = TRUE)
+ggplot(mete_by_diss, aes(mean_diss, z2_ipd, color = site)) +
     geom_jitter(width = 0.25) +
     this_ms_look(log_y = TRUE)
 
