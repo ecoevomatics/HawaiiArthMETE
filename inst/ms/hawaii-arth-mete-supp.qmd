@@ -323,28 +323,23 @@ The following code produces the visualization reported in the main text of devia
 
 
 # prepare data frame of predicted values for plotting
-x <- seq(min(site_summ$site_log_age), 
-         max(site_summ$site_log_age), 
-         length.out = 50)
+x <- range(arth$flow_age_my) |> 
+    log() |> 
+    (\(x) seq(x[1], x[2], length.out = 50))() |> 
+    exp() |> 
+    data.frame(flow_age_my = _)
 
-newx <- cbind(1, x, x^2)
-sad_hat <- predict(sad_rma_chrono, newmods = newx)
-ipd_hat <- predict(ipd_rma_chrono, newmods = newx)
+sad_hat <- site_means_predict(sad_rma_chrono, newdata = x)
+ipd_hat <- site_means_predict(ipd_rma_chrono, newdata = x)
 
-
-
-z2_chrono_pred <- rbind(
-    data.frame(flow_age_my = exp(x), 
-               z2 = exp(sad_hat$pred), 
-               z2_lo = exp(sad_hat$ci.lb), 
-               z2_hi = exp(sad_hat$ci.ub), 
-               metric = "z2_sad"), 
-    data.frame(flow_age_my = exp(x), 
-               z2 = exp(ipd_hat$pred), 
-               z2_lo = exp(ipd_hat$ci.lb), 
-               z2_hi = exp(ipd_hat$ci.ub), 
-               metric = "z2_ipd")
-)
+z2_chrono_pred <- bind_rows(z2_sad = data.frame(x, sad_hat), 
+                            z2_ipd = data.frame(x, ipd_hat), 
+                            .id = "metric") |> 
+    select(!se) |> 
+    rename(z2 = pred,
+           z2_lo = ci.lb, 
+           z2_hi = ci.ub) |> 
+    mutate(across(starts_with("z2"), exp))
 
 
 # plotting
@@ -357,7 +352,7 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
                 mapping = aes(x = flow_age_my, 
                               ymin = z2_lo, 
                               ymax = z2_hi), 
-                color = "gray", linewidth = 0.0001, alpha = 0.25) +
+                color = "transparent", alpha = 0.4) +
     # central tendency 
     geom_line(data = z2_chrono_pred, 
               mapping = aes(flow_age_my, z2), 
