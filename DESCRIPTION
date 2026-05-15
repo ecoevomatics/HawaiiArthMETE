@@ -7,10 +7,12 @@ Author: Andrew Rominger, Katie Thai
 LazyData: true
 Encoding: UTF-8
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.0)
 Imports: 
     meteR,
     dplyr, 
-    ggplot2
+    ggplot2,
+    scales,
+    cowplot
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
