@@ -528,33 +528,18 @@ filter(mete_by_non, site == "VO") |>
 ```{r}
 #| eval: false
 
-z_diss <- function(x, nat, B = 500) {
-    # browser()
-    
-    
-    obs_dist <- bray_part(x, nat)
+bray_diss_z <- function(x, B = 500) {
+    obs_dist <- x |> vegdist(method = "bray") |> mean()
     
     sim <- nullmodel(x, "quasiswap_count") |>
-        simulate(nsim = B)
-    
-    sim_a <- nullmodel(x[, nat], "quasiswap_count") |>
-        simulate(nsim = B)
-    
-    sim_b <- nullmodel(x[, !nat], "quasiswap_count") |>
         simulate(nsim = B)
 
     sim_mean_dist <- sapply(1:dim(sim)[3], function(i) {
         vegdist(sim[, , i]) |> mean()
     })
-    
-    sim_ab_mean_dist <- sapply(1:dim(sim)[3], function(i) {
-        bray_part(cbind(sim_a[, , i], sim_b[, , i]), nat)
-    })
 
-    s <- sqrt(sum(apply(sim_ab_mean_dist, 1, sd)^2))
-    (obs_dist - rowMeans(sim_ab_mean_dist)) / s
 
-    
+    (obs_dist - mean(sim_mean_dist)) / sd(sim_mean_dist)
     
 }
 
@@ -566,75 +551,9 @@ diss <- split(arth, arth$site) |>
                         values_from = abund, 
                         values_fill = 0) |> 
             select(!tree) |> 
-            z_diss() 
+            bray_diss_z() 
     })
 
-
-bray_part <- function(x, nat) {
-    ma <- outer(rowSums(x[, nat]), rowSums(x[, nat]), "+")
-    mb <- outer(rowSums(x[, !nat]), rowSums(x[, !nat]), "+")
-    m <- outer(rowSums(x), rowSums(x), "+")
-    
-    lt <- lower.tri(m)
-    
-    va <- as.matrix(vegan::vegdist(x[, nat])) * ma / m
-    vb <- as.matrix(vegan::vegdist(x[, !nat])) * mb / m
-    
-    # va <- mean(z_diss(x[, nat]) * ma / m)
-    # vb <- mean(z_diss(x[, !nat]) * mb / m)
-    
-    c(native = mean(va[lt]), nonnat = mean(vb[lt])) #|> log() |> diff()
-}
-
-
-
-foo <- split(arth, arth$site) |> 
-    sapply(function(dat) {
-        comm <- summarize(dat, 
-                  abund = n(), 
-                  .by = c(tree, species_code)) |> 
-            pivot_wider(names_from = species_code, 
-                        values_from = abund, 
-                        values_fill = 0) |> 
-            select(!tree)
-        g <- dat$origin[match(names(comm), dat$species_code)] %in% 
-            c("endemic", "indigenous")
-        
-        z_diss(as.matrix(comm), g)
-    })
-
-doo <- tapply(mete_by_non$prop_nspp_non_nat, mete_by_non$site, mean)
-
-data.frame(site = factor(names(doo), levels(arth$site)), 
-           prop_nspp = doo, 
-           prop_bray = foo[2, ]) |> 
-    ggplot(aes(prop_nspp, prop_bray, color = site)) +
-    geom_point() +
-    this_ms_look()
-
-
-summarize(
-    arth, 
-    nn_mean = sum(abundance[!(origin %in% c("endemic", "indigneous"))]) /
-        n_distinct(species_code[!(origin %in% c("endemic", "indigneous"))]),
-    .by = c(site_name, tree)
-) |> 
-    ggplot(aes(site_name, nn_mean, color = site_name)) +
-    geom_point() +
-    this_ms_look()
-
-x <- rbind(n1, n2, c(8, 3, 4, 1), c(2, 2, 2, 2), c(4, 1, 1, 1))
-g <- c("a", "a", "b", "b")
-ma <- sum(x[, g == "a"])
-mb <- sum(x[, g == "b"])
-m <- sum(x)
-
-
-mean(vegdist(x[, g == "a"]) * ma / m) 
-mean(vegdist(x[, g == "b"]) * mb / m)
-
-mean(v1)
-mean(v2)
 
 mete_by_diss <- mutate(arth_mete, 
                        mean_diss = diss[site])
@@ -669,40 +588,9 @@ rma(yi = z2_sad_mean,
 
 
 ```{r}
-#| label: cswap
+#| label: bray-part
 
-
-
-cswap <- function(x, g) {
-    n <- length(g)
-    xs <- colSums(x)
-    new_g <- g
-    
-    for(r in 1:1000) {
-        
-        i <- sample(n, 1)
-        othr <- which(g == !g[i])
-        j <- sample(othr, 1, 
-                    prob = 1 - abs(xs[i] - xs[othr]) / (xs[i] + xs[othr]))
-        
-        g_i <- new_g[i]
-        g_j <- new_g[j]
-        new_g[i] <- g_j
-        new_g[j] <- g_i
-    }
-    
-    new_g
-}
-
-nat_z <- function(x, g, B = 1000) {
-    obs <- bray_part(x, g)
-    sim <- sapply(1:B, function(i) bray_part(x, cswap(x, g)))
-    
-    # (obs - rowMeans(sim)) / sqrt(sum(apply(sim, 1, sd)^2))
-    (obs - mean(sim)) / sd(sim)
-}
-
-nll <- split(arth, arth$site) |> 
+site_bray_z <- split(arth, arth$site) |> 
     sapply(function(dat) {
         comm <- summarize(dat, 
                   abund = n(), 
@@ -714,27 +602,10 @@ nll <- split(arth, arth$site) |>
         g <- dat$origin[match(names(comm), dat$species_code)] %in% 
             c("endemic", "indigenous")
         
-        nat_z(as.matrix(comm), g)
+        bray_part_z(as.matrix(comm), g)
     })
 
 
 ```
 
 
-```{r}
-#| label: other-stuff
-
-x <- matrix(rnbinom(10 * 30, mu = 8, size = 1), nrow = 10)
-g <- c(rep(TRUE, 18), rep(FALSE, 30 - 18))
-
-obs <- bray_part(x, g)
-sim <- sapply(1:1000, function(i) bray_part(x, cswap(x, g)))
-
-replicate(1000, bray_part(x, sample(g))) |> 
-    apply(1, sd) |> 
-    (\(x) sqrt(sum(x^2)))()
-
-sqrt(sum(apply(sim, 1, sd)^2))
-(obs - rowMeans(sim)) / sqrt(sum(apply(sim, 1, sd)^2))
-
-```
