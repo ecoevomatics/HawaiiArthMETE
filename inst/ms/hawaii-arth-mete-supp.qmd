@@ -583,7 +583,7 @@ bray_part <- function(x, nat) {
     # va <- mean(z_diss(x[, nat]) * ma / m)
     # vb <- mean(z_diss(x[, !nat]) * mb / m)
     
-    c(native = mean(va[lt]), nonnat = mean(vb[lt])) |> log() |> diff()
+    c(native = mean(va[lt]), nonnat = mean(vb[lt])) #|> log() |> diff()
 }
 
 
