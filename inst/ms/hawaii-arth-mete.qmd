@@ -47,23 +47,20 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 x <- st_read("hi_geol/hawaii_state_geol_ageClean.shp") |> 
     filter(!is.na(age_mid)) 
 hi <- st_read("hi_geol/hi_outline.shp")
-
-
-m <- 0.7 / diff(range(arth$flow_age_my))
-0.9 + (max(x$age_mid) - max(arth$flow_age_my)) * m
-0.2 + (min(x$age_mid) - min(arth$flow_age_my)) * m
-
+sites <- st_read("hi_geol/gruner_sites.kml") |> 
+    st_transform(crs = st_crs(x))
 
 p <- ggplot(hi) +
     geom_sf(color = "gray30", fill = "gray30", linewidth = 0.1) +
-    geom_sf(data = x, 
-            aes(fill = age_mid, color = age_mid), 
+    geom_sf(data = x,
+            aes(fill = age_mid, color = age_mid),
             linewidth = 0.0001,
             inherit.aes = FALSE) +
     scale_fill_viridis_c(option = "magma", begin = 0.2, end = 1,
                          transform = c("log10", "reverse")) +
-    scale_color_viridis_c(option = "magma", begin = 0.2, end = 1, 
+    scale_color_viridis_c(option = "magma", begin = 0.2, end = 1,
                          transform = c("log10", "reverse")) +
+    geom_sf(data = sites, shape = 21, fill = "black", color = "white") +
     theme_cowplot() + 
     theme(legend.position = "none", 
           axis.line = element_blank(), 
@@ -123,6 +120,7 @@ l <- data.frame(y = seq(log_age_range[1],
           axis.text.y.right = element_text(size = 10)) + 
     coord_cartesian(clip = "off")
 
+plot_grid(p, l, rel_widths = c(1, 0.2))
 ```
 
 
@@ -151,7 +149,11 @@ We find departures from steady state at middle aged sites. Departures are predic
 - dissimilarity as instability
 - possible causes of instability---adaptive radiation
 - presents future hypothesis to test with genetic data
-
+- hypotheses
+    - diversification drives divergence; diversification slowed down on older flows
+    - invasion drives divergence
+    - both do and they interact, perhaps even conditions favoring diversification favor invasion too
+    
 
 ## Setup
 
