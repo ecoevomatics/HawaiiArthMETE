@@ -528,20 +528,7 @@ filter(mete_by_non, site == "VO") |>
 ```{r}
 #| eval: false
 
-bray_diss_z <- function(x, B = 500) {
-    obs_dist <- x |> vegdist(method = "bray") |> mean()
-    
-    sim <- nullmodel(x, "quasiswap_count") |>
-        simulate(nsim = B)
 
-    sim_mean_dist <- sapply(1:dim(sim)[3], function(i) {
-        vegdist(sim[, , i]) |> mean()
-    })
-
-
-    (obs_dist - mean(sim_mean_dist)) / sd(sim_mean_dist)
-    
-}
 
 
 diss <- split(arth, arth$site) |> 
