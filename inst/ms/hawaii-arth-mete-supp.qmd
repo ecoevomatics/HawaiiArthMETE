@@ -12,7 +12,7 @@ knitr:
 ---
 
 
-This supplement walks through the steps of recreating the entire analysis presented in the main text. It also provided further analysis in support of and to contextualize results in the main text. 
+This supplement walks through the steps of recreating the entire analysis presented in the main text. It also provides further analysis in support of and to contextualize results in the main text. 
 
 
 ## Computing setup
@@ -121,29 +121,35 @@ arth_mete <- do.call(rbind, arth_mete)
 
 ```
 
-An initial investigation of patterns in the SAD reveal two clear outliers in terms of deviation from theory and proportion of non-native individuals (@fig-z2-out). 
+<!-- An initial investigation of patterns in the SAD reveal two clear outliers in terms of deviation from theory and proportion of non-native individuals (@fig-z2-out).  -->
 
 
-### Investigating highly invaded, highly dominated samples
+<!-- ### Investigating highly invaded, highly dominated samples -->
 
-The two outlier samples both show a difference (theory - observed) in maximum abundance of over -300 (@fig-z2-out). 
+<!-- The two outlier samples both show a difference (theory - observed) in maximum abundance of over -300 (@fig-z2-out).  -->
 
 ```{r}
+#| label: calc-outliers
+#| dependson: mete-calc
+#| eval: false
+
 outliers <- filter(arth_mete, nmax_diff < -300)
 ```
 
 ```{r}
 #| label: fig-z2-out
 #| fig-width: 7
+#| dependson: [mete-calc]
+#| eval: false
 
-pivot_longer(outliers, 
-             c(prop_n_non_nat, nmax_diff), 
-             names_to = "metric")
+names(mete_by_non)
+names(arth_mete)
+arth_mete <- full_join(arth_mete, mete_by_non, by = c("site", "tree"))
 
-select(arth_mete, site_name, prop_n_non_nat, nmax_diff, z2_sad) |> 
+select(arth_mete, site_name.x, prop_nspp_non_nat, nmax_diff.x, z2_sad.x) |> 
     # pivot so both metrics are plotted in faceted panels
-    pivot_longer(prop_n_non_nat:nmax_diff, names_to = "metric") |> 
-    ggplot(aes(value, z2_sad, color = site_name)) +
+    pivot_longer(prop_nspp_non_nat:nmax_diff.x, names_to = "metric") |> 
+    ggplot(aes(value, z2_sad.x, color = site_name.x)) +
     geom_point() +
     
     # add arrows pointing to outliers
@@ -162,8 +168,8 @@ select(arth_mete, site_name, prop_n_non_nat, nmax_diff, z2_sad) |>
     facet_grid(
         cols = vars(metric), scales = "free_x", 
         labeller = as_labeller(
-            c(nmax_diff = "Diff. in maximum abundance", 
-              prop_n_non_nat = "Prop. non-native individuals")
+            c(nmax_diff.x = "Diff. in maximum abundance", 
+              prop_nspp_non_nat = "Prop. non-native individuals")
         ), 
         switch = "x"
     ) +
@@ -174,11 +180,13 @@ select(arth_mete, site_name, prop_n_non_nat, nmax_diff, z2_sad) |>
           axis.title.x = element_blank())
 ```
 
-These two outlier samples come from the Laupāhoehoe and Kohala sites. To further understand these two samples and determine if they should remain in the analyses we look at their composition. @tbl-out1 shows the three most abundant species for the Laupāhoehoe outlier sample while @tbl-out2 shows the three most abundant species for the `r Kohala outlier sample.
+<!-- These two outlier samples come from the Laupāhoehoe and Kohala sites. To further understand these two samples and determine if they should remain in the analyses we look at their composition. @tbl-out1 shows the three most abundant species for the Laupāhoehoe outlier sample while @tbl-out2 shows the three most abundant species for the `r Kohala outlier sample. -->
 
 
 ```{r}
 #| label: tbl-out1
+#| dependson: [mete-calc]
+#| eval: false
 
 filter(arth, tree == outliers$tree[1] & site == outliers$site[1]) |> 
     summarize(n = n(), .by = c(genus, species, origin)) |> 
@@ -196,6 +204,8 @@ filter(arth, tree == outliers$tree[1] & site == outliers$site[1]) |>
 
 ```{r}
 #| label: tbl-out2
+#| dependson: [mete-calc]
+#| eval: false
 
 filter(arth, tree == outliers$tree[2] & site == outliers$site[2]) |> 
     summarize(n = n(), .by = c(genus, species, origin)) |> 
@@ -211,11 +221,13 @@ filter(arth, tree == outliers$tree[2] & site == outliers$site[2]) |>
 
 ```
 
-In both outliers the most abundant species is non-native, and in the case of Laupāhoehoe, all top three most abundant species are non-native. Laupāhoehoe and Kohala share *Salina celebensis* in common which is a Collembola known to reach high densities in Hawaiʻi [@christiansen1992]. The abundances of *Salina celebensis* and *Greenidea formosana* in these samples are significant outliers compared to the maximum abundance found in any other sample as shown in @fig-crazy-abund.
+<!-- In both outliers the most abundant species is non-native, and in the case of Laupāhoehoe, all top three most abundant species are non-native. Laupāhoehoe and Kohala share *Salina celebensis* in common which is a Collembola known to reach high densities in Hawaiʻi [@christiansen1992]. The abundances of *Salina celebensis* and *Greenidea formosana* in these samples are significant outliers compared to the maximum abundance found in any other sample as shown in @fig-crazy-abund. -->
 
 
 ```{r}
 #| label: fig-crazy-abund
+#| dependson: [mete-calc]
+#| eval: false
 
 crazy_abund <- filter(arth, 
                       (site %in% outliers$site & tree %in% outliers$tree)) |> 
@@ -243,10 +255,12 @@ summarize(arth, .by = c(site, tree),
 
 ```
 
-Because these samples are so unusual we decided to drop them from all further analyses presented in the main text. However, we retain the outlier samples in the supplement to validate that our results are not biased by their removal.
+<!-- Because these samples are so unusual we decided to drop them from all further analyses presented in the main text. However, we retain the outlier samples in the supplement to validate that our results are not biased by their removal. -->
 
 ```{r}
 #| label: remove-outliers
+#| dependson: [mete-calc]
+#| eval: false
 
 # remove from mete results
 arth_mete_out <- arth_mete
@@ -269,6 +283,7 @@ Now we analyze how deviations from METE behave across the chronosequence. The fo
 
 ```{r}
 #| label: z2-chrono-lm
+#| dependson: [mete-calc, ]
 
 # quadratic model of sad z^2 across age
 sad_rma_chrono <- site_means_lm(log(z2_sad) ~ 
@@ -289,6 +304,7 @@ Likelihood ratio tests (LRT) can evaluate the significance of the quadratic mode
 
 ```{r}
 #| label: z2-chrono-lrt
+#| dependson: [mete-calc, z2-chrono-lm]
 
 # likelihood ratio tests for sad and ipd across chrono
 sad_lrt_chrono <- anova(sad_rma_chrono)
@@ -301,6 +317,8 @@ ipd_lrt_chrono
 The quadratic model for SAD $z^2$-values is supported by the LRT with a $P$-value < 0.0001, but the quadratic model for IPD $z^2$-values did not have a significant $P$-value. However, the 95% CI for the quadratic term in the IPD $z^2$-values model has the majority of its range below zero, indicating the data do tend toward a quadratic shape, just with greater variance compared to the quadratic model for SAD $z^2$-values.
 
 ```{r}
+#| dependson: [mete-calc, z2-chrono-lm]
+
 ipd_rma_chrono
 
 ```
@@ -314,7 +332,7 @@ The following code produces the visualization reported in the main text of devia
 #| fig-cap: |
 #|     Deviations from METE as measured by $z^2$ across the chronosequence. 
 #|     Discussed in more detail in the main text.
-
+#| dependson: mete-calc, z2-chrono-lm
 
 # prepare data frame of predicted values for plotting
 x <- range(arth$flow_age_my) |> 
@@ -385,6 +403,7 @@ Next we determine how the observed data deviate from the METE predictions. To be
 #|     Alakaʻi site while the high deviation distributions come from the
 #|     same sample at the Kamakou site. Samples were choosen to represent
 #|     ranges of deviation while still being similar in state variables
+#| dependson: [mete-calc]
 
 # function to summarize theoretical and observed distributions
 # given one sample `x`
@@ -453,7 +472,7 @@ Looking across all samples (@fig-how-z2) we see that deviations between observed
 #| fig-cap: |
 #|     Relationship between $z^2$ measure of deviation from METE and different
 #|     metrics describing how observed data and METE predictions diverge.
-
+#| dependson: [mete-calc]
 
 fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name, 
                        z2 = z2_sad, rar_diff = n1_diff, dom_diff = nmax_diff),
@@ -497,6 +516,7 @@ fig_how_z2
 
 ```{r}
 #| label: fig-dev-non
+#| dependson: [mete-calc]
 
 mete_by_non <- summarize(
     arth, 
@@ -526,7 +546,8 @@ filter(mete_by_non, site == "VO") |>
 ### Deviation vs. dissimilarity
 
 ```{r}
-#| eval: false
+#| label: diss-z-calc
+#| dependson: [mete-calc]
 
 
 
@@ -575,7 +596,14 @@ rma(yi = z2_sad_mean,
 
 
 ```{r}
+#| label: diss-z-calc
+#| dependson: [mete-calc, diss-z-calc]
+
+```
+
+```{r}
 #| label: bray-part
+#| dependson: [mete-calc]
 
 site_bray_z <- split(arth, arth$site) |> 
     sapply(function(dat) {
