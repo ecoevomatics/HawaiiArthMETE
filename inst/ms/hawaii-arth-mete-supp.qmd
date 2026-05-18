@@ -1,5 +1,5 @@
 ---
-title: "Analysis of arthopod communites in Hawaii using METE Theory"
+title: "Supplement to \"Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective\""
 format: 
     pdf:
         include-in-header:
