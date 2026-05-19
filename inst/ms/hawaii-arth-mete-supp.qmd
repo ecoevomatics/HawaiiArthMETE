@@ -38,8 +38,6 @@ library(ggplot2)
 library(ggh4x)
 library(dplyr)
 library(tidyr)
-library(vegan)
-library(metafor)
 library(HawaiiArthMETE)
 
 
@@ -95,16 +93,6 @@ arth_mete <- split(arth, arth[, c("site", "tree")], drop = TRUE) |>
             # z2 values
             z2_sad = logLikZ(s)$z,
             z2_ipd = logLikZ(p)$z,
-            
-            # prop non-native for abundance and power
-            prop_n_non_nat = sum(
-                x$abundance[!(x$origin %in% c("endemic", "indigneous"))]
-            ) / 
-                sum(x$abundance),
-            prop_p_non_nat = sum(
-                x$metabolic_rate[!(x$origin %in% c("endemic", "indigneous"))]
-            ) / 
-                sum(x$metabolic_rate),
             
             # differences in extreme values
             n1_diff = log(mean(meteDist2Rank(s) == 1) / mean(s$data == 1)),
@@ -379,6 +367,7 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
         ), 
         switch = "y"
     ) +
+    xlab("Flow age (my)") +
     this_ms_look(log_x = TRUE, log_y = TRUE) +
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
@@ -461,8 +450,7 @@ fig_how_diff
 ```
 
 
-Looking across all samples (@fig-how-z2) we see that deviations between observed and theoretical SADs is consistently in the direction of under-predicted both rarity and dominance (i.e. observed SADs have more rarity and greater dominance than theoretical predictions). 
-@fig-sad-how shows that when METE predictions deviate from observed SADs, METE under-predicts both rarity and dominance compared to observed SADs. This means that observed SADs are more uneven than the METE prediction. 
+Looking across all samples (@fig-how-z2) we see that deviations between observed and theoretical SADs is consistently in the direction of under-predicted both rarity and dominance (i.e. observed SADs have more rarity and greater dominance than theoretical predictions). Indeed, only one sample shows a (small) over-prediction in dominance, and only two samples show a (small) over-prediction in rarity. This means that observed SADs are more uneven than the METE prediction. 
 
 
 ```{r}
@@ -507,51 +495,182 @@ fig_how_z2
 ```
 
 
+In the case of the IPD dominance refers to metabolic rates of individuals with the highest metabolic rates, and rarity refers to the number of individuals with very low metabolic rates. Actual and theoretical IPDs do not show this consistent discrepancy between observed and predicted dominance and rarity. To evaluate this we model the probability of whether the log ratio is above or below zero with an intercept only binomial GLM. 
+
+```{r}
+#| label: ipd-how-glm
+#| dependson: [mete-calc]
+
+# "successes" and "failures" for GLM
+ipd_diff <- summarize(arth_mete, 
+                      n_over_dom = sum(pmax_diff < 0), 
+                      n_undr_dom = sum(pmax_diff > 0), 
+                      n_over_rar = sum(p1_diff < 0), 
+                      n_undr_rar = sum(p1_diff > 0), 
+                      .by = site)
+
+# dominance 
+pmax_mod <- glm(cbind(n_over_dom, n_undr_dom) ~ 1, 
+                family = binomial, data = ipd_diff) 
+
+summary(pmax_mod)
+
+
+# rarity
+p1_mod <- glm(cbind(n_over_rar, n_undr_rar) ~ 1, 
+              family = binomial, data = ipd_diff)
+
+summary(p1_mod)
+
+```
+
+The fact that in both models the intercept is not significantly different from the null ($p = 0.5$) means that there is not evidence of systematic difference between thertical prediction and observed IPD.
+
 
 ## Comparing deviations from METE with potential explanatory variables
 
 
+### Deviation vs. proportion of non-native species
 
-### Deviation vs. proportion that are invasive
+To see if proportion of non-native species has any relationship with deviation from METE we use meta regression as with the chronosequence analysis. The below code produces this meta regression and tests the affect of proportion of non-native species on deviations of the SAD and IPD from METE predictions.
 
 ```{r}
-#| label: fig-dev-non
+#| label: calc-dev-non
 #| dependson: [mete-calc]
 
+# calculate proportion of non-native spp per site
 mete_by_non <- summarize(
     arth, 
     prop_nspp_non_nat = n_distinct(
         species_code[!(origin %in% c("endemic", "indigneous"))]) / 
         n_distinct(species_code),
     .by = site_name) |> 
+    # join to mete summary statistics
     full_join(arth_mete)
 
-ggplot(mete_by_non, aes(prop_nspp_non_nat, z2_sad, color = site_name)) +
-    geom_point() +
-    this_ms_look(log_y = TRUE) +
-    geom_hline(yintercept = exp(0.0474))
-
+# sad regression 
 sad_rma_non <- site_means_lm(log(z2_sad) ~ prop_nspp_non_nat + (1 | site), 
+                             # excluding Kīlauea site because it is 
+                             # quite different, further assessed below
                              filter(mete_by_non, site != "VO"))
 
+# sad likelihood ratio test
 anova(sad_rma_non)
 
-filter(mete_by_non, site == "VO") |> 
-    summarize(across(contains("nspp"), mean)) |> 
-    site_means_predict(sad_rma_non, newdata = _)
+
+# ipd regression 
+ipd_rma_non <- site_means_lm(log(z2_ipd) ~ prop_nspp_non_nat + (1 | site), 
+                             # excluding Kīlauea site
+                             filter(mete_by_non, site != "VO"))
+
+# ipd likelihood ratio test
+anova(ipd_rma_non)
+
+```
+
+The below code is used for visualizing the results. Note that Kīlauea is considered separately because it falls clearly below the expected trend based on other sites. In the case of the SAD, the mean and 95% CI of the $z^2$-value for Kīlauea is below both the expected value and 95% CI of the rest of the data. In the case of the Kīlauea IPD only the mean of $z^2$-values is below the 95% CI of the rest of the data; the two CIs do overlap.  This is why in the meta regression analysis Kīlauea was excluded, so we could interrogate the way it deviates from the overall pattern.
+
+```{r}
+#| label: fig-dev-non
+#| fig-height: 7
+#| fig-cap: |
+#|     Relationship between proportion of non-native species and deviation from 
+#|     METE. Kīlauea was excluded from the overall analysis to be able to 
+#|     compare it separately to the overall trend. Gray regreions represent
+#|     95% confidence envelopes (or confidence interval for Kīlauea) and solid 
+#|     lines are expected values.
+#| dependson: [mete-calc, calc-dev-non]
+
+
+# 95% CI for mean of Kīlauea site
+vo_mean <- filter(mete_by_non, site == "VO") |> 
+    pivot_longer(starts_with("z2"), 
+                 names_to = c(".value", "dist"), names_sep = "_") |> 
+    mutate(z2 = log(z2)) |> 
+    summarize(site_name = first(site_name), 
+              prop_nspp_non_nat = mean(prop_nspp_non_nat),
+              z2_mean = mean(z2), 
+              z2_se = sd(z2) / sqrt(n()), 
+              z2_lo = z2_mean - 1.96 * z2_se,
+              z2_hi = z2_mean + 1.96 * z2_se, 
+              .by = dist) |> 
+    rename(z2 = z2_mean) |> 
+    mutate(across(starts_with("z2"), exp))
+
+# prediction for plotting
+x <- range(mete_by_non$prop_nspp_non_nat) |> 
+    (\(x) seq(x[1], x[2], length.out = 50))() |> 
+    data.frame(prop_nspp_non_nat = _)
+
+sad_hat <- site_means_predict(sad_rma_non, newdata = x)
+ipd_hat <- site_means_predict(ipd_rma_non, newdata = x)
+
+z2_non_pred <- bind_rows(sad = data.frame(x, sad_hat), 
+                         ipd = data.frame(x, ipd_hat), 
+                         .id = "dist") |> 
+    select(!se) |> 
+    rename(z2 = pred,
+           z2_lo = ci.lb, 
+           z2_hi = ci.ub) |> 
+    mutate(across(starts_with("z2"), exp))
+
+# plotting
+fig_dev_non <- pivot_longer(mete_by_non, starts_with("z2"), 
+                            names_to = c(".value", "dist"), 
+                            names_sep = "_") |> 
+    ggplot(aes(prop_nspp_non_nat, z2, color = site_name)) +
+    geom_jitter(width = 0.002) +
+    # confidence envelope
+    geom_ribbon(data = z2_non_pred, 
+                mapping = aes(x = prop_nspp_non_nat, 
+                              ymin = z2_lo, 
+                              ymax = z2_hi), 
+                color = "transparent", alpha = 0.4) +
+    # central tendency 
+    geom_line(data = z2_non_pred, 
+              mapping = aes(prop_nspp_non_nat, z2), 
+              color = "black") +
+    geom_rect(data = vo_mean, 
+              mapping = aes(xmin = prop_nspp_non_nat - 0.002, 
+                            xmax = prop_nspp_non_nat + 0.002, 
+                            ymin = z2_lo, 
+                            ymax = z2_hi), 
+              color = "transparent", alpha = 0.4) +
+    geom_segment(data = vo_mean, 
+              mapping = aes(x = prop_nspp_non_nat - 0.002, 
+                            xend = prop_nspp_non_nat + 0.002, 
+                            y = z2, 
+                            yend = z2), 
+              color = "black") +
+    facet_grid(rows = vars(dist), 
+               labeller = as_labeller(
+                   c(ipd = "\"IPD\"~z^2*\"-value\"", 
+                     sad = "\"SAD\"~z^2*\"-value\""),
+                   label_parsed
+               ), 
+               switch = "y") +
+    xlab("Proportion of non-native spp.") +
+    this_ms_look(log_y = TRUE) +
+    theme(axis.title.y = element_blank(),
+          strip.background = element_blank(), 
+          strip.placement = "outside")
+
+
+
+fig_dev_non
 ```
 
 
 
 ### Deviation vs. dissimilarity
 
+We also conducted meta regression to see if $z^2$-values change meaningfully across different levels of within-site, between-sample dissimilarity or $\beta$-diversity. The below code runs this meta regression analysis.
+
 ```{r}
-#| label: diss-z-calc
+#| label: calc-diss-z
 #| dependson: [mete-calc]
 
-
-
-
+# calculate dissimilarity z-scores
 diss <- split(arth, arth$site) |> 
     sapply(FUN = function(dat) {
         summarize(dat, abund = n(), .by = c(tree, species_code)) |> 
@@ -562,51 +681,116 @@ diss <- split(arth, arth$site) |>
             bray_diss_z() 
     })
 
-
+# combine with mete summary statistics
 mete_by_diss <- mutate(arth_mete, 
                        mean_diss = diss[site])
 
 
+# sad regression 
+sad_rma_diss <- site_means_lm(log(z2_sad) ~ mean_diss + (1 | site),
+                              data = mete_by_diss)
 
-ggplot(mete_by_diss, aes(mean_diss, z2_sad, color = site)) +
-    geom_jitter(width = 0.25) +
-    this_ms_look(log_y = TRUE)
-ggplot(mete_by_diss, aes(mean_diss, z2_ipd, color = site)) +
-    geom_jitter(width = 0.25) +
-    this_ms_look(log_y = TRUE)
-
-
-xy <- mete_by_diss |> 
-    summarize(z2_sad_mean = mean(log(z2_sad)), 
-              z2_sad_sd = sd(log(z2_sad)), 
-              n = n(), 
-              mean_diss = first(mean_diss), 
-              .by = site)
+# sad likelihood ratio test
+anova(sad_rma_diss)
 
 
+# ipd regression 
+ipd_rma_diss <- site_means_lm(log(z2_ipd) ~ mean_diss + (1 | site),
+                              data = mete_by_diss)
 
-rma(yi = z2_sad_mean, 
-    vi = z2_sad_sd^2 / n, 
-    mods = ~ mean_diss, 
-    data = xy, 
-    method = "REML")
+# ipd likelihood ratio test
+anova(ipd_rma_diss)
 
 
 ```
 
+The relationship between deviation from METE and dissimilarity is more clearly linear than that of proportion non-native species and deviation from METE. It is therefore worth figuring out if the ways that native and non-native taxa contribute to dissimilarity is different across sites.
+
+
+The below code visualizes the results of the meta regression or SAD and IPD $z^2$-values against dissimilarity.
 
 ```{r}
-#| label: diss-z-calc
-#| dependson: [mete-calc, diss-z-calc]
+#| label: fig-diss-z
+#| fig-height: 8
+#| fig-cap: |
+#|     Relationship between dissimilarity and deviation from METE. Gray 
+#|     regreions represent 95% confidence envelopes and solid lines are 
+#|     expected values.
+#| dependson: [mete-calc, calc-diss-z]
+
+# prediction for plotting
+x <- range(mete_by_diss$mean_diss) |> 
+    (\(x) seq(x[1], x[2], length.out = 50))() |> 
+    data.frame(mean_diss = _)
+
+sad_hat <- site_means_predict(sad_rma_diss, newdata = x)
+ipd_hat <- site_means_predict(ipd_rma_diss, newdata = x)
+
+z2_diss_pred <- bind_rows(sad = data.frame(x, sad_hat), 
+                         ipd = data.frame(x, ipd_hat), 
+                         .id = "dist") |> 
+    select(!se) |> 
+    rename(z2 = pred,
+           z2_lo = ci.lb, 
+           z2_hi = ci.ub) |> 
+    mutate(across(starts_with("z2"), exp))
+
+# plotting
+fig_diss_z <- pivot_longer(mete_by_diss, starts_with("z2"), 
+                            names_to = c(".value", "dist"), names_sep = "_") |> 
+    ggplot(aes(mean_diss, z2, color = site_name)) +
+    geom_jitter(width = 0.1) +
+    # confidence envelope
+    geom_ribbon(data = z2_diss_pred, 
+                mapping = aes(x = mean_diss, 
+                              ymin = z2_lo, 
+                              ymax = z2_hi), 
+                color = "transparent", alpha = 0.4) +
+    # central tendency 
+    geom_line(data = z2_diss_pred, 
+              mapping = aes(mean_diss, z2), 
+              color = "black") +
+    facet_grid(rows = vars(dist), 
+               labeller = as_labeller(
+                   c(ipd = "\"IPD\"~z^2*\"-value\"", 
+                     sad = "\"SAD\"~z^2*\"-value\""),
+                   label_parsed
+               ), 
+               switch = "y") +
+    xlab("Mean dissimilarity") +
+    this_ms_look(log_y = TRUE) +
+    theme(axis.title.y = element_blank(),
+          strip.background = element_blank(), 
+          strip.placement = "outside")
+
+fig_diss_z
+
 
 ```
+
+
+### Partitioning Bray Curtis dissimilarity between native and non-native species
+
+To do that we take advantage of the additive nature of Bray Curtis dissimilarity. Bray Curtis dissimilarity is defined as
+
+$$
+d_{kj} = \frac{\sum_i |x_{ij} - x_{ik}|}{\sum_{ij} x_{ij} + x_{ik}}
+$$
+
+where $x_{ij}$ and $x_{ik}$ are the abundances of species $i$ at sites $j$ and $k$. This can be partitioned across any grouping of species, say $(a)$ and $(b)$ with abundances $x_{ij}^{(a)}$ and $x_{ij}^{(b)}$
+
+$$
+d_{kj} = \frac{\sum_i |x_{ij}^{(a)} - x_{ik}^{(a)}|}{\sum_{ij} x_{ij} + x_{ik}} + \frac{\sum_i |x_{ij}^{(b)} - x_{ik}^{(b)}|}{\sum_{ij} x_{ij} + x_{ik}}
+$$
+
+Now we can look separately at the contribution of group $(a)$ and group $(b)$ to the overall dissimilarity. We use this approach to compare the contributions of native and non-native taxa to overall dissimilarity. We again make use of a permutational null model to compare these contributions. This null model cannot be the same as the null model used to calculate z scores for overall dissimilarity because that null model shuffled species across samples and individuals across species. Instead, we want to shuffle group labels (native or non-native) across species. The custom function `bray_part_z` calculates these z scores using another custom function `cswap` from *HawaiiArthMETE*.
 
 ```{r}
 #| label: bray-part
 #| dependson: [mete-calc]
 
-site_bray_z <- split(arth, arth$site) |> 
-    sapply(function(dat) {
+site_bray_z <- split(arth, arth$site_name) |> 
+    lapply(function(dat) {
         comm <- summarize(dat, 
                   abund = n(), 
                   .by = c(tree, species_code)) |> 
@@ -617,10 +801,49 @@ site_bray_z <- split(arth, arth$site) |>
         g <- dat$origin[match(names(comm), dat$species_code)] %in% 
             c("endemic", "indigenous")
         
-        bray_part_z(as.matrix(comm), g)
-    })
+        data.frame(bp = bray_part_z(as.matrix(comm), g))
+    }) |> 
+    bind_rows(.id = "site_name")
 
 
 ```
+
+
+Now we can visualize different contributions of native and non-native species to within-site, between-sample dissimilarity.
+
+```{r}
+#| label: fig-bray-part
+#| fig-cap: |
+#|     Difference in contribution of native and non-native species to 
+#|     dissimilarity compared to null. Negative values indicate greater 
+#|     contribution of non-native species compared to chance while positive
+#|     values indicate greater contribution of native species compared to 
+#|     chance.
+#| dependson: [mete-calc, bray-part]
+
+site_bray_z$site_name <- factor(site_bray_z$site_name, 
+                                levels = levels(arth$site_name))
+
+fig_bray_part <- ggplot(site_bray_z, aes(bp, site_name, fill = site_name)) +
+    geom_bar(stat = "identity") +
+    this_ms_look() +
+    geom_vline(xintercept = 0, color = "gray") +
+    xlim(c(-1, 1) * max(abs(site_bray_z$bp))) +
+    ylab("") +
+    xlab("Log ratio dissimilarity partition") +
+    annotate("segment", x = c(-0.5, 0.5), xend = c(-2.75, 2.75), 
+             y = 6, yend = 6, 
+             arrow = arrow(length = unit(1, "char"))) +
+    annotate("text", x = c(-3, 3), y = 6, 
+             label = c("More non-native\ncontribution", 
+                       "More native\ncontribution"), 
+             hjust = c(1, 0), size = 4) +
+    theme(legend.position = "none", 
+          plot.margin = margin(40, 40, 7, 7)) +
+    coord_cartesian(ylim = c(1, 5), clip = "off") 
+
+fig_bray_part
+```
+
 
 
