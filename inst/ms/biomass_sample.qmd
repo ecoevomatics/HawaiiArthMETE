@@ -1,0 +1,301 @@
+---
+title: "Sampling biomass estimates from allometric equations"
+format: 
+  pdf:
+    number-sections: true
+    keep-tex: false
+    include-in-header:
+      text: |
+        \usepackage{newunicodechar}
+        \newunicodechar{ʻ}{`} 
+        \renewcommand{\thefigure}{A\arabic{figure}}
+        \renewcommand{\thesection}{A\arabic{section}}
+knitr:
+  opts_chunk: 
+    dev: cairo_pdf
+crossref:
+  fig-title: "Appendix Figure"
+  fig-prefix: "Appendix Figure"
+  tbl-title: "Appendix Table"
+  tbl-prefix: "Appendix Table"
+csl: ecology-letters.csl
+bibliography: hawaii-arth-mete.bib
+---
+
+## Setup
+
+We make use of these packages
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(cowplot)
+```
+
+## Allometric relationships
+
+@gruner2003 published coefficients for taxon- and stage-specific allometric relationships of the form
+
+$$
+\text{mass} = a (\text{length})^b
+$$
+
+This allometric relationship was estimated from real data based on the log-log transform and assuming a normal distribution of log-transformed mass
+
+$$
+\begin{aligned}
+\widehat{{\log(\text{mass})}} &= \log(a) + b \log(\text{length}) \\
+\log(\text{mass}) &\sim \mathscr{N}(\widehat{{\log(\text{mass})}}, ~\sigma)
+\end{aligned}
+$$
+
+
+@gruner2003 also published $R^2$ coefficients for these log-log transformed allometric relationships.
+
+@gruner2007 measured length of individual specimens to 1 mm resolution and used the estiamted coefficients from these allometric relationships to approximate the mass of each specimen as $e^{\log(a) + b \log(\text{length})}$. This is a reasonable assumption but leads to potential issues when comparing data to Maximum Entropy Theory of Ecology [METE; @harte2011] predictions because METE assumes biomass-derived metabolic rates are continuous while using expected values based on 1 mm resolution length measurements introduces artificial discretization of the data.
+
+
+## Drawing random biomass samples
+
+To overcome this potential issue we conduct our METE analyses with random draws from $\log(\text{mass}) \sim \mathscr{N}(\widehat{{\log(\text{mass})}}, ~\sigma)$, one draw per individual. Random draws will be centered around $\widehat{{\log(\text{mass})}}$ but be continuous-valued rather than artificially discretized.
+
+In order to achieve those random draws we must match the allometric coefficients from @gruner2003 to the taxonomy and stage information in @gruner2007. A modified version of Table 1 from @gruner2003 is shown in @tbl-grun
+
+```{r}
+#| label: tbl-grun
+#| tbl-cap: |
+#|     Coefficient estimates for the allometric relationship 
+#|     $\text{mass} = a (\text{length})^b$, modified from Table 1 of 
+#|     @gruner2003
+
+allom <- read.csv("../gruner2003.csv")
+
+knitr::kable(allom)
+```
+
+
+Now we match rows in `allom` to rows in the data from @gruner2007 (which we call `arth`) based on taxonomy and stage. Matching follows a priority hierarchy from genus to class and from specific stage to all stages lumped.
+
+
+```{r}
+#| label: match-arth
+
+arth <- read.csv("../gruner2007.csv")
+
+#' function to match based on taxonomy and stage, prioritizing finest 
+#' resolution match possible. to be applied over rows of `arth` with `mapply`.
+#' a few key assumptions are made:
+#'     - `arth$stage` has no missing data (it does not)
+#'     - `allom[, c("taxon", "stage")]` has no duplicates (it does not)
+#'
+#' @param genus genus column from `arth`
+#' @param family family column from `arth`
+#' @param order order column from `arth`
+#' @param class class column from `arth`
+#' @param stage stage column from `arth`
+#' @param d data frame of allometric coefficients
+#' 
+#' @returns integer ID of row in allometry data frame 
+
+match_allom <- function(genus, family, order, class, stage, d) {
+    tax_levels <- c("genus", "family", "order", "class")
+    
+    # vector holding specific taxon name at each level
+    taxvals <- c(genus, family, order, class) |> 
+        setNames(tax_levels)
+
+    tmatch <- taxvals %in% d$taxon
+    
+    # if nothing matches, return arthropod all
+    if(sum(tmatch) == 0) {
+        d_idx <- d$taxon == "Arthropoda" & d$stage == "all"
+    } else {
+        
+        t_idx <- which(tmatch) |> min()
+        tax <- taxvals[t_idx]
+        
+        d_idx <- d$taxon == tax
+        
+        # multiple rows match so match stage
+        if(sum(d_idx) > 1) {
+            d_idx <- d_idx & (stage == d$stage)
+        } 
+    }
+    
+    return(which(d_idx))
+}
+
+
+# apply to every row of `arth`
+allom_idx <- mapply(match_allom,
+                    arth$genus, arth$family, arth$order, 
+                    arth$class, arth$stage,
+                    MoreArgs = list(d = allom))
+
+# add allom info to `arth` data
+arth$taxon_matched <- allom$taxon[allom_idx]
+arth$stage_matched <- allom$stage[allom_idx]
+arth$a <- allom$a[allom_idx]
+arth$b <- allom$b[allom_idx]
+arth$R2 <- allom$R2[allom_idx]
+
+# add prediction to `arth`
+arth$biom_pred <- arth$a * arth$lengthmm^arth$b
+
+# where prediction is NA (due to missing length) fill in with estimate from
+# Gruner 2007
+arth$biom_pred[is.na(arth$biom_pred)] <- arth$ind_biom[is.na(arth$biom_pred)]
+```
+
+Now we are ready to draw biommass samples.
+
+
+## Draw log(biomass) using considering $R^2$
+
+To draw a sample of biomass we have to know $\sigma$, i.e. the standard deviation of the residuals of the log-log allometry model. We can back-calculate $\sigma$ from $R^2$ using sums of squares:
+
+$$
+\begin{aligned}
+R^2 &= \frac{SS_\text{regression}}{SS_\text{regression} + SS_\text{residual}}
+\\ 
+\Rightarrow SS_\text{residual} &= SS_\text{regression} \cdot \frac{1 - R^2}{R^2} 
+\end{aligned}
+$$
+
+The residual standard deviation is connected to $SS_\text{residuals}$ by $\sigma = \sqrt{SS_\text{residual} / (n - 2)}$ where $n$ is number of specimens. To calculate $SS_\text{regression}$ and $n$ we have to group the `arth` data according to which taxon and stage each row matched to
+
+
+```{r}
+#| label: sigma-resid
+
+# record predicted log biomass for further calculations
+log_biom_pred <- log(arth$biom_pred)
+
+# vector to hold residual standard deviations
+sigma_resid <- numeric(length(log_biom_pred))
+
+# group by matching index
+groups <- split(1:nrow(arth), allom_idx)
+
+for(g in names(groups)) {
+    # rows in `arth` to consider
+    idx   <- groups[[g]]
+    
+    # predictions for these groups
+    preds <- log_biom_pred[idx]
+    
+    # number specimens for this group
+    n_g <- length(idx)
+
+    if(n_g < 3) {
+        # too few points to estimate variance, assume sigma = 0
+        s <- 0
+    } else {
+        # sum of squares regression
+        SS_reg <- sum((preds - mean(preds))^2)
+        
+        if(SS_reg == 0) {
+            # occurs when all length values are equal or slope = 0,
+            # assume sigma = 0
+            s <- 0
+        } else {
+            # calculate sigma of residuals
+            R2_g   <- allom$R2[as.integer(g)]
+            SS_res <- SS_reg * (1 - R2_g) / R2_g
+            
+            s <- sqrt(SS_res / (n_g - 2))
+        }
+    }
+    
+    # update sigma vector
+    sigma_resid[idx] <- s
+}
+
+# add sigma of residuals to `arth`
+arth$sigma_resid <- sigma_resid
+
+```
+
+Finally a random draw of biomass can be added to `arth` by sampling from
+
+$$
+\log(y) \sim \mathscr{N}(\log(\text{predicted biomass}), ~\sigma)
+$$
+
+
+```{r}
+#| label: draw-biom
+
+# set seed for consistent results
+set.seed(123)
+
+arth$biom_sim <- rnorm(nrow(arth), arth$biom_pred, arth$sigma_resid)
+
+```
+
+## Sanity check against existing `ind_biom`
+
+The published biomass estimates from @gruner2007 are retained in `arth$ind_biom`. If our random samples of biomass were successful then `(biom_sim - ind_biom) / sigma_resid` should follow a normal distribution with mean = 0 and standard deviation = 1.
+
+```{r}
+# create a new data frame with a column that should be N(0, 1)
+normalized <- filter(arth, sigma_resid > 0) |> 
+    mutate(norm_01 = (biom_sim - ind_biom) / sigma_resid) 
+```
+
+A few specimens ($n =$ `r sum(normalized$norm_01 > 4)` out of `r nrow(arth)` total specimens) are outliers. The most reliable treatment for those outliers is to set them equal to their originally published biomass from @gruner2007
+
+```{r}
+# find problem specimens
+trouble <- filter(normalized, norm_01 > 4) |> 
+    select(specimen_code) |> 
+    pull() |> 
+    (\(x) arth$specimen_code %in% x)()
+
+# set biomasses to original published
+arth$biom_pred[trouble] <- arth$ind_biom[trouble]
+arth$biom_sim[trouble] <- arth$ind_biom[trouble]
+
+# ensure any future sampling will respect the original published value
+arth$sigma_resid[trouble] <- 0
+
+```
+
+Now we can re-calculate the normalized samples and compare to $\mathscr{N}(0, ~1)$ in @fig-check.
+
+```{r}
+#| label: fig-check
+#| fig-cap: |
+#|     Checking normalized sample of biomass against expectation of $\mathscr{N}(0, ~1) shown in red$
+filter(arth, sigma_resid > 0) |> 
+    mutate(norm_01 = (biom_sim - ind_biom) / sigma_resid) |> 
+    ggplot(aes(norm_01)) +
+    geom_histogram(aes(y = after_stat(density)), bins = 30) +
+    stat_function(fun = dnorm, color = "red", linewidth = 1) +
+    xlab("Normalized biomass sample") +
+    theme_cowplot()
+```
+
+The random draws indeed conform to the expectation.
+
+## Saving the final product
+
+The final computation is to add relative metabolic rate which we assume is simply
+
+$$
+\text{metabolic rate} \propto \text{biomass}^{3/4}
+$$
+
+METE normalizes metabolic rate such that the minimum is always 1, thus we only need to raise biomass to the $3/4$ power
+
+```{r}
+arth$metabolic_rate <- arth$biom_sim^0.75
+
+```
+
+We ship these data with the R package *HawaiiArthMETE* so our last step is to save them to the `/data` directory.
+
+```{r}
+save(arth, file = "../../data/arth.rda")
+```
+
