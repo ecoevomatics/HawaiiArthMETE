@@ -121,13 +121,13 @@ cswap <- function(x, g) {
 #' @export
 
 bray_diss_z <- function(x, B = 500) {
-    obs_dist <- x |> vegdist(method = "bray") |> mean()
+    obs_dist <- x |> vegan::vegdist(method = "bray") |> mean()
     
-    sim <- nullmodel(x, "quasiswap_count") |>
+    sim <- vegan::nullmodel(x, "quasiswap_count") |>
         simulate(nsim = B)
     
     sim_mean_dist <- sapply(1:dim(sim)[3], function(i) {
-        vegdist(sim[, , i]) |> mean()
+        vegan::vegdist(sim[, , i]) |> mean()
     })
     
     
