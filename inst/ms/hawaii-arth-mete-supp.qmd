@@ -240,8 +240,6 @@ As could be predicted from the analysis of METE deviations across the chronosequ
 
 ```{r}
 
-# filter(arth_mete, site %in% c("VO", "KH") & (z2_ipd > 11 | z2_ipd < 0.2))
-
 expl <- data.frame(site = c("VO", "KH"), 
                    tree = c(7, 1), 
                    deviation = c("lo", "hi"))
@@ -255,28 +253,6 @@ ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
                inherit.aes = FALSE) +
     this_ms_look(log_x = TRUE, log_y = TRUE)
 
-
-# summarize(arth, 
-#           n = n(), 
-#           .by = c(site, tree)) |> 
-#     full_join(arth_mete) |> 
-#     ggplot(aes(z2_sad, z2_ipd, color = site_name, size = n)) +
-#     geom_point() +
-#     this_ms_look(log_x = TRUE, log_y = TRUE)
-# 
-# ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
-#     geom_point() +
-#     geom_point(data = left_join(expl, arth_mete), 
-#                mapping = aes(z2_sad, z2_ipd), 
-#                shape = 1, size = 10,
-#                inherit.aes = FALSE) +
-#     this_ms_look(log_x = TRUE, log_y = TRUE)
-# 
-# 
-# left_join(expl, arth) |> 
-#     summarize(n = n(),
-#               nspp = n_distinct(species_code), 
-#               .by = site)
 
 ```
 
