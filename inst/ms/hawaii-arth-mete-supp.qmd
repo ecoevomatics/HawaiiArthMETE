@@ -1,14 +1,23 @@
 ---
 title: "Supplement to \"Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective\""
 format: 
-    pdf:
-        include-in-header:
-            text: |
-                \usepackage{newunicodechar}
-                \newunicodechar{ʻ}{`} 
+  pdf:
+    number-sections: true
+    keep-tex: true
+    include-in-header:
+      text: |
+        \usepackage{newunicodechar}
+        \newunicodechar{ʻ}{`} 
+        \renewcommand{\thefigure}{S\arabic{figure}}
+        \renewcommand{\thesection}{S\arabic{section}}
 knitr:
-    opts_chunk: 
-        dev: cairo_pdf
+  opts_chunk: 
+    dev: cairo_pdf
+crossref:
+  fig-title: "Supplementary Figure"
+  fig-prefix: "Supplementary Figure"
+csl: ecology-letters.csl
+bibliography: hawaii-arth-mete.bib
 ---
 
 
@@ -116,7 +125,7 @@ Now we analyze how deviations from METE behave across the chronosequence. The fo
 
 ```{r}
 #| label: z2-chrono-lm
-#| dependson: [mete-calc, ]
+#| dependson: [mete-calc]
 
 # quadratic model of sad z^2 across age
 sad_rma_chrono <- site_means_lm(log(z2_sad) ~ 
@@ -227,7 +236,51 @@ fig_z2_chrono
 
 ## How do observed patterns deviate from METE?
 
-Next we determine how the observed data deviate from the METE predictions. To begin we look at two exemplar SADs and two exemplar IPDs representing low and high deviation from theory (@fig-how-diff).
+As could be predicted from the analysis of METE deviations across the chronosequence, generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
+
+```{r}
+
+# filter(arth_mete, site %in% c("VO", "KH") & (z2_ipd > 11 | z2_ipd < 0.2))
+
+expl <- data.frame(site = c("VO", "KH"), 
+                   tree = c(7, 1), 
+                   deviation = c("lo", "hi"))
+
+
+ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
+    geom_point() +
+    geom_point(data = left_join(expl, arth_mete), 
+               mapping = aes(z2_sad, z2_ipd), 
+               shape = 1, size = 10,
+               inherit.aes = FALSE) +
+    this_ms_look(log_x = TRUE, log_y = TRUE)
+
+
+# summarize(arth, 
+#           n = n(), 
+#           .by = c(site, tree)) |> 
+#     full_join(arth_mete) |> 
+#     ggplot(aes(z2_sad, z2_ipd, color = site_name, size = n)) +
+#     geom_point() +
+#     this_ms_look(log_x = TRUE, log_y = TRUE)
+# 
+# ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
+#     geom_point() +
+#     geom_point(data = left_join(expl, arth_mete), 
+#                mapping = aes(z2_sad, z2_ipd), 
+#                shape = 1, size = 10,
+#                inherit.aes = FALSE) +
+#     this_ms_look(log_x = TRUE, log_y = TRUE)
+# 
+# 
+# left_join(expl, arth) |> 
+#     summarize(n = n(),
+#               nspp = n_distinct(species_code), 
+#               .by = site)
+
+```
+
+Next we determine how the observed data deviate from the METE predictions. To begin we look at two exemplar SADs and two exemplar IPDs representing low and high deviation from METE (@fig-how-diff). The high and low $z^2$-values of these samples are highlighted in @fig-z2-cor. Specific samples were chosen such that they have comparable state variables.
 
 ```{r}
 #| label: fig-how-diff
@@ -261,10 +314,8 @@ mk_summ <- function(x) {
 
 
 
-expl_samps <- data.frame(site = c("KA", "MO"), 
-                         tree = c(5, 9), 
-                         deviation = c("lo", "hi")) |> 
-    left_join(arth) |> 
+
+expl_samps <- left_join(expl, arth) |> 
     (\(x) split(x, x$deviation, drop = TRUE))() |> 
     lapply(mk_summ) |> 
     bind_rows(.id = "deviation")
@@ -669,7 +720,8 @@ Now we can visualize different contributions of native and non-native species to
 site_bray_z$site_name <- factor(site_bray_z$site_name, 
                                 levels = levels(arth$site_name))
 
-fig_bray_part <- ggplot(site_bray_z, aes(bp, site_name, fill = site_name)) +
+fig_bray_part <- ggplot(arrange(site_bray_z, as.numeric(site_name)), 
+                        aes(bp, site_name, fill = site_name)) +
     geom_bar(stat = "identity") +
     this_ms_look() +
     geom_vline(xintercept = 0, color = "gray") +
@@ -691,4 +743,16 @@ fig_bray_part
 ```
 
 
+## Rerunning analyses
 
+```{r}
+#| label: re-run
+
+# create r script from qmd
+r_temp <- tempfile(fileext = ".R")
+quarto::qmd_to_r_script("hawaii-arth-mete-supp.qmd", r_temp)
+
+# remove this and subseqent chunks
+r <- readLines(r_temp) 
+r <- r[-(grep("label: re-run", r):length(r))]
+```
