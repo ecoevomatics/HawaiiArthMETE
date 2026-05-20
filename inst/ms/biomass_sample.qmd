@@ -236,38 +236,12 @@ arth$biom_sim <- exp(rnorm(nrow(arth), log(arth$biom_pred), arth$sigma_resid))
 
 ## Sanity check against existing `ind_biom`
 
-The published biomass estimates from @gruner2007 are retained in `arth$ind_biom`. If our random samples of biomass were successful then `(biom_sim - ind_biom) / sigma_resid` should follow a normal distribution with mean = 0 and standard deviation = 1.
-
-```{r}
-# create a new data frame with a column that should be N(0, 1)
-normalized <- filter(arth, sigma_resid > 0) |> 
-    mutate(norm_01 = (biom_sim - ind_biom) / sigma_resid) 
-```
-
-A few specimens ($n =$ `r sum(normalized$norm_01 > 5 | normalized$norm_01 < -5)` out of `r nrow(arth)` total specimens) are outliers. The most reliable treatment for those outliers is to set them equal to their originally published biomass from @gruner2007
-
-```{r}
-# find problem specimens
-trouble <- filter(normalized, norm_01 > 4) |> 
-    select(specimen_code) |> 
-    pull() |> 
-    (\(x) arth$specimen_code %in% x)()
-
-# set biomasses to original published
-arth$biom_pred[trouble] <- arth$ind_biom[trouble]
-arth$biom_sim[trouble] <- arth$ind_biom[trouble]
-
-# ensure any future sampling will respect the original published value
-arth$sigma_resid[trouble] <- 0
-
-```
-
-Now we can re-calculate the normalized samples and compare to $\mathscr{N}(0, ~1)$ in @fig-check.
+The published biomass estimates from @gruner2007 are retained in `arth$ind_biom`. If our random samples of biomass were successful then `(biom_sim - ind_biom) / sigma_resid` should follow a normal distribution with mean = 0 and standard deviation = 1, which we evaluate in @fig-check.
 
 ```{r}
 #| label: fig-check
 #| fig-cap: |
-#|     Checking normalized sample of biomass against expectation of $\mathscr{N}(0, ~1) shown in red$
+#|     Checking normalized sample of biomass against expectation of $\mathscr{N}(0, ~1)$ shown in red.
 filter(arth, sigma_resid > 0) |> 
     mutate(norm_01 = (log(biom_sim) - log(ind_biom)) / sigma_resid) |> 
     ggplot(aes(norm_01)) +
@@ -275,11 +249,6 @@ filter(arth, sigma_resid > 0) |>
     stat_function(fun = dnorm, color = "red", linewidth = 1) +
     xlab("Normalized biomass sample") +
     theme_cowplot() 
-
-ggplot(arth, aes(ind_biom, biom_sim)) +
-    geom_point() +
-    scale_x_log10() +
-    scale_y_log10()
 ```
 
 The random draws indeed conform to the expectation.
@@ -302,6 +271,12 @@ arth$metabolic_rate <- arth$biom_sim^0.75
 We ship these data with the R package *HawaiiArthMETE* so our last step is to save them to the `/data` directory.
 
 ```{r}
+# make site and site_name factors ordered by age
+arth$site <- factor(arth$site, levels = c("KA", "MO", "KH", "LA", "VO"))
+arth$site_name <- factor(arth$site_name, 
+                         levels = c("Alakaʻi", "Kamakou", "Kohala", 
+                                    "Laupāhoehoe", "Kīlauea"))
+
 save(arth, file = "../../data/arth.rda")
 ```
 
