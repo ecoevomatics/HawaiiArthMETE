@@ -177,6 +177,7 @@ sigma_resid <- numeric(length(log_biom_pred))
 # group by matching index
 groups <- split(1:nrow(arth), allom_idx)
 
+# loop over groups calculating n and sigma
 for(g in names(groups)) {
     # rows in `arth` to consider
     idx   <- groups[[g]]
@@ -299,3 +300,5 @@ We ship these data with the R package *HawaiiArthMETE* so our last step is to sa
 save(arth, file = "../../data/arth.rda")
 ```
 
+
+## References
