@@ -230,7 +230,7 @@ $$
 # set seed for consistent results
 set.seed(123)
 
-arth$biom_sim <- rnorm(nrow(arth), arth$biom_pred, arth$sigma_resid)
+arth$biom_sim <- exp(rnorm(nrow(arth), log(arth$biom_pred), arth$sigma_resid))
 
 ```
 
@@ -244,7 +244,7 @@ normalized <- filter(arth, sigma_resid > 0) |>
     mutate(norm_01 = (biom_sim - ind_biom) / sigma_resid) 
 ```
 
-A few specimens ($n =$ `r sum(normalized$norm_01 > 4)` out of `r nrow(arth)` total specimens) are outliers. The most reliable treatment for those outliers is to set them equal to their originally published biomass from @gruner2007
+A few specimens ($n =$ `r sum(normalized$norm_01 > 5 | normalized$norm_01 < -5)` out of `r nrow(arth)` total specimens) are outliers. The most reliable treatment for those outliers is to set them equal to their originally published biomass from @gruner2007
 
 ```{r}
 # find problem specimens
@@ -269,12 +269,17 @@ Now we can re-calculate the normalized samples and compare to $\mathscr{N}(0, ~1
 #| fig-cap: |
 #|     Checking normalized sample of biomass against expectation of $\mathscr{N}(0, ~1) shown in red$
 filter(arth, sigma_resid > 0) |> 
-    mutate(norm_01 = (biom_sim - ind_biom) / sigma_resid) |> 
+    mutate(norm_01 = (log(biom_sim) - log(ind_biom)) / sigma_resid) |> 
     ggplot(aes(norm_01)) +
-    geom_histogram(aes(y = after_stat(density)), bins = 30) +
+    geom_histogram(aes(y = after_stat(density)), bins = 50) +
     stat_function(fun = dnorm, color = "red", linewidth = 1) +
     xlab("Normalized biomass sample") +
-    theme_cowplot()
+    theme_cowplot() 
+
+ggplot(arth, aes(ind_biom, biom_sim)) +
+    geom_point() +
+    scale_x_log10() +
+    scale_y_log10()
 ```
 
 The random draws indeed conform to the expectation.
