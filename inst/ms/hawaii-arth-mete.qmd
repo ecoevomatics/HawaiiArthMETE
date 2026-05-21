@@ -30,6 +30,7 @@ library(cowplot)
 library(grid)
 library(sf)
 library(dplyr)
+library(meteR)
 library(HawaiiArthMETE)
 
 knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
@@ -151,14 +152,53 @@ We find departures from steady state at middle aged sites. Departures are predic
 
 ## Methods
 
+### Reproducibility and data preparation
+
+A custom R package, *HawaiiArthMETE* [@HawaiiArthMETE], accompanies this paper and can be used to reproduce all results. All data analyzed here are available via the package as described in @sec-setup. 
+
+Arthropod data come from the original publication by @gruner2007 and include `r nrow(arth)` specimens. Each specimen was identified to the species level (morpho species were used in `r round(100 * mean(grepl("sp_", arth$species)), 2)`% of specimens). Specimen lengths were measured to the nearest millimeter.  For METE analyses we need to estimate metabolic rate from these data. Because METE normalizes metabolic rates such that the lowest possible rate is 1 we use a simplified $3/4$ scaling rule to approximate metabolic rate $B$ from mass $M$ as $B \propto M^{3/4}$.
+
+This leaves the estimation of mass from length. @gruner2007 used taxon- and stage- specific length-to-biomass allometric scaling relationships [@gruner2003] to approximate mass as the expected value of a log-log regression
+
+$$
+\begin{aligned}
+\text{mass} & = e^{\widehat{\log(\text{mass})}} \\
+\widehat{\log(\text{mass})} &= \log(a) + b \cdot \log(\text{length})
+\end{aligned}
+$$
+
+where $a$ and $b$ are estimated from data collected by @gruner2003 and vary by taxon and stage.
+
+Using these expected value masses based on length measured to the nearest milliliter yields metabolic rate approximations that are artificially discretization (see the appendix "Sampling biomass estimates from allometric equations"). These descretizations in turn lead to spurious conclusions about the predicitiveness of METE because METE assumes metabolic rates are continuous (see @sec-re-run).
+
+Therefore, instead of estimating mass as the expected value from an allometric relationship we sample masses as random draws from the full model relating mass to length
+
+$$
+\begin{aligned}
+\text{mass} & = e^{y} \\
+y &\sim \mathscr{N}(\widehat{\log(\text{mass})}, ~\sigma) \\
+\widehat{\log(\text{mass})} &= \log(a) + b \cdot \log(\text{length})
+\end{aligned}
+$$
+
+where $\sigma$ is the taxon- and stage-specific standard deviation of residuals. The full procedure for sampling masses is detailed in the appendix "Sampling biomass estimates from allometric equations" and the consequences of using random draws versus expected values on the METE analysis is thoroughly investigated in @sec-re-run. We conclude that using random draws for mass estimates is largely similar to using expected values, and our overall conclusions are unchanged, but using draws avoids both spurious deviations from and conformations to METE that would be introduced by using expected values of mass.
+
+### METE analysis
+
+- meteR
+- use z2
+- log z2
+- rma cause colinear
+
 ## Results
 
 - deviations for SAD and IPD peak at middle age
 - deviations for IPD larger overall
 - deviations of SAD are because of more unevenness (more singletons and more hyper abundant species)
 - no consistent relationship between IDP deviations and the extremes of the distribution (deviation is in the middle)
-- deviations not predicted by proportion of non-natives
-- deviations *are* predicted by dissimilarity
+- deviations are predicted by proportion of non-natives
+- deviations are predicted by dissimilarity
+- something is going on at Kīlauea
 
 
 ## Discussion
