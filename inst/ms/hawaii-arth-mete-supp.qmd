@@ -26,7 +26,7 @@ This supplement walks through the steps of recreating the entire analysis presen
 
 ## Computing setup
 
-Analyses are supported by a custom R package *HawaiiArthMETE* [@foo] which can be installed from github. 
+Analyses are supported by a custom R package *HawaiiArthMETE* [@HawaiiArthMETE] which can be installed from github. 
 
 ```{r}
 #| label: pkg-install
@@ -890,3 +890,4 @@ confint(scr_env$ipd_rma_diss, fixed = TRUE, random = FALSE) |>
 
 In both cases, the 95% CIs contain a majority of positive values.
 
+## References
