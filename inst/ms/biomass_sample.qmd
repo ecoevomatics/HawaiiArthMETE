@@ -145,7 +145,21 @@ arth$biom_pred <- arth$a * arth$lengthmm^arth$b
 # where prediction is NA (due to missing length) fill in with estimate from
 # Gruner 2007
 arth$biom_pred[is.na(arth$biom_pred)] <- arth$ind_biom[is.na(arth$biom_pred)]
+
 ```
+
+@gruner2007 used corrections to estimate biomass for a limited subset of specimens, these show up as discrepancies between the recorded `ind_biom` in `arth` and our new column `biom_pred`. We consider discrepancies between measurements to be those that have a 0.1 absolute difference in log biomass relative to recorded log biomass. We set these discrepancies equal to the recorded value rather than predicted value
+
+```{r}
+#| label: biom-diff
+
+biom_diff <- (log(arth$ind_biom) - log(arth$biom_pred)) / 
+    log(arth$ind_biom)
+
+arth$biom_pred[abs(biom_diff) > 0.1] <- arth$ind_biom[abs(biom_diff) > 0.1]
+```
+
+`r round(100 * mean(abs(biom_diff) > 0.1), 1)`% of specimens have discrepancies in their predicted biomass.
 
 Now we are ready to draw biommass samples.
 
