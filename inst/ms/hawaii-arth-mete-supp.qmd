@@ -24,7 +24,7 @@ bibliography: hawaii-arth-mete.bib
 This supplement walks through the steps of recreating the entire analysis presented in the main text. It also provides further analysis in support of and to contextualize results in the main text. 
 
 
-## Computing setup
+## Computing setup {#sec-setup}
 
 Analyses are supported by a custom R package *HawaiiArthMETE* [@HawaiiArthMETE] which can be installed from github. 
 
@@ -58,13 +58,19 @@ knitr::opts_chunk$set(
     cache = TRUE
 )
 
-# load data 
-data(arth)
-
 sessionInfo() |> 
     print(locale = FALSE)
 ```
 
+The data used in all analyses is available with the *HawaiiArthMETE* package
+
+```{r}
+#| label: get-data
+
+# load data 
+data(arth)
+
+```
 
 ## METE calculations
 
@@ -748,7 +754,7 @@ fig_bray_part
 ```
 
 
-## Evaluating the consequences of sampling biomass values
+## Evaluating the consequences of sampling biomass values {#sec-re-run}
 
 Here we re-run all analyses using a single expected value of biomass derived from taxon- and stage-specific allometric scaling relationships rather than sampling with noise from those relationships. To do so we extract all R code from the qmd file generating this supplement, alter the metabolic rate estimates going into the METE calculations, and re-run the code
 
