@@ -47,6 +47,7 @@ library(ggplot2)
 library(ggh4x)
 library(dplyr)
 library(tidyr)
+library(metafor)
 library(HawaiiArthMETE)
 
 
@@ -79,7 +80,6 @@ All metrics are calculated for both the species abundance distribution (SAD) and
 #| label: mete-calc
 #| message: false
 #| output: false
-#| cache: true
 
 arth_mete <- split(arth, arth[, c("site", "tree")], drop = TRUE) |> 
     lapply(function(x) {
@@ -125,7 +125,8 @@ Now we analyze how deviations from METE behave across the chronosequence. The fo
 
 ```{r}
 #| label: z2-chrono-lm
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 # quadratic model of sad z^2 across age
 sad_rma_chrono <- site_means_lm(log(z2_sad) ~ 
@@ -146,7 +147,9 @@ Likelihood ratio tests (LRT) can evaluate the significance of the quadratic mode
 
 ```{r}
 #| label: z2-chrono-lrt
-#| dependson: [mete-calc, z2-chrono-lm]
+#| dependson: 
+#|     - mete-calc
+#|     - z2-chrono-lm
 
 # likelihood ratio tests for sad and ipd across chrono
 sad_lrt_chrono <- anova(sad_rma_chrono)
@@ -156,12 +159,14 @@ ipd_lrt_chrono <- anova(ipd_rma_chrono)
 ipd_lrt_chrono
 ```
 
-The quadratic model for SAD $z^2$-values is supported by the LRT with a $P$-value < 0.0001, but the quadratic model for IPD $z^2$-values did not have a significant $P$-value. However, the 95% CI for the quadratic term in the IPD $z^2$-values model has the majority of its range below zero, indicating the data do tend toward a quadratic shape, just with greater variance compared to the quadratic model for SAD $z^2$-values.
+The quadratic model for SAD $z^2$-values is supported by the LRT with a $P$-value < 0.0001, but the quadratic model for IPD $z^2$-values just misses the significance threshold of $P \leq 0.05$. However, the Wald-based 95% CI for the quadratic term in the IPD $z^2$-values model does not overlap 0, indicating that by the less stringent Wald-approximation, this quadratic term is significant and the data do tend toward a quadratic shape, just with greater variance compared to the quadratic model for SAD $z^2$-values.
 
 ```{r}
-#| dependson: [mete-calc, z2-chrono-lm]
+#| dependson:
+#|     - mete-calc
+#|     - z2-chrono-lm
 
-ipd_rma_chrono
+confint(ipd_rma_chrono, fixed = TRUE, random = FALSE)
 
 ```
 
@@ -170,10 +175,9 @@ The following code produces the visualization reported in the main text of devia
 
 ```{r}
 #| label: fig-z2-chrono
-#| fig-height: 7
+#| fig-height: 6
 #| fig-cap: |
 #|     Deviations from METE as measured by $z^2$ across the chronosequence. 
-#|     Discussed in more detail in the main text.
 #| dependson: mete-calc, z2-chrono-lm
 
 # prepare data frame of predicted values for plotting
@@ -239,8 +243,14 @@ fig_z2_chrono
 As could be predicted from the analysis of METE deviations across the chronosequence, generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
 
 ```{r}
+#| label: fig-z2-cor
+#| fig-cap: |
+#|     Relationship between deviations of SAD and IPD. Slighlty enlarged, 
+#|     circled points are those used as examples of low and high deviation 
+#|     from METE
 
 expl <- data.frame(site = c("VO", "KH"), 
+                   site_name = c("Kīlauea", "Kohala"),
                    tree = c(7, 1), 
                    deviation = c("lo", "hi"))
 
@@ -249,8 +259,15 @@ ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
     geom_point() +
     geom_point(data = left_join(expl, arth_mete), 
                mapping = aes(z2_sad, z2_ipd), 
-               shape = 1, size = 10,
-               inherit.aes = FALSE) +
+               size = 6, 
+               show.legend = FALSE) +
+    geom_point(data = left_join(expl, arth_mete), 
+               mapping = aes(z2_sad, z2_ipd), 
+               size = 6, shape = 1, color = "black",
+               stroke = 1.5,
+               show.legend = FALSE) +
+    xlab(expression("SAD"~z^2*"-values")) +
+    ylab(expression("IPD"~z^2*"-values")) +
     this_ms_look(log_x = TRUE, log_y = TRUE)
 
 
@@ -266,7 +283,8 @@ Next we determine how the observed data deviate from the METE predictions. To be
 #|     Alakaʻi site while the high deviation distributions come from the
 #|     same sample at the Kamakou site. Samples were choosen to represent
 #|     ranges of deviation while still being similar in state variables
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 # function to summarize theoretical and observed distributions
 # given one sample `x`
@@ -332,7 +350,8 @@ Looking across all samples (@fig-how-z2) we see that deviations between observed
 #| fig-cap: |
 #|     Relationship between $z^2$ measure of deviation from METE and different
 #|     metrics describing how observed data and METE predictions diverge.
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name, 
                        z2 = z2_sad, rar_diff = n1_diff, dom_diff = nmax_diff),
@@ -371,7 +390,8 @@ In the case of the IPD dominance refers to metabolic rates of individuals with t
 
 ```{r}
 #| label: ipd-how-glm
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 # "successes" and "failures" for GLM
 ipd_diff <- summarize(arth_mete, 
@@ -408,7 +428,8 @@ To see if proportion of non-native species has any relationship with deviation f
 
 ```{r}
 #| label: calc-dev-non
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 # calculate proportion of non-native spp per site
 mete_by_non <- summarize(
@@ -442,16 +463,19 @@ anova(ipd_rma_non)
 
 The below code is used for visualizing the results. Note that Kīlauea is considered separately because it falls clearly below the expected trend based on other sites. In the case of the SAD, the mean and 95% CI of the $z^2$-value for Kīlauea is below both the expected value and 95% CI of the rest of the data. In the case of the Kīlauea IPD only the mean of $z^2$-values is below the 95% CI of the rest of the data; the two CIs do overlap.  This is why in the meta regression analysis Kīlauea was excluded, so we could interrogate the way it deviates from the overall pattern.
 
+
 ```{r}
 #| label: fig-dev-non
-#| fig-height: 7
+#| fig-height: 6
 #| fig-cap: |
 #|     Relationship between proportion of non-native species and deviation from 
 #|     METE. Kīlauea was excluded from the overall analysis to be able to 
 #|     compare it separately to the overall trend. Gray regreions represent
 #|     95% confidence envelopes (or confidence interval for Kīlauea) and solid 
 #|     lines are expected values.
-#| dependson: [mete-calc, calc-dev-non]
+#| dependson: 
+#|     - mete-calc
+#|     - calc-dev-non
 
 
 # 95% CI for mean of Kīlauea site
@@ -540,7 +564,8 @@ We also conducted meta regression to see if $z^2$-values change meaningfully acr
 
 ```{r}
 #| label: calc-diss-z
-#| dependson: [mete-calc]
+#| dependson: 
+#|     - mete-calc
 
 # calculate dissimilarity z-scores
 diss <- split(arth, arth$site) |> 
@@ -583,12 +608,14 @@ The below code visualizes the results of the meta regression or SAD and IPD $z^2
 
 ```{r}
 #| label: fig-diss-z
-#| fig-height: 8
+#| fig-height: 6
 #| fig-cap: |
 #|     Relationship between dissimilarity and deviation from METE. Gray 
 #|     regreions represent 95% confidence envelopes and solid lines are 
 #|     expected values.
-#| dependson: [mete-calc, calc-diss-z]
+#| dependson: 
+#|     - mete-calc
+#|     - calc-diss-z
 
 # prediction for plotting
 x <- range(mete_by_diss$mean_diss) |> 
@@ -609,7 +636,8 @@ z2_diss_pred <- bind_rows(sad = data.frame(x, sad_hat),
 
 # plotting
 fig_diss_z <- pivot_longer(mete_by_diss, starts_with("z2"), 
-                            names_to = c(".value", "dist"), names_sep = "_") |> 
+                           names_to = c(".value", "dist"), 
+                           names_sep = "_") |> 
     ggplot(aes(mean_diss, z2, color = site_name)) +
     geom_jitter(width = 0.1) +
     # confidence envelope
@@ -657,9 +685,9 @@ $$
 
 Now we can look separately at the contribution of group $(a)$ and group $(b)$ to the overall dissimilarity. We use this approach to compare the contributions of native and non-native taxa to overall dissimilarity. We again make use of a permutational null model to compare these contributions. This null model cannot be the same as the null model used to calculate z scores for overall dissimilarity because that null model shuffled species across samples and individuals across species. Instead, we want to shuffle group labels (native or non-native) across species. The custom function `bray_part_z` calculates these z scores using another custom function `cswap` from *HawaiiArthMETE*.
 
+
 ```{r}
 #| label: bray-part
-#| dependson: [mete-calc]
 
 site_bray_z <- split(arth, arth$site_name) |> 
     lapply(function(dat) {
@@ -691,7 +719,8 @@ Now we can visualize different contributions of native and non-native species to
 #|     contribution of non-native species compared to chance while positive
 #|     values indicate greater contribution of native species compared to 
 #|     chance.
-#| dependson: [mete-calc, bray-part]
+#| dependson: 
+#|     - bray-part
 
 site_bray_z$site_name <- factor(site_bray_z$site_name, 
                                 levels = levels(arth$site_name))
@@ -719,16 +748,145 @@ fig_bray_part
 ```
 
 
-## Rerunning analyses
+## Evaluating the consequences of sampling biomass values
+
+Here we re-run all analyses using a single expected value of biomass derived from taxon- and stage-specific allometric scaling relationships rather than sampling with noise from those relationships. To do so we extract all R code from the qmd file generating this supplement, alter the metabolic rate estimates going into the METE calculations, and re-run the code
+
 
 ```{r}
 #| label: re-run
+#| output: false
+#| dependson: 
+#|    - mete-calc
+#|    - z2-chrono-lm
+#|    - z2-chrono-lrt
+#|    - fig-z2-chrono
+#|    - fig-how-diff
+#|    - fig-how-z2
+#|    - ipd-how-glm
+#|    - calc-dev-non
+#|    - fig-dev-non
+#|    - calc-diss-z
+#|    - fig-diss-z
 
 # create r script from qmd
 r_temp <- tempfile(fileext = ".R")
 quarto::qmd_to_r_script("hawaii-arth-mete-supp.qmd", r_temp)
 
-# remove this and subseqent chunks
+# remove all chunks subsequent to bray-part (including bray-part)
+# because those do not have to do with IPD
 r <- readLines(r_temp) 
-r <- r[-(grep("label: re-run", r):length(r))]
+r <- r[-(grep("label: bray-part", r)[1]:length(r))]
+
+# remove chunks before `mete-calc`
+r <- r[-(1:(grep("label: mete-calc", r) - 1))]
+
+# change metabolic rate to expected value
+r <- gsub("x\\$metabolic_rate",
+          "x\\$ind_biom\\^0.75",
+          r)
+
+# write and source, sourcing into local environment preserves global
+# environment
+writeLines(r, r_temp)
+scr_env <- new.env()
+source(r_temp, local = scr_env)
 ```
+
+
+Now that all analyses involving the IPD have been re-run with expected values of biomass rather than random draws, we can evaluate differences between the two approaches.
+
+The first thing to notice is that IPD $z^2$-values are correlated under both analysis scenarios [@fig-ipd-both]
+
+```{r}
+#| label: fig-ipd-both
+#| fig-cap: |
+#|     Relationship between IPD $z^2$-values when calculated using random draws
+#|     of expected values of biomass. The solid line is the 1:1 line.
+
+data.frame(ipd_draw = arth_mete$z2_ipd, 
+           ipd_expt = scr_env$arth_mete$z2_ipd) |> 
+    ggplot(aes(ipd_draw, ipd_expt)) +
+    geom_point() +
+    this_ms_look(log_x = TRUE, log_y = TRUE) +
+    geom_abline(intercept = 0, slope = 1) +
+    xlab(expression("Random draw IPD"~z^2)) +
+    ylab(expression("Expected value IPD"~z^2))
+
+```
+
+Using expected values for biomass increases the variability of log-transformed IPD $z^2$-values slightly: $SD_\text{expected values}$ = `r round(sd(log(scr_env$arth_mete$z2_ipd)), 3)` compared to $SD_\text{random draws}$ = `r round(sd(log(arth_mete$z2_ipd)), 3)`
+
+
+This increased variability is not surprising given the artificial descritization that results from using expected values. We can see the impact of this descritization by again comparing the exemplar samples with high and low deviation from @fig-z2-cor and @fig-how-diff. Now we compare on the IPD $z^2$ values and see that, while the overall shape of the IPD is similar, long runs of the same metabolic rate drive both spurious deviations and conformations to METE predictions [@fig-diff-both].
+
+
+```{r}
+#| label: fig-diff-both
+#| fig-cap: |
+#|     Example rank distributions of individual metabolic rate showing both
+#|     high and low deviations from METE as well as metabolic rate estimates
+#|     based on random draws from allometric relationships versus the expected
+#|     values of those relationships. Note that with expected values artificial
+#|     descritization causes both spurious deviation from METE (as in the low
+#|     deviation example) and spurios conformations to METE (as in the high
+#|     deviation example).
+
+
+bind_rows(draws = expl_samps, 
+          exptd = scr_env$expl_samps, 
+          .id = "biomass") |> 
+    filter(dist == "ipd") |> 
+    ggplot(aes(rank, m)) +
+    geom_point(aes(rank, abund_obs)) +
+    geom_ribbon(aes(ymin = lo, ymax = hi), 
+                fill = "#489BC5", alpha = 0.75) +
+    geom_line(color = "#489BC5") +
+    facet_grid2(
+        rows = vars(deviation), cols = vars(biomass), 
+        scales = "free", independent = "x",
+        labeller = as_labeller(
+            c(hi = "High deviation", lo = "Low deviation",
+              draws = "Random draws of biomass", 
+              exptd = "Expected values of biomass")
+        )
+    ) +
+    xlab("Rank") +
+    ylab("Metabolic rate") +
+    this_ms_look(log_y = TRUE)
+```
+
+
+The primary effect of increased variability in IPD $z^2$-values and spurious deviations/conformations is to decrease the significance of the relationship of IPD $z^2$-values and explanatory variables. While LRT identified both proportion non-native species and dissimilarity as predictors of IPD $z^2$-values, when using expected values of biomass the $P$-values of these relationships are no longer $\leq 0.05$:
+
+```{r}
+#| label: exptd-LRT
+
+# LRT of proportion non-native species
+anova(scr_env$ipd_rma_non)
+
+# LRT of dissimilarity
+anova(scr_env$ipd_rma_diss)
+
+```
+
+It should be noted, however, that there is still marginal support for these relationships based on 95% confidence intervals of their coefficients in the two models:
+
+```{r}
+#| label: exptd-slope
+
+# slope of proportion non-native species
+confint(scr_env$ipd_rma_non, fixed = TRUE, random = FALSE) |> 
+    as.data.frame() |> 
+    (\(x) x[2, , drop = FALSE])()
+
+# slope of dissimilarity
+confint(scr_env$ipd_rma_diss, fixed = TRUE, random = FALSE) |> 
+    as.data.frame() |> 
+    (\(x) x[2, , drop = FALSE])()
+
+```
+
+
+In both cases, the 95% CIs contain a majority of positive values.
+
