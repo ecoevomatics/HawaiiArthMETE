@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+title: "HawaiiArthMETE"
+version: 0.0.1
+doi: 10.5281/zenodo.20319088
+date-released: 2026-05-20
+url: "https://github.com/ecoevomatics/HawaiiArthMETE"
+type: software
+abstract: "Analysis of arthropod communities in Hawaii using METE theory"
+message: "If you use this software, please cite it as below."
+authors:
+  - given-names: Andrew
+    family-names: Rominger
+    affiliation: University of Hawaii at Manoa
+    orcid: "https://orcid.org/0000-0003-3755-4480"
+  - given-names: Katie
+    family-names: Thai
+    affiliation: University of Hawaii at Manoa
+keywords:
+  - Hawaii
+  - arthropod
+  - chronosequence
+  - Maximum Entropy Theory of Ecology
