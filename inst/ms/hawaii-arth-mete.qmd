@@ -1,7 +1,24 @@
 ---
 title: "Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective"
-format: pdf
+author:
+  - name: Andrew J. Rominger
+  - name: Kaite Thai
+  - name: Rosemary G. Gillespie
+  - name: John Harte
+  - name: Daniel S. Gruner
+format:
+  pdf:
+    keep-tex: true
+    include-in-header: 
+      text: |
+        \usepackage{xr}
+        \externaldocument{hawaii-arth-mete-supp}
+        \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
+        \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
+csl: ecology-letters.csl
+bibliography: hawaii-arth-mete.bib
 ---
+
 
 ```{r}
 #| label: setup
