@@ -11,10 +11,15 @@ format:
     keep-tex: true
     include-in-header: 
       text: |
+        \usepackage{newunicodechar}
+        \newunicodechar{ʻ}{`} 
         \usepackage{xr}
         \externaldocument{hawaii-arth-mete-supp}
         \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
         \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
+knitr:
+  opts_chunk: 
+    dev: cairo_pdf
 csl: ecology-letters.csl
 bibliography: hawaii-arth-mete.bib
 ---
@@ -33,7 +38,7 @@ library(dplyr)
 library(meteR)
 library(HawaiiArthMETE)
 
-knitr::opts_chunk$set(fig.width = 4.5, fig.height = 3)
+knitr::opts_chunk$set(fig.width = 5.5, fig.height = 4, echo = FALSE)
 
 ```
 
@@ -51,21 +56,13 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 
 
 ```{r}
-#| label: fig-chrono
+#| label: fig-chrono-work
 #| include: false
-#| cache: true
-#| fig-cap: |
-#|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
-#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
-#|     sites are indicated with dots on the map and arrows indicating their
-#|     flow ages on the legend. From oldest to youngest (west to east) sites 
-#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
 
-
-x <- st_read("hi_geol/hawaii_state_geol_ageClean.shp") |> 
+x <- st_read("../hi_geol/hawaii_state_geol_ageClean.shp") |> 
     filter(!is.na(age_mid)) 
-hi <- st_read("hi_geol/hi_outline.shp")
-sites <- st_read("hi_geol/gruner_sites.kml") |> 
+hi <- st_read("../hi_geol/hi_outline.shp")
+sites <- st_read("../hi_geol/gruner_sites.kml") |> 
     st_transform(crs = st_crs(x))
 
 p <- ggplot(hi) +
@@ -137,6 +134,18 @@ l <- data.frame(y = seq(log_age_range[1],
           axis.text.y.left = element_blank(), 
           axis.text.y.right = element_text(size = 10)) + 
     coord_cartesian(clip = "off")
+
+```
+
+```{r}
+#| label: fig-chrono
+#| cache: true
+#| fig-cap: |
+#|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
+#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
+#|     sites are indicated with dots on the map and arrows indicating their
+#|     flow ages on the legend. From oldest to youngest (west to east) sites 
+#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
 
 plot_grid(p, l, rel_widths = c(1, 0.2))
 ```
@@ -225,6 +234,32 @@ We also compare this Bray Curtis dissimilarity partitioning to a null model. Her
 
 ## Results
 
+```{r}
+#| label: supp-read
+#| include: false
+
+ff <- list.files("hawaii-arth-mete-supp_cache/pdf/", pattern = ".RData", 
+                 full.names = TRUE) |> 
+    gsub(".RData", "", x = _)
+
+for(f in ff) {
+    lazyLoad(f)
+}
+```
+
+### Deviations from METE across the chronosequence
+
+```{r}
+#| label: fig-z2-chrono
+#| fig-cap: |
+#|     Deviations from METE across the chronosequence as measured by 
+#|     $z^2$-values. Colors represent sites and match the color coding of 
+#|     substrate age in @fig-chrono.
+
+fig_z2_chrono
+
+```
+
 - deviations for SAD and IPD peak at middle age
 - deviations for IPD larger overall
 - deviations of SAD are because of more unevenness (more singletons and more hyper abundant species)
@@ -244,4 +279,4 @@ We also compare this Bray Curtis dissimilarity partitioning to a null model. Her
     - invasion drives divergence
     - both do and they interact, perhaps even conditions favoring diversification favor invasion too
     
-
+## References
