@@ -185,10 +185,43 @@ where $\sigma$ is the taxon- and stage-specific standard deviation of residuals.
 
 ### METE analysis
 
-- meteR
-- use z2
-- log z2
-- rma cause colinear
+To produce METE predictions for the SAD and IPD we use the *meteR* R package [@rominger-merow2016]. We compare these predictions to observed SAD and IPD patterns using a $z^2$-value. The use of $z^2$-values is discussed in @rominger-merow2016, but briefly: the $z^2$-value compares the log likelihood of the data given them METE model to the log likelihood of a hypothetical data set drawn from the METE model itself. This comparison is done many times and the actual $z^2$-value is calculated as
+
+$$
+z^2 = \left(\frac{\log(\mathscr{L}(\text{data} \mid \text{METE})) - \hat{\mu}_{\log\mathscr{L}_\text{METE}}}{\hat{\sigma}_{\log\mathscr{L}_\text{METE}}}\right)^2
+$$
+
+where $\hat{\mu}_{\log\mathscr{L}_\text{METE}}$ is the mean of the log likelihood of data drawn from METE itself, and $\hat{\sigma}_{\log\mathscr{L}_\text{METE}}$ is the standard deviation of the log likelihood of data drawn from METE itself.
+
+If METE is truly correct in describing the data, $z^2$ will asymptotically have a $\chi^2$ distribution with $d.f. = 1$ [@rominger-merow2016]. If METE does not truly describe the data, the $z^2$-value is likely to be large.
+
+We also quantify the difference between METE predictions and observed SADs and IPDs by comparing the tails of the observed and predicted distributions. These tails can be especially informative about the nature of deviations [@harte2011]. For the SAD we compare rarity as the log ratio of observed proportion of singletons to the predicted proportion of singletons, and we compare dominance as log ration of observed total abundance of the top three most abundant species to the predicted total abundance of the top three most abundant species. For the IPD we compare metrics similar to rarity and dominance: the log ratio of observed proportion of individuals with a scaled metabolism of less than 3 to its prediction, and the log ratio of the observed sum of metabolic rates for the top 10 individuals to its prediction.
+
+
+
+## Statistical analysis of deviations from METE and potential explanatory variables
+
+We first evaluate how deviations from METE, as measured by $z^2$-values, vary across the chronosequence. We then test for relationships between $z^2$-values and proportion of non-native species at a site as well as within site, between sample dissimilarity or $\beta$-diversity.
+
+For all these analyses we fit linear models predicting log-transformed $z^2$-values responding to each explanatory variable: substrate age, proportion non-native species, and within site $\beta$-diversity. Log-transforming $z^2$-values brings them closer to the normal assumptions of a linear model. The need for log-transformation is not surprising: while $z^2$-values will be $\chi^2$ distributed if METE is true, deviations from METE add more probability to larger values, and taken together will lead to right-skewed distribution of $z^2$-values. Log-transformation brings right-skewed random variables closer to normal.
+
+When modeling deviations from METE, we have two statistical challenges to address: samples within sites could represent pseudo replicates necessitating a random-effects model; however, because explanatory variables are site-level characteristics, site-level random effects would be completely collinear with site-level explanatory variables. 
+
+To address these challenges we model the site-level mean and variance rather than each individual sample within each site. This is the most conservative approach but runs the risk of being under-powered because while we have `r nrow(unique(arth[, c("site", "tree")]))` samples, we only have `r n_distinct(arth$site)` sites. Modeling mean and variance is the same technique used in meta-analyses. We therefore make use of the *metafor* package [@metafor] in fitting testing these models.
+
+## Calculating $\beta$-diversity
+
+To quantify within site, between sample $\beta$-diversity we first calculate mean Bray-Curtis dissimilarity between samples and then, to standardize $\beta$-diversity measures across sites, we normalize mean dissimilarity to a null model. We use the `quasiswap_count` algorithm implemented in *vegan* [@vegan] to generate null samples. This algorithm preserves row and column sums of a sample by species matrix and also seeks to maintain null matrix fill close to the observed fill thereby mimicking patchiness in the real data. We use 500 null sample by species matrices to generate null models for each site. Then normalized within site, between sample $\beta$-diversity was calculated as a z-score
+
+$$
+\text{Normalized }\beta = \frac{\text{BC}_\text{obs} - \mu_\text{null}}{\sigma_\text{null}}
+$$
+
+where $BC_\text{obs}$ is the observed mean Bray-Curtis dissimilarity between samples within a site, $\mu_\text{null}$ is the mean of the null distribution, and $\sigma_\text{null}$ is the standard deviation of the null distribution.
+
+We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray Curtis dissimilarity between native and non-native groups of species. @sec-part provides the mathematical and computational details of how we do this. The end result of partitioning Bray-Curtis dissimilarity between native and non-native species is that we have a ratio of within site $\beta$-diversity attributable to native species to that attributable to non-native species. We take the log of this ratio such that equal contributions of native and non-native species yields a log ratio of 0.
+
+We also compare this Bray Curtis dissimilarity partitioning to a null model. Here the `quasiswap_count` algorithm will not work because it permutes individuals across species as well as sites. Instead we want to only shuffle the label of each species: native or non-native. But we still need to maintain, at least probabilistically, attributes of the data that might confound null model analysis. Specifically, we should seek to maintain, in probability, the distribution of abundances of native and non-native species. We wrote a custom algorithm to do this in the *HawaiiArthMETE* package and described in @sec-bart.
 
 ## Results
 
