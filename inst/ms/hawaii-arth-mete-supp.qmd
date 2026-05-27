@@ -675,7 +675,7 @@ fig_diss_z
 ```
 
 
-### Partitioning Bray Curtis dissimilarity between native and non-native species
+### Partitioning Bray Curtis dissimilarity between native and non-native species {#sec-part}
 
 To do that we take advantage of the additive nature of Bray Curtis dissimilarity. Bray Curtis dissimilarity is defined as
 
