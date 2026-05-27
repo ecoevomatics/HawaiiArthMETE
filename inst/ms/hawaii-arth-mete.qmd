@@ -2,21 +2,41 @@
 title: "Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective"
 author:
   - name: Andrew J. Rominger
-  - name: Kaite Thai
+    orcid: 0000-0003-3755-4480
+    affiliations:
+      - name: University of Hawai`i at Mānoa
+  - name: Katie Thai
+    orcid: 0009-0006-1223-122X
+    affiliations:
+      - name: University of Hawai`i at Mānoa
   - name: Rosemary G. Gillespie
-  - name: John Harte
+    orcid: 0000-0003-0086-7424
+    affiliations:
+      - name: University of California Berkeley
   - name: Daniel S. Gruner
+    orcid: 0000-0002-3153-4297
+    affiliations:
+      - name: University of Maryland
+  - name: John Harte
+    orcid: 0000-0002-8794-5140
+    affiliations:
+      - name: University of California Berkeley
+filters:
+  - authors.lua
 format:
   pdf:
     keep-tex: true
     include-in-header: 
       text: |
+        \usepackage{authblk}
+        \usepackage{orcidlink}
         \usepackage{newunicodechar}
         \newunicodechar{ʻ}{`} 
         \usepackage{xr}
         \externaldocument{hawaii-arth-mete-supp}
         \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
         \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
+        \renewcommand{\sfdefault}{\rmdefault}
 knitr:
   opts_chunk: 
     dev: cairo_pdf
@@ -264,8 +284,64 @@ fig_z2_chrono
 - deviations for IPD larger overall
 - deviations of SAD are because of more unevenness (more singletons and more hyper abundant species)
 - no consistent relationship between IDP deviations and the extremes of the distribution (deviation is in the middle)
+
+
+```{r}
+#| label: fig-how-z2
+#| fig-width: 7
+#| fig-height: 5
+#| fig-cap: |
+#|     Relationship between $z^2$ measure of deviation from METE and different
+#|     metrics describing how observed data and METE predictions diverge.
+
+fig_how_z2
+```
+
+
+## Deviations from METE predicted by non-native species and $\beta$-diversity
+
+
+```{r}
+#| label: fig-pred
+#| fig-width: 7
+#| fig-height: 5
+#| fig-cap: |
+#|     Relationship between $z^2$ measure of deviation from METE and different
+#|     predictor variables: proportion of non-native species and 
+#|     $\beta$-diversity.
+
+f_non <- fig_dev_non +
+    theme(legend.position = "none", 
+          plot.margin = unit(c(7, 1, 7, 7), "pt"))
+
+f_dis <- fig_diss_z +
+    theme(axis.text.y = element_blank(), 
+          axis.ticks.length.y = unit(0, "npc"), 
+          strip.text = element_blank(), 
+          plot.margin = unit(c(7, 7, 7, 1), "pt"))
+
+plot_grid(f_non, f_dis, rel_widths = c(1, 1.25))
+
+```
+
 - deviations are predicted by proportion of non-natives
 - deviations are predicted by dissimilarity
+
+## Partitioning $\beta$-diversity across native and non-native species
+
+
+```{r}
+#| label: fig-bray-part
+#| fig-cap: |
+#|     Difference in contribution of native and non-native species to 
+#|     dissimilarity compared to null. Negative values indicate greater 
+#|     contribution of non-native species compared to chance while positive
+#|     values indicate greater contribution of native species compared to 
+#|     chance.
+
+fig_bray_part
+```
+
 - something is going on at Kīlauea
 
 
