@@ -10,6 +10,7 @@ format:
         \newunicodechar{ʻ}{`} 
         \renewcommand{\thefigure}{S\arabic{figure}}
         \renewcommand{\thesection}{S\arabic{section}}
+        \renewcommand{\sfdefault}{\rmdefault}
 knitr:
   opts_chunk: 
     dev: cairo_pdf
@@ -180,7 +181,7 @@ confint(ipd_rma_chrono, fixed = TRUE, random = FALSE)
 The following code produces the visualization reported in the main text of deviation from METE across flow ages.
 
 ```{r}
-#| label: fig-z2-chrono
+#| label: fig-z2-chrono-supp
 #| fig-height: 6
 #| fig-cap: |
 #|     Deviations from METE as measured by $z^2$ across the chronosequence. 
@@ -350,7 +351,7 @@ Looking across all samples (@fig-how-z2) we see that deviations between observed
 
 
 ```{r}
-#| label: fig-how-z2
+#| label: fig-how-z2-supp
 #| fig-width: 7.5
 #| fig-height: 6
 #| fig-cap: |
@@ -718,7 +719,7 @@ site_bray_z <- split(arth, arth$site_name) |>
 Now we can visualize different contributions of native and non-native species to within-site, between-sample dissimilarity.
 
 ```{r}
-#| label: fig-bray-part
+#| label: fig-bray-part-supp
 #| fig-cap: |
 #|     Difference in contribution of native and non-native species to 
 #|     dissimilarity compared to null. Negative values indicate greater 
