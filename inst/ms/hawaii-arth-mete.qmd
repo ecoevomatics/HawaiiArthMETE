@@ -71,11 +71,11 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 
 ### The Hawaiian Chronosequence 
 
-- world famous adaptive ration
-- arthropods as diverse and useful study system
-- age differences are snapshots in eco-evolutionary process
+The Hawaiian Archipelago holds numerous examples of adaptive radiation [@gillespie; @bidens; @silversward; @drosoph; @lobiliods; @birds; @bidens; @leafhoppers]. Those remarkable examples of diversification along with the geographic isolation and chronological geology of the archipelago have made it a focal point for the study of eco-evolutionary processes [@simon1987; @wagner-funk1995; @chadwick1999; @price2004; @gillespieClague2009; @barton]. The manner in which the islands formed in chronological sequence [@fig-chrono] has allowed for the study of ecosystems in different stages of eco-evolutionary assembly [@gillespie; @rominger; @vitusek] by considering ecosystems on different aged substrates to be snapshots of eco-evolutionary processes at different time points.
 
-[@simon1987; @chadwick1999; @gillespieClague2009]. 
+Arthropods 
+
+
 
 
 
@@ -85,10 +85,10 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 #| cache: true
 #| fig-cap: |
 #|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
-#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
-#|     sites are indicated with dots on the map and arrows indicating their
-#|     flow ages on the legend. From oldest to youngest (west to east) sites 
-#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
+#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. Substrate age
+#|     data from @foo. The five sites are indicated with dots on the map and 
+#|     arrows indicating their flow ages on the legend. From oldest to youngest 
+#|     (west to east) sites are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
 
 x <- st_read("../hi_geol/hawaii_state_geol_ageClean.shp") |> 
     filter(!is.na(age_mid)) 
@@ -182,9 +182,11 @@ In this study of arthropods communities across the Hawaiian chronosequence, we f
 
 ### Reproducibility and data preparation
 
-A custom R package, *HawaiiArthMETE* [@HawaiiArthMETE], accompanies this paper and can be used to reproduce all results. All data analyzed here are available via the package as described in @sec-setup. 
+A custom R package, *HawaiiArthMETE* [@HawaiiArthMETE], accompanies this paper and can be used to reproduce all results. All data analyzed here are available via the package as described in \ssec{sec-setup}. 
 
-Arthropod data come from the original publication by @gruner2007 and include `r nrow(arth)` specimens. Each specimen was identified to the species level (morpho species were used in `r round(100 * mean(grepl("sp_", arth$species)), 2)`% of specimens). Specimen lengths were measured to the nearest millimeter.  For METE analyses we need to estimate metabolic rate from these data. Because METE normalizes metabolic rates such that the lowest possible rate is 1 we use a simplified $3/4$ scaling rule to approximate metabolic rate $B$ from mass $M$ as $B \propto M^{3/4}$.
+Arthropod data come from the original publication by @gruner2007, a study that collected `r nrow(arth)` specimens across the Hawaiian chronosequence [@fig-chrono]. Study sites in @gruner2007 where standardized to be climatically homogeneous, seeking to capture differences in arthropod assemblages due to substrate age and not other abiotic factors. 
+
+Each specimen was identified to the species level (morpho species were used in `r round(100 * mean(grepl("sp_", arth$species)), 2)`% of specimens). Specimen lengths were measured to the nearest millimeter.  For METE analyses we need to estimate metabolic rate from these data. Because METE normalizes metabolic rates such that the lowest possible rate is 1 we use a simplified $3/4$ scaling rule to approximate metabolic rate $B$ from mass $M$ as $B \propto M^{3/4}$.
 
 This leaves the estimation of mass from length. @gruner2007 used taxon- and stage- specific length-to-biomass allometric scaling relationships [@gruner2003] to approximate mass as the expected value of a log-log regression
 
@@ -197,7 +199,7 @@ $$
 
 where $a$ and $b$ are estimated from data collected by @gruner2003 and vary by taxon and stage.
 
-Using these expected value masses based on length measured to the nearest milliliter yields metabolic rate approximations that are artificially discretization (see the appendix "Sampling biomass estimates from allometric equations"). These descretizations in turn lead to spurious conclusions about the predicitiveness of METE because METE assumes metabolic rates are continuous (see @sec-re-run).
+Using these expected value masses based on length measured to the nearest milliliter yields metabolic rate approximations that are artificially discretization (see the appendix "Sampling biomass estimates from allometric equations"). These descretizations in turn lead to spurious conclusions about the predicitiveness of METE because METE assumes metabolic rates are continuous (see \ssec{sec-re-run}).
 
 Therefore, instead of estimating mass as the expected value from an allometric relationship we sample masses as random draws from the full model relating mass to length
 
@@ -209,7 +211,7 @@ y &\sim \mathscr{N}(\widehat{\log(\text{mass})}, ~\sigma) \\
 \end{aligned}
 $$
 
-where $\sigma$ is the taxon- and stage-specific standard deviation of residuals. The full procedure for sampling masses is detailed in the appendix "Sampling biomass estimates from allometric equations" and the consequences of using random draws versus expected values on the METE analysis is thoroughly investigated in @sec-re-run. We conclude that using random draws for mass estimates is largely similar to using expected values, and our overall conclusions are unchanged, but using draws avoids both spurious deviations from and conformations to METE that would be introduced by using expected values of mass.
+where $\sigma$ is the taxon- and stage-specific standard deviation of residuals. The full procedure for sampling masses is detailed in the appendix "Sampling biomass estimates from allometric equations" and the consequences of using random draws versus expected values on the METE analysis is thoroughly investigated in \ssec{sec-re-run}. We conclude that using random draws for mass estimates is largely similar to using expected values, and our overall conclusions are unchanged, but using draws avoids both spurious deviations from and conformations to METE that would be introduced by using expected values of mass.
 
 ### METE analysis
 
@@ -247,9 +249,9 @@ $$
 
 where $BC_\text{obs}$ is the observed mean Bray-Curtis dissimilarity between samples within a site, $\mu_\text{null}$ is the mean of the null distribution, and $\sigma_\text{null}$ is the standard deviation of the null distribution.
 
-We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray Curtis dissimilarity between native and non-native groups of species. @sec-part provides the mathematical and computational details of how we do this. The end result of partitioning Bray-Curtis dissimilarity between native and non-native species is that we have a ratio of within site $\beta$-diversity attributable to native species to that attributable to non-native species. We take the log of this ratio such that equal contributions of native and non-native species yields a log ratio of 0.
+We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray Curtis dissimilarity between native and non-native groups of species. \ssec{sec-part} provides the mathematical and computational details of how we do this. The end result of partitioning Bray-Curtis dissimilarity between native and non-native species is that we have a ratio of within site $\beta$-diversity attributable to native species to that attributable to non-native species. We take the log of this ratio such that equal contributions of native and non-native species yields a log ratio of 0.
 
-We also compare this Bray Curtis dissimilarity partitioning to a null model. Here the `quasiswap_count` algorithm will not work because it permutes individuals across species as well as sites. Instead we want to only shuffle the label of each species: native or non-native. But we still need to maintain, at least probabilistically, attributes of the data that might confound null model analysis. Specifically, we should seek to maintain, in probability, the distribution of abundances of native and non-native species. We wrote a custom algorithm to do this in the *HawaiiArthMETE* package and described in @sec-bart.
+We also compare this Bray Curtis dissimilarity partitioning to a null model. Here the `quasiswap_count` algorithm will not work because it permutes individuals across species as well as sites. Instead we want to only shuffle the label of each species: native or non-native. But we still need to maintain, at least probabilistically, attributes of the data that might confound null model analysis. Specifically, we should seek to maintain, in probability, the distribution of abundances of native and non-native species. We wrote a custom algorithm to do this in the *HawaiiArthMETE* package and described in \ssec{sec-bart}.
 
 ## Results
 
