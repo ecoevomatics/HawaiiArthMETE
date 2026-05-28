@@ -1,14 +1,14 @@
 ---
-title: "Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective"
+title: "Eco-evolutionary deviations from steady state across the Hawaiian chronosequence revealed with a maximum entropy perspective"
 author:
   - name: Andrew J. Rominger
     orcid: 0000-0003-3755-4480
     affiliations:
-      - name: University of Hawai`i at Mānoa
+      - name: University of Hawaiʻi at Mānoa
   - name: Katie Thai
     orcid: 0009-0006-1223-122X
     affiliations:
-      - name: University of Hawai`i at Mānoa
+      - name: University of Hawaiʻi at Mānoa
   - name: Rosemary G. Gillespie
     orcid: 0000-0003-0086-7424
     affiliations:
@@ -58,7 +58,8 @@ library(dplyr)
 library(meteR)
 library(HawaiiArthMETE)
 
-knitr::opts_chunk$set(fig.width = 5.5, fig.height = 4, echo = FALSE)
+knitr::opts_chunk$set(fig.width = 5.5, fig.height = 4, 
+                      echo = FALSE, message = FALSE, warning = FALSE)
 
 ```
 
@@ -74,10 +75,20 @@ Both deterministic and stochastic perspectives on the generation of universal bi
 - arthropods as diverse and useful study system
 - age differences are snapshots in eco-evolutionary process
 
+[@simon1987; @chadwick1999; @gillespieClague2009]. 
+
+
 
 ```{r}
-#| label: fig-chrono-work
-#| include: false
+#| label: fig-chrono
+#| results: hide
+#| cache: true
+#| fig-cap: |
+#|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
+#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
+#|     sites are indicated with dots on the map and arrows indicating their
+#|     flow ages on the legend. From oldest to youngest (west to east) sites 
+#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
 
 x <- st_read("../hi_geol/hawaii_state_geol_ageClean.shp") |> 
     filter(!is.na(age_mid)) 
@@ -155,17 +166,6 @@ l <- data.frame(y = seq(log_age_range[1],
           axis.text.y.right = element_text(size = 10)) + 
     coord_cartesian(clip = "off")
 
-```
-
-```{r}
-#| label: fig-chrono
-#| cache: true
-#| fig-cap: |
-#|     Chronosequence of the Hawaiian Archipelago showing oldest flows to the
-#|     west on Kauaʻi and youngest flows to the east on Hawaiʻi. The five 
-#|     sites are indicated with dots on the map and arrows indicating their
-#|     flow ages on the legend. From oldest to youngest (west to east) sites 
-#|     are: Alakaʻi, Kamakou, Kohala, Laupāhoehoe, Kīlauea.
 
 plot_grid(p, l, rel_widths = c(1, 0.2))
 ```
@@ -173,10 +173,9 @@ plot_grid(p, l, rel_widths = c(1, 0.2))
 
 ### The Maximum Entropy Theory of Ecology
 
-- METE posits: if state variables are in steady state, all biodiversity patterns are statistical outcomes from those macroscopic variables
-- departures from METE represent departures from steady state
+The Maximum Entropy Theory of Ecology (METE @harte2011) is a particularly useful tool for studying steady state biodiversity patterns because it produces multiple testable predictions, making falsifications of the theory more informative [@mcgill2003] including the distribution of abundances across species and the distribution of metabolic rates across individuals in a sample. METE arrives at some similar predictions to other null or neutral models of biodiversity such at the Unified Neutral Theory [@hubbell] but instead of being limited to a single neutral formulation, METE is grounded in the principles of statistical mechanics [@harte2011 @jaynes1957] drawing from the probabilistic properties of large, randomly assembled systems. Thus its predictions represent a community in statistical steady state. Statistical steady state means that a system is governed by only a few simple state variables, which constitute a state space, and that no additional processes limit the system's ability to freely explore this state space. The state variables of METE are total number of species $S_0$, total number of individuals $N_0$, and summed metabolic rate across all individuals $E_0$ [@harte2011]. METE posits that if state variables are in steady state, all biodiversity patterns are statistical outcomes from those state variables independently of the specific biological mechanisms governing the values of the state variables, so long as those mechanisms do not constitute information beyond the state variables themselves. Examples of such additional information could be rapid environmental change leading to mismatched niches with local environments, rapid diversification, or biological invasion. Under such scenarios the simple state variables of $S_0$, $N_0$, and $E_0$ would not likely constitute enough information to yield accurate predictions for biodiversity patterns such as the species abundance distribution or distribution of metabolic rates across individuals. Thus finding deviations between observed patterns of abundance and metabolic rate distributions compared to their METE predictions allows us to identify ecological systems out of statistical steady state [@harte2011; @rominger2015; @newman??]. 
 
-We find departures from steady state at middle aged sites. Departures are predicted by community dissimilarity which peaks at middle aged sites. This suggests these communities are unstable, perhaps due to their age being the right time for adaptive radiation to take off for arthropods. More work connecting departure from eco steady state and evo steady state would be needed to further test this possibility.
+In this study of arthropods communities across the Hawaiian chronosequence, we find consistent deviations from steady state at middle aged sites. Deviations are predicted by community dissimilarity which peaks at middle aged sites. This suggests these communities are unstable, perhaps due to their age being the right time for adaptive radiation to take off for arthropods [@gillespie; bennett; goodman; ogrady; others]. Deviations are also partially predicted by proportion of non-native species, except that the proportion of non-native species is high at the youngest site while this site also shows some of the lowest deviations from METE. This suggests the role of biological invasion is context dependent, at times producing stead state and at others driving deviation from it. More work connecting deviations from steady state to ecological and evolutionary drivers will be needed to further test these possibilities.
 
 
 ## Methods
