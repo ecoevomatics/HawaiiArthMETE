@@ -55,6 +55,7 @@ library(cowplot)
 library(grid)
 library(sf)
 library(dplyr)
+library(metafor)
 library(meteR)
 library(HawaiiArthMETE)
 
@@ -280,10 +281,13 @@ fig_z2_chrono
 
 ```
 
-- deviations for SAD and IPD peak at middle age
-- deviations for IPD larger overall
-- deviations of SAD are because of more unevenness (more singletons and more hyper abundant species)
-- no consistent relationship between IDP deviations and the extremes of the distribution (deviation is in the middle)
+Deviations from METE in the SAD an IPD are largely in agreement: samples with high $z^2$-values for the SAD tend to have high $z^2$-values for the IPD (see \sfig{fig-z2-cor}). The $z^2$-values for both distributions peak at middle aged sites along the chronosequence [@fig-z2-chrono]. For the SAD this is supported by a likelihood ratio test comparing a quadratic model of $z^2$-values to an intercept-only model with LRT statistic $\Lambda =$ `r sad_lrt_chrono$QM`, $d.f. =$ `r sad_lrt_chrono$QMdf[1]`, and $P$ `r ifelse(sad_lrt_chrono$QMp < 0.0001, "< 0.0001", paste("= ", round(sad_lrt_chrono$QMp, 4)))`. 
+
+The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values. Not surprisingly, for quadratic model of IPD $z^2$-values across the chronosequence, the LRT statistic is $\Lambda =$ `r ipd_lrt_chrono$QM` with $d.f. =$ `r ipd_lrt_chrono$QMdf[1]` and $P$ `r ifelse(ipd_lrt_chrono$QMp < 0.0001, "< 0.0001", paste("= ", round(ipd_lrt_chrono$QMp, 4)))`. While the $P$-value for the test of the quadratic model for IPD $z^2$-values just misses the $\leq 0.05$ significance cut off by the likelihood ratio test, the less conservative Wald test does show the quadratic term to be significant with a 95% confidence interval of `r confint(ipd_rma_chrono, fixed = TRUE, random = FALSE) |> (`[[`)("fixed") |> (`[`)(3, 2:3) |> round(3) |> paste(collapse = ", ") |> (\(x) sprintf("[%s]", x))()`, which does not overlap 0.
+
+For the SAD, the primary driver of differences between METE predictions and observed patterns is that observed species abundances have both a higher proportion of singletons and a larger concentration of abundance in the most abundant species [@fig-how-z2] compared to METE. Taken together, this means that observed SADs are more uneven than those predicted by METE.
+
+For the IPD there is not a consistent relationship between deviations and the tails of the metabolic rate distribution [@fig-how-z2]. In terms of proportion of individuals with very low metabolisms, `r sum(ipd_diff[, "n_over_rar"])` samples showed theory over-predicting this proportion while `r sum(ipd_diff[, "n_undr_rar"])` samples showed theory under-predicting this proportion. The difference was not significant by a binomial generalized linear model of over-versus-under prediction grouped by site (z = `r round(summary(p1_mod)$coefficients[3], 3)`, $P$ = `r `round(summary(p1_mod)$coefficients[4], 3)`). In terms of concentration of metabolic rate in the most metabolically active individuals, `r sum(ipd_diff[, "n_over_dom"])` samples showed theory over-predicting this concentration while `r sum(ipd_diff[, "n_undr_dom"])` samples showed theory under-predicting this concentration. With the two numbers exactly equal, the difference could not be significant.
 
 
 ```{r}
