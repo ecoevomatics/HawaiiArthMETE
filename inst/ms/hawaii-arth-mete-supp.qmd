@@ -423,7 +423,7 @@ summary(p1_mod)
 
 ```
 
-The fact that in both models the intercept is not significantly different from the null ($p = 0.5$) means that there is not evidence of systematic difference between thertical prediction and observed IPD.
+The fact that in both models the intercept is not significantly different from the null ($p = 0.5$) means that there is not evidence of systematic difference between theoretical prediction and observed IPD.
 
 
 ## Comparing deviations from METE with potential explanatory variables
