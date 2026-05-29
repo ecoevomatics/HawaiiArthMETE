@@ -349,7 +349,7 @@ The between sample $\beta$-diversity at a site has a significant positive linear
 fig_bray_part
 ```
 
-- something is going on at Kīlauea
+In an effort to understand why Kīlauea is an outlier in the relationship between proportion of non-native species and z2v but not an outlier in the relationship between $\beta$-diversity and z2v we partition native and non-native species' contributions to $\beta$-diversity. 
 
 
 ## Discussion
