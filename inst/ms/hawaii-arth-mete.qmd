@@ -349,7 +349,9 @@ The between sample $\beta$-diversity at a site has a significant positive linear
 fig_bray_part
 ```
 
-In an effort to understand why Kīlauea is an outlier in the relationship between proportion of non-native species and z2v but not an outlier in the relationship between $\beta$-diversity and z2v we partition native and non-native species' contributions to $\beta$-diversity. 
+In an effort to understand why Kīlauea is an outlier in the relationship between proportion of non-native species and z2v but not an outlier in the relationship between $\beta$-diversity and z2v we partition native and non-native species' contributions to $\beta$-diversity. We find that while Kīlauea has a high proportion of non-native species, it also has a low between sample $\beta$-diversity, and non-native species contribute disproportionately more, compared to the null, to that low $\beta$-diversity. Taking these insights together, Kīlauea has many non-native species, but those species are distributed very homogenously across samples. 
+
+Kīlauea and Alakaʻi are similar in that they have low $\beta$-diversity, a disproportionate contribution of non-native species to what $\beta$-diversity they do have, and low overall deviation from METE. 
 
 
 ## Discussion
