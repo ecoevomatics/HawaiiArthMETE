@@ -328,8 +328,11 @@ plot_grid(f_non, f_dis, rel_widths = c(1, 1.25))
 
 ```
 
-- deviations are predicted by proportion of non-natives
-- deviations are predicted by dissimilarity
+The proportion of non-native species at a site has a significant linear relationship with both SAD and IPD z2v when excluding Kīlauea [@fig-pred]. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$.
+
+Kīlauea is an interesting outlier in both the SAD and IPD z2v relationships with proportion non-native species. In the case of the SAD, the 95% confidence interval for the mean of Kīlauea z2v is well below the 95% confidence envelope of the overall relationship [@fig-pred]. In the case of the IPD, the 95% the mean of Kīlauea z2v is below the 95% confidence envelope of the overall relationship, but the confidence interval and envelope do partially overlap [@fig-pred]. This is a strong suggestion that the effect of non-native species at Kīlauea is distinct from other sites. We unpack that possibility further in our analysis of $\beta$-diversity.
+
+The between sample $\beta$-diversity at a site has a significant positive linear relationship with the z2v of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$. There are no clear outlier sites in the relationship of z2v and $\beta$-diversity.
 
 ## Partitioning $\beta$-diversity across native and non-native species
 
