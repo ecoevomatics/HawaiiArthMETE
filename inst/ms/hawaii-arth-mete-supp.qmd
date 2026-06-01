@@ -455,8 +455,8 @@ sad_rma_non <- site_means_lm(log(z2_sad) ~ prop_nspp_non_nat + (1 | site),
                              filter(mete_by_non, site != "VO"))
 
 # sad likelihood ratio test
-anova(sad_rma_non)
-
+sad_lrt_non <- anova(sad_rma_non)
+sad_lrt_non
 
 # ipd regression 
 ipd_rma_non <- site_means_lm(log(z2_ipd) ~ prop_nspp_non_nat + (1 | site), 
@@ -464,7 +464,8 @@ ipd_rma_non <- site_means_lm(log(z2_ipd) ~ prop_nspp_non_nat + (1 | site),
                              filter(mete_by_non, site != "VO"))
 
 # ipd likelihood ratio test
-anova(ipd_rma_non)
+ipd_lrt_non <- anova(ipd_rma_non)
+ipd_lrt_non
 
 ```
 
@@ -708,9 +709,19 @@ site_bray_z <- split(arth, arth$site_name) |>
         g <- dat$origin[match(names(comm), dat$species_code)] %in% 
             c("endemic", "indigenous")
         
-        data.frame(bp = bray_part_z(as.matrix(comm), g))
+        bp <- bray_part_z(as.matrix(comm), g)
+        data.frame(bp_nat = bp[1], bp_non = bp[2])
     }) |> 
     bind_rows(.id = "site_name")
+
+site_bray_z$site_name <- factor(site_bray_z$site_name, 
+                                levels = levels(arth$site_name))
+
+pal <- this_ms_look()[[1]]$palette(5)
+pal <- rbind(colorspace::darken(pal, amount = 0.25),
+             colorspace::lighten(pal, amount = 0.5)) |> 
+    as.vector()
+
 
 
 ```
@@ -729,27 +740,25 @@ Now we can visualize different contributions of native and non-native species to
 #| dependson: 
 #|     - bray-part
 
-site_bray_z$site_name <- factor(site_bray_z$site_name, 
-                                levels = levels(arth$site_name))
 
-fig_bray_part <- ggplot(arrange(site_bray_z, as.numeric(site_name)), 
-                        aes(bp, site_name, fill = site_name)) +
+
+fig_bray_part <- site_bray_z |> 
+    pivot_longer(!site_name) |> 
+    mutate(g = paste(as.numeric(site_name), 
+                     name, sep = "_")) |> 
+    # plotting
+    ggplot(aes(value, site_name, fill = g, alpha = name)) +
     geom_bar(stat = "identity") +
     this_ms_look() +
-    geom_vline(xintercept = 0, color = "gray") +
-    xlim(c(-1, 1) * max(abs(site_bray_z$bp))) +
-    ylab("") +
-    xlab("Log ratio dissimilarity partition") +
-    annotate("segment", x = c(-0.5, 0.5), xend = c(-2.75, 2.75), 
-             y = 6, yend = 6, 
-             arrow = arrow(length = unit(1, "char"))) +
-    annotate("text", x = c(-3, 3), y = 6, 
-             label = c("More non-native\ncontribution", 
-                       "More native\ncontribution"), 
-             hjust = c(1, 0), size = 4) +
-    theme(legend.position = "none", 
-          plot.margin = margin(40, 40, 7, 7)) +
-    coord_cartesian(ylim = c(1, 5), clip = "off") 
+    scale_fill_manual(values = pal, guide = "none") +
+    scale_alpha_manual(
+    values = c(bp_nat = 1, bp_non = 1), # over-ride alpha
+    name = NULL,
+    labels = c(bp_nat = "Native", bp_non = "Non-native"),
+    guide = guide_legend(override.aes = list(fill = c("grey30", "grey80"),
+                                             alpha = 1))) +
+    xlab("Mean dissimilarity") +
+    theme(axis.title.y = element_blank())
 
 fig_bray_part
 ```

@@ -8,18 +8,19 @@
 #' 
 #' @details
 #' only works for a logical \code{grp} though the same partitioning logic 
-#' applies to greater than two groups
+#' applies to greater than two groups. Null model permutation is done by 
+#' quasiswap_count algorithm but run separately for the submatrices of each
+#' group indicated by \code{grp}.
 #' 
 #' @returns 
-#' a single number, the log of the ratio of contributions of each group to
-#' the overall dissimilarity; a negative number means a greater contribution 
-#' of the group represented by \code{grp = FALSE}, a positive number means a 
-#' greater contribution of the group represented by \code{grp = TRUE}.
+#' \code{bray_part} a vector of length 2 with the Bray-Curtis partitions for 
+#' each group indicated by \code{grp}.
 #' 
-#' \code{bray_part_z} returns a permutation-based z-value (using \code{cswap})
-#' of the same log ratio. negative and positive sign of z-value is same as for 
-#' \code{bray_part} but is now a "greater contribution of the group ..., 
-#' relative to chance."
+#' \code{bray_part_z} returns a vector of length 2 with permutation-based 
+#' z-values the same partition. Interpretation is "contribution of group i 
+#' compared to the null." Note that output of \code{bray_part_z} will not sum
+#' exactly to values of \code{bray_diss_z} because the null model used here is
+#' more constrained.
 #'
 #' @rdname bray_part
 #' 
@@ -35,20 +36,44 @@ bray_part <- function(x, grp) {
     va <- as.matrix(vegan::vegdist(x[, grp])) * ma / m
     vb <- as.matrix(vegan::vegdist(x[, !grp])) * mb / m
     
-    c(mean(va[lt]), mean(vb[lt])) |> 
-        log() |> 
-        diff()
+    c(mean(va[lt]), mean(vb[lt]))
 }
 
 #' @rdname bray_part
+#' @param B number of permutation replicates
 #' 
 #' @export
 
-bray_part_z <- function(x, grp, B = 1000) {
+bray_part_z <- function(x, grp, B = 500) {
+    # browser()
     obs <- bray_part(x, grp)
-    sim <- sapply(1:B, function(i) bray_part(x, cswap(x, grp)))
     
-    (obs - mean(sim)) / sd(sim)
+    sim_a <- vegan::nullmodel(x[, grp], "quasiswap_count") |>
+        simulate(nsim = B)
+    
+    sim_b <- vegan::nullmodel(x[, !grp], "quasiswap_count") |>
+        simulate(nsim = B)
+    
+    # weʻre splitting groups to then cbind them, so need new grouping
+    # vector reflecting this re-ordering
+    new_grp <- c(rep(TRUE, sum(grp)), 
+                 rep(FALSE, sum(!grp)))
+    
+    # this will be a B x 2 matrix with columns for reps, rows for groups
+    sim_part <- sapply(1:dim(sim_a)[3], function(i) {
+        bray_part(cbind(sim_a[, , i], 
+                        sim_b[, , i]), 
+                  new_grp)
+    })
+    
+    # mean per row
+    m_diss <- rowMeans(sim_part)
+    
+    # overall sd
+    s_diss <- colSums(sim_part) |> sd()
+    
+    # z-value for each group
+    (obs - m_diss) / s_diss
 }
 
 
