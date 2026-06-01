@@ -714,15 +714,9 @@ site_bray_z <- split(arth, arth$site_name) |>
     }) |> 
     bind_rows(.id = "site_name")
 
+# make site names factors ordered by age
 site_bray_z$site_name <- factor(site_bray_z$site_name, 
                                 levels = levels(arth$site_name))
-
-pal <- this_ms_look()[[1]]$palette(5)
-pal <- rbind(colorspace::darken(pal, amount = 0.25),
-             colorspace::lighten(pal, amount = 0.5)) |> 
-    as.vector()
-
-
 
 ```
 
@@ -741,6 +735,11 @@ Now we can visualize different contributions of native and non-native species to
 #|     - bray-part
 
 
+# palette for native and non-native by site
+pal <- this_ms_look()[[1]]$palette(5)
+pal <- rbind(colorspace::darken(pal, amount = 0.25),
+             colorspace::lighten(pal, amount = 0.5)) |> 
+    as.vector()
 
 fig_bray_part <- site_bray_z |> 
     pivot_longer(!site_name) |> 
