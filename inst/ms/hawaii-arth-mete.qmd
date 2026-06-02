@@ -354,10 +354,17 @@ Within site $\beta$-diversity has a significant positive linear relationship wit
 #| label: fig-bray-part
 #| fig-cap: |
 #|     Difference in contribution of native and non-native species to 
-#|     dissimilarity compared to null. Negative values indicate greater 
-#|     contribution of non-native species compared to chance while positive
-#|     values indicate greater contribution of native species compared to 
-#|     chance.
+#|     $\beta$-diversity compared to null. The total height of bars (taking into
+#|     account negative heights as well) is equal to the overall $\beta$-diversity
+#|     z-score for a site. These overall $\beta$-diversity values are same in 
+#|     pattern, but different in exact value, to those in @fig-pred because the 
+#|     null model used here is more restrictive (see methods). Lighter colors 
+#|     represent the contribution of non-native species and darker colors the
+#|     contributions of native species to overall $\beta$-diversity. The 
+#|     contribution of non-native species at Kamakou is small and positive
+#|     (`r round(site_bray_z$bp_non[site_bray_z$site_name == "Kamakou"], 4)`).
+#|     The contribution of non-native species at Kīlauea is negative and the 
+#|     contribution of native species at Alakaʻi is negative.
 
 fig_bray_part
 ```
