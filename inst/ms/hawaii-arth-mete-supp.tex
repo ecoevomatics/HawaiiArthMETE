@@ -183,6 +183,7 @@
 \newunicodechar{ʻ}{`}
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\sfdefault}{\rmdefault}
 \KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -229,7 +230,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Supplement to ``Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective''},
+  pdftitle={Supplement to ``Eco-evolutionary deviations from steady state across the Hawaiʻi chronosequence revealed with a maximum entropy perspective''},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -239,7 +240,8 @@
 
 
 \title{Supplement to ``Eco-evolutionary deviations from steady state
-across the Hawaiian chronosequence from a maximum entropy perspective''}
+across the Hawaiʻi chronosequence revealed with a maximum entropy
+perspective''}
 \author{}
 \date{}
 \begin{document}
@@ -250,7 +252,7 @@ This supplement walks through the steps of recreating the entire
 analysis presented in the main text. It also provides further analysis
 in support of and to contextualize results in the main text.
 
-\section{Computing setup}\label{computing-setup}
+\section{Computing setup}\label{sec-setup}
 
 Analyses are supported by a custom R package \emph{HawaiiArthMETE}
 (Rominger \& Thai 2026) which can be installed from github.
@@ -355,9 +357,6 @@ The following object is masked from 'package:meteR':
     \AttributeTok{cache =} \ConstantTok{TRUE}
 \NormalTok{)}
 
-\CommentTok{\# load data }
-\FunctionTok{data}\NormalTok{(arth)}
-
 \FunctionTok{sessionInfo}\NormalTok{() }\SpecialCharTok{|\textgreater{}} 
     \FunctionTok{print}\NormalTok{(}\AttributeTok{locale =} \ConstantTok{FALSE}\NormalTok{)}
 \end{Highlighting}
@@ -392,6 +391,16 @@ loaded via a namespace (and not attached):
 [29] glue_1.8.0         farver_2.1.2       rmarkdown_2.29     purrr_1.1.0       
 [33] tools_4.5.2        pkgconfig_2.0.3    htmltools_0.5.8.1 
 \end{verbatim}
+
+The data used in all analyses is available with the
+\emph{HawaiiArthMETE} package
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# load data }
+\FunctionTok{data}\NormalTok{(arth)}
+\end{Highlighting}
+\end{Shaded}
 
 \section{METE calculations}\label{mete-calculations}
 
@@ -595,11 +604,11 @@ of deviation from METE across flow ages.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-z2-chrono-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-z2-chrono-supp-1.pdf}}
 
 }
 
-\caption{\label{fig-z2-chrono}Deviations from METE as measured by
+\caption{\label{fig-z2-chrono-supp}Deviations from METE as measured by
 \(z^2\) across the chronosequence.}
 
 \end{figure}%
@@ -747,14 +756,14 @@ variables}
 
 \end{figure}%
 
-Looking across all samples (Supplementary Figure~\ref{fig-how-z2}) we
-see that deviations between observed and theoretical SADs is
-consistently in the direction of under-predicted both rarity and
-dominance (i.e.~observed SADs have more rarity and greater dominance
-than theoretical predictions). Indeed, only one sample shows a (small)
-over-prediction in dominance, and only two samples show a (small)
-over-prediction in rarity. This means that observed SADs are more uneven
-than the METE prediction.
+Looking across all samples (\textbf{?@fig-how-z2}) we see that
+deviations between observed and theoretical SADs is consistently in the
+direction of under-predicted both rarity and dominance (i.e.~observed
+SADs have more rarity and greater dominance than theoretical
+predictions). Indeed, only one sample shows a (small) over-prediction in
+dominance, and only two samples show a (small) over-prediction in
+rarity. This means that observed SADs are more uneven than the METE
+prediction.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -795,11 +804,11 @@ than the METE prediction.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-how-z2-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-how-z2-supp-1.pdf}}
 
 }
 
-\caption{\label{fig-how-z2}Relationship between \(z^2\) measure of
+\caption{\label{fig-how-z2-supp}Relationship between \(z^2\) measure of
 deviation from METE and different metrics describing how observed data
 and METE predictions diverge.}
 
@@ -881,7 +890,8 @@ Number of Fisher Scoring iterations: 4
 
 The fact that in both models the intercept is not significantly
 different from the null (\(p = 0.5\)) means that there is not evidence
-of systematic difference between thertical prediction and observed IPD.
+of systematic difference between theoretical prediction and observed
+IPD.
 
 \section{Comparing deviations from METE with potential explanatory
 variables}\label{comparing-deviations-from-mete-with-potential-explanatory-variables}
@@ -922,7 +932,8 @@ Joining with `by = join_by(site_name)`
                              \FunctionTok{filter}\NormalTok{(mete\_by\_non, site }\SpecialCharTok{!=} \StringTok{"VO"}\NormalTok{))}
 
 \CommentTok{\# sad likelihood ratio test}
-\FunctionTok{anova}\NormalTok{(sad\_rma\_non)}
+\NormalTok{sad\_lrt\_non }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(sad\_rma\_non)}
+\NormalTok{sad\_lrt\_non}
 \end{Highlighting}
 \end{Shaded}
 
@@ -940,7 +951,8 @@ QM(df = 1) = 22.3287, p-val < .0001
                              \FunctionTok{filter}\NormalTok{(mete\_by\_non, site }\SpecialCharTok{!=} \StringTok{"VO"}\NormalTok{))}
 
 \CommentTok{\# ipd likelihood ratio test}
-\FunctionTok{anova}\NormalTok{(ipd\_rma\_non)}
+\NormalTok{ipd\_lrt\_non }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(ipd\_rma\_non)}
+\NormalTok{ipd\_lrt\_non}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1088,7 +1100,8 @@ regression analysis.
                               \AttributeTok{data =}\NormalTok{ mete\_by\_diss)}
 
 \CommentTok{\# sad likelihood ratio test}
-\FunctionTok{anova}\NormalTok{(sad\_rma\_diss)}
+\NormalTok{sad\_lrt\_diss }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(sad\_rma\_diss)}
+\NormalTok{sad\_lrt\_diss}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1105,7 +1118,8 @@ QM(df = 1) = 29.9678, p-val < .0001
                               \AttributeTok{data =}\NormalTok{ mete\_by\_diss)}
 
 \CommentTok{\# ipd likelihood ratio test}
-\FunctionTok{anova}\NormalTok{(ipd\_rma\_diss)}
+\NormalTok{ipd\_lrt\_diss }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(ipd\_rma\_diss)}
+\NormalTok{ipd\_lrt\_diss}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1191,8 +1205,7 @@ and solid lines are expected values.}
 \end{figure}%
 
 \subsection{Partitioning Bray Curtis dissimilarity between native and
-non-native
-species}\label{partitioning-bray-curtis-dissimilarity-between-native-and-non-native-species}
+non-native species}\label{sec-part}
 
 To do that we take advantage of the additive nature of Bray Curtis
 dissimilarity. Bray Curtis dissimilarity is defined as
@@ -1213,14 +1226,17 @@ d_{kj} = \frac{\sum_i |x_{ij}^{(a)} - x_{ik}^{(a)}|}{\sum_{ij} x_{ij} + x_{ik}} 
 Now we can look separately at the contribution of group \((a)\) and
 group \((b)\) to the overall dissimilarity. We use this approach to
 compare the contributions of native and non-native taxa to overall
-dissimilarity. We again make use of a permutational null model to
-compare these contributions. This null model cannot be the same as the
-null model used to calculate z scores for overall dissimilarity because
-that null model shuffled species across samples and individuals across
-species. Instead, we want to shuffle group labels (native or non-native)
-across species. The custom function \texttt{bray\_part\_z} calculates
-these z scores using another custom function \texttt{cswap} from
-\emph{HawaiiArthMETE}.
+dissimilarity. We again make use of the \texttt{quasiswap\_count}
+permutational null model to standardize these contributions. However, we
+must permute the two submatrices (one for native species, one for
+non-natives) separately in order to preserve the distribution of native
+and non-native individuals across sites. We can then combine these
+separately permuted submatrices and partition dissimilarity. Comparing
+observed Bray Curtis partitions to their null counterparts gives us a
+z-score standardized view of how native and non-native species
+contributed to overall dissimilarity. The custom function
+\texttt{bray\_part\_z} from \emph{HawaiiArthMETE} calculates these z
+scores.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1236,9 +1252,14 @@ these z scores using another custom function \texttt{cswap} from
 \NormalTok{        g }\OtherTok{\textless{}{-}}\NormalTok{ dat}\SpecialCharTok{$}\NormalTok{origin[}\FunctionTok{match}\NormalTok{(}\FunctionTok{names}\NormalTok{(comm), dat}\SpecialCharTok{$}\NormalTok{species\_code)] }\SpecialCharTok{\%in\%} 
             \FunctionTok{c}\NormalTok{(}\StringTok{"endemic"}\NormalTok{, }\StringTok{"indigenous"}\NormalTok{)}
         
-        \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{bp =} \FunctionTok{bray\_part\_z}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(comm), g))}
+\NormalTok{        bp }\OtherTok{\textless{}{-}} \FunctionTok{bray\_part\_z}\NormalTok{(}\FunctionTok{as.matrix}\NormalTok{(comm), g)}
+        \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{bp\_nat =}\NormalTok{ bp[}\DecValTok{1}\NormalTok{], }\AttributeTok{bp\_non =}\NormalTok{ bp[}\DecValTok{2}\NormalTok{])}
 \NormalTok{    \}) }\SpecialCharTok{|\textgreater{}} 
     \FunctionTok{bind\_rows}\NormalTok{(}\AttributeTok{.id =} \StringTok{"site\_name"}\NormalTok{)}
+
+\CommentTok{\# make site names factors ordered by age}
+\NormalTok{site\_bray\_z}\SpecialCharTok{$}\NormalTok{site\_name }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(site\_bray\_z}\SpecialCharTok{$}\NormalTok{site\_name, }
+                                \AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(arth}\SpecialCharTok{$}\NormalTok{site\_name))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1247,28 +1268,39 @@ species to within-site, between-sample dissimilarity.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{site\_bray\_z}\SpecialCharTok{$}\NormalTok{site\_name }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(site\_bray\_z}\SpecialCharTok{$}\NormalTok{site\_name, }
-                                \AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(arth}\SpecialCharTok{$}\NormalTok{site\_name))}
+\CommentTok{\# palette for native and non{-}native by site}
+\NormalTok{pal }\OtherTok{\textless{}{-}} \FunctionTok{this\_ms\_look}\NormalTok{()[[}\DecValTok{1}\NormalTok{]]}\SpecialCharTok{$}\FunctionTok{palette}\NormalTok{(}\DecValTok{5}\NormalTok{)}
+\NormalTok{pal }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(colorspace}\SpecialCharTok{::}\FunctionTok{darken}\NormalTok{(pal, }\AttributeTok{amount =} \FloatTok{0.25}\NormalTok{),}
+\NormalTok{             colorspace}\SpecialCharTok{::}\FunctionTok{lighten}\NormalTok{(pal, }\AttributeTok{amount =} \FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{as.vector}\NormalTok{()}
 
-\NormalTok{fig\_bray\_part }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{arrange}\NormalTok{(site\_bray\_z, }\FunctionTok{as.numeric}\NormalTok{(site\_name)), }
-                        \FunctionTok{aes}\NormalTok{(bp, site\_name, }\AttributeTok{fill =}\NormalTok{ site\_name)) }\SpecialCharTok{+}
+\NormalTok{fig\_bray\_part }\OtherTok{\textless{}{-}}\NormalTok{ site\_bray\_z }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{pivot\_longer}\NormalTok{(}\SpecialCharTok{!}\NormalTok{site\_name) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{g =} \FunctionTok{paste}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(site\_name), }
+\NormalTok{                     name, }\AttributeTok{sep =} \StringTok{"\_"}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+    \CommentTok{\# plotting}
+    \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(value, site\_name, }\AttributeTok{fill =}\NormalTok{ g, }\AttributeTok{alpha =}\NormalTok{ name)) }\SpecialCharTok{+}
     \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{this\_ms\_look}\NormalTok{() }\SpecialCharTok{+}
-    \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{xlim}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{) }\SpecialCharTok{*} \FunctionTok{max}\NormalTok{(}\FunctionTok{abs}\NormalTok{(site\_bray\_z}\SpecialCharTok{$}\NormalTok{bp))) }\SpecialCharTok{+}
-    \FunctionTok{ylab}\NormalTok{(}\StringTok{""}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{xlab}\NormalTok{(}\StringTok{"Log ratio dissimilarity partition"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{annotate}\NormalTok{(}\StringTok{"segment"}\NormalTok{, }\AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{0.5}\NormalTok{, }\FloatTok{0.5}\NormalTok{), }\AttributeTok{xend =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\FloatTok{2.75}\NormalTok{, }\FloatTok{2.75}\NormalTok{), }
-             \AttributeTok{y =} \DecValTok{6}\NormalTok{, }\AttributeTok{yend =} \DecValTok{6}\NormalTok{, }
-             \AttributeTok{arrow =} \FunctionTok{arrow}\NormalTok{(}\AttributeTok{length =} \FunctionTok{unit}\NormalTok{(}\DecValTok{1}\NormalTok{, }\StringTok{"char"}\NormalTok{))) }\SpecialCharTok{+}
-    \FunctionTok{annotate}\NormalTok{(}\StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \FunctionTok{c}\NormalTok{(}\SpecialCharTok{{-}}\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{), }\AttributeTok{y =} \DecValTok{6}\NormalTok{, }
-             \AttributeTok{label =} \FunctionTok{c}\NormalTok{(}\StringTok{"More non{-}native}\SpecialCharTok{\textbackslash{}n}\StringTok{contribution"}\NormalTok{, }
-                       \StringTok{"More native}\SpecialCharTok{\textbackslash{}n}\StringTok{contribution"}\NormalTok{), }
-             \AttributeTok{hjust =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{), }\AttributeTok{size =} \DecValTok{4}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{, }
-          \AttributeTok{plot.margin =} \FunctionTok{margin}\NormalTok{(}\DecValTok{40}\NormalTok{, }\DecValTok{40}\NormalTok{, }\DecValTok{7}\NormalTok{, }\DecValTok{7}\NormalTok{)) }\SpecialCharTok{+}
-    \FunctionTok{coord\_cartesian}\NormalTok{(}\AttributeTok{ylim =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{), }\AttributeTok{clip =} \StringTok{"off"}\NormalTok{) }
+    \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =}\NormalTok{ pal, }\AttributeTok{guide =} \StringTok{"none"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{scale\_alpha\_manual}\NormalTok{(}
+    \AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\AttributeTok{bp\_nat =} \DecValTok{1}\NormalTok{, }\AttributeTok{bp\_non =} \DecValTok{1}\NormalTok{), }\CommentTok{\# over{-}ride alpha}
+    \AttributeTok{name =} \ConstantTok{NULL}\NormalTok{,}
+    \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\AttributeTok{bp\_nat =} \StringTok{"Native"}\NormalTok{, }\AttributeTok{bp\_non =} \StringTok{"Non{-}native"}\NormalTok{),}
+    \AttributeTok{guide =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{override.aes =} \FunctionTok{list}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{c}\NormalTok{(}\StringTok{"grey30"}\NormalTok{, }\StringTok{"grey80"}\NormalTok{),}
+                                             \AttributeTok{alpha =} \DecValTok{1}\NormalTok{))) }\SpecialCharTok{+}
+    \FunctionTok{xlab}\NormalTok{(}\StringTok{"Mean dissimilarity"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
 
+\begin{verbatim}
+Scale for fill is already present.
+Adding another scale for fill, which will replace the existing scale.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \NormalTok{fig\_bray\_part}
 \end{Highlighting}
 \end{Shaded}
@@ -1277,20 +1309,20 @@ species to within-site, between-sample dissimilarity.
 
 \centering{
 
-\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-bray-part-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{hawaii-arth-mete-supp_files/figure-pdf/fig-bray-part-supp-1.pdf}}
 
 }
 
-\caption{\label{fig-bray-part}Difference in contribution of native and
-non-native species to dissimilarity compared to null. Negative values
-indicate greater contribution of non-native species compared to chance
-while positive values indicate greater contribution of native species
-compared to chance.}
+\caption{\label{fig-bray-part-supp}Difference in contribution of native
+and non-native species to dissimilarity compared to null. Negative
+values indicate greater contribution of non-native species compared to
+chance while positive values indicate greater contribution of native
+species compared to chance.}
 
 \end{figure}%
 
 \section{Evaluating the consequences of sampling biomass
-values}\label{evaluating-the-consequences-of-sampling-biomass-values}
+values}\label{sec-re-run}
 
 Here we re-run all analyses using a single expected value of biomass
 derived from taxon- and stage-specific allometric scaling relationships
@@ -1362,7 +1394,7 @@ solid line is the 1:1 line.}
 
 Using expected values for biomass increases the variability of
 log-transformed IPD \(z^2\)-values slightly:
-\(SD_\text{expected values}\) = 2.242 compared to
+\(SD_\text{expected values}\) = 2.222 compared to
 \(SD_\text{random draws}\) = 2.236
 
 This increased variability is not surprising given the artificial

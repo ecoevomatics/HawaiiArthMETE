@@ -203,7 +203,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
-  pdftitle={Eco-evolutionary deviations from steady state across the Hawaiian chronosequence revealed with a maximum entropy perspective},
+  pdftitle={Eco-evolutionary deviations from steady state across the Hawaiʻi chronosequence revealed with a maximum entropy perspective},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -212,7 +212,7 @@
   pdfcreator={LaTeX via pandoc}}
 
 
-\title{Eco-evolutionary deviations from steady state across the Hawaiian
+\title{Eco-evolutionary deviations from steady state across the Hawaiʻi
 chronosequence revealed with a maximum entropy perspective}
 \author{}
 \date{}
@@ -248,8 +248,8 @@ patterns, we combine data from the highly dynamic ecosystems of the
 Hawaiian Archipelago with the intentionally minimalist steady state
 predictions of the Maximum Entropy Theory of Ecology.
 
-\subsubsection{The Hawaiian
-Chronosequence}\label{the-hawaiian-chronosequence}
+\subsubsection{The Hawaiʻi
+Chronosequence}\label{the-hawaiux2bbi-chronosequence}
 
 The Hawaiian Archipelago holds numerous examples of adaptive radiation
 (Baldwin \& Sanderson 1998; Bennett \& O'Grady 2013; Gillespie 2004;
@@ -337,20 +337,20 @@ distributions compared to their METE predictions allows us to identify
 ecological systems out of statistical steady state (Harte 2011; Newman
 \emph{et al.} 2020; Rominger \emph{et al.} 2016).
 
-In this study of arthropods communities across the Hawaiian
+In this study of arthropods communities across the Hawaiʻi
 chronosequence, we find consistent deviations from steady state at
-middle aged sites. Deviations are predicted by community dissimilarity
-which peaks at middle aged sites. This suggests these communities are
-unstable, perhaps due to their age being the right time for adaptive
-radiation to take off for arthropods (Bennett \& O'Grady 2013; Gillespie
-2004). Deviations are also partially predicted by proportion of
-non-native species, except that the proportion of non-native species is
-high at the youngest site while this site also shows some of the lowest
-deviations from METE. This suggests the role of biological invasion is
-context dependent, at times producing stead state and at others driving
-deviation from it. More work connecting deviations from steady state to
-ecological and evolutionary drivers will be needed to further test these
-possibilities.
+middle aged sites. Deviations are predicted by within site
+\(\beta\)-diversity which peaks at middle aged sites. This suggests
+these communities are unstable, perhaps due to their age being the right
+time for adaptive radiation to take off for arthropods (Bennett \&
+O'Grady 2013; Gillespie 2004). Deviations are also partially predicted
+by proportion of non-native species, except that the proportion of
+non-native species is high at the youngest site while this site also
+shows some of the lowest deviations from METE. This suggests the role of
+biological invasion is context dependent, at times producing stead state
+and at others driving deviation from it. More work connecting deviations
+from steady state to ecological and evolutionary drivers will be needed
+to further test these possibilities.
 
 \subsection{Methods}\label{methods}
 
@@ -363,7 +363,7 @@ data analyzed here are available via the package as described in
 \ssec{sec-setup}.
 
 Arthropod data come from the original publication by Gruner (2007), a
-study that collected 17024 specimens across the Hawaiian chronosequence
+study that collected 17024 specimens across the Hawaiʻi chronosequence
 Figure~\ref{fig-chrono}. Study sites in Gruner (2007) where standardized
 to be climatically homogeneous, seeking to capture differences in
 arthropod assemblages due to substrate age and not other abiotic
@@ -459,15 +459,14 @@ ratio of observed proportion of individuals with a scaled metabolism of
 less than 3 to its prediction, and the log ratio of the observed sum of
 metabolic rates for the top 10 individuals to its prediction.
 
-\subsection{Statistical analysis of deviations from METE and potential
-explanatory
+\subsubsection{Statistical analysis of deviations from METE and
+potential explanatory
 variables}\label{statistical-analysis-of-deviations-from-mete-and-potential-explanatory-variables}
 
 We first evaluate how deviations from METE, as measured by
 \(z^2\)-values, vary across the chronosequence. We then test for
 relationships between \(z^2\)-values and proportion of non-native
-species at a site as well as within site, between sample dissimilarity
-or \(\beta\)-diversity.
+species at a site as well as within site \(\beta\)-diversity.
 
 For all these analyses we fit linear models predicting log-transformed
 \(z^2\)-values responding to each explanatory variable: substrate age,
@@ -494,20 +493,21 @@ variance is the same technique used in meta-analyses. We therefore make
 use of the \emph{metafor} package (Viechtbauer 2010) in fitting testing
 these models.
 
-\subsection{\texorpdfstring{Calculating
+\subsubsection{\texorpdfstring{Calculating
 \(\beta\)-diversity}{Calculating \textbackslash beta-diversity}}\label{calculating-beta-diversity}
 
-To quantify within site, between sample \(\beta\)-diversity we first
-calculate mean Bray-Curtis dissimilarity between samples and then, to
-standardize \(\beta\)-diversity measures across sites, we normalize mean
+To quantify within site \(\beta\)-diversity as the mean dissimilarity
+between samples within a site. We first calculate mean Bray-Curtis
+dissimilarity between samples and then, to standardize
+\(\beta\)-diversity measures across sites, we normalize mean
 dissimilarity to a null model. We use the \texttt{quasiswap\_count}
 algorithm implemented in \emph{vegan} (Oksanen \emph{et al.} 2025) to
 generate null samples. This algorithm preserves row and column sums of a
 sample by species matrix and also seeks to maintain null matrix fill
 close to the observed fill thereby mimicking patchiness in the real
-data. We use 500 null sample by species matrices to generate null models
-for each site. Then normalized within site, between sample
-\(\beta\)-diversity was calculated as a z-score
+data. Within each site we use 500 null sample-by-species matrices to
+generate null models for each site. The final measure of within site
+\(\beta\)-diversity is then calculated as a z-score
 
 \[
 \text{Normalized }\beta = \frac{\text{BC}_\text{obs} - \mu_\text{null}}{\sigma_\text{null}}
@@ -521,23 +521,29 @@ of the null distribution.
 We are also interested in understanding how native and non-native
 species contribute to the overall mean dissimilarity at a site. We can
 do this by partitioning Bray Curtis dissimilarity between native and
-non-native groups of species. \ssec{sec-part} provides the mathematical
-and computational details of how we do this. The end result of
-partitioning Bray-Curtis dissimilarity between native and non-native
-species is that we have a ratio of within site \(\beta\)-diversity
-attributable to native species to that attributable to non-native
-species. We take the log of this ratio such that equal contributions of
-native and non-native species yields a log ratio of 0.
+non-native groups of species. The end result of partitioning Bray Curtis
+is two dissimilarity values (one for native species, one for
+non-natives) that add to the total dissimilarity at a site.
+\ssec{sec-part} provides the mathematical and computational details of
+how we do this.
 
 We also compare this Bray Curtis dissimilarity partitioning to a null
-model. Here the \texttt{quasiswap\_count} algorithm will not work
-because it permutes individuals across species as well as sites. Instead
-we want to only shuffle the label of each species: native or non-native.
-But we still need to maintain, at least probabilistically, attributes of
-the data that might confound null model analysis. Specifically, we
-should seek to maintain, in probability, the distribution of abundances
-of native and non-native species. We wrote a custom algorithm to do this
-in the \emph{HawaiiArthMETE} package and described in \ssec{sec-bart}.
+model. We again use the \texttt{quasiswap\_count} algorithm but must
+constrain the algorithm to permute only inside submatrices (one for
+native species, another for non-natives). This additional constraint is
+to ensure that the distributions of native and non-native abundances
+across sites are preserved in permuted and observed site-by-species
+matrices. We wrote custom code to do this in the \emph{HawaiiArthMETE}
+package and described in \ssec{sec-bart}.
+
+Comparing observed Bray Curtis dissimilarity partitions to their
+permutational null counterparts yields a z-score for the partitioned
+dissimilarities. While partitions of Bray Curtis dissimilarity perfectly
+add to equal the overall dissimilarity, these z-scores will not
+perfectly add to the previously described overall dissimilarity z-scores
+because the partitioned z-scores are calculated from a null model with
+additional constraints (considering native and non-native species)
+compared to the overall z-scores.
 
 \subsection{Results}\label{results}
 
@@ -558,66 +564,45 @@ match the color coding of substrate age in Figure~\ref{fig-chrono}.}
 
 \end{figure}%
 
-Deviations from METE in the SAD an IPD both peak at middle aged sites
-along the chronosequence Figure~\ref{fig-z2-chrono}. This is supported
-by a likelihood ratio test comparing a quadratic model of \(z^2\)-values
-to an intercept-only model. For SAD \(z^2\)-values the LRT statistic is
-\(\Lambda =\) 28.7299696 with \(d.f. =\) 2 and \(P\) \textless{} 0.0001.
-For IPD \(z^2\)-values the LRT statistic is \(\Lambda =\) 5.5130141 with
-\(d.f. =\) 2 and \(P\) = 0.0635.
+Deviations from METE in the SAD an IPD are largely in agreement: samples
+with high \(z^2\)-values for the SAD tend to have high \(z^2\)-values
+for the IPD (see \sfig{fig-z2-cor}). The \(z^2\)-values for both
+distributions peak at middle aged sites along the chronosequence
+Figure~\ref{fig-z2-chrono}. For the SAD this is supported by a
+likelihood ratio test comparing a quadratic model of \(z^2\)-values to
+an intercept-only model with LRT statistic \(\Lambda =\) 28.7299696,
+\(d.f. =\) 2, and \(P\) \textless{} 0.0001.
 
-\begin{verbatim}
-$QM
-[1] 28.72997
+The overall spread of IPD \(z^2\)-values is greater than that of SAD
+\(z^2\)-values. Not surprisingly, for quadratic model of IPD
+\(z^2\)-values across the chronosequence, the LRT statistic is
+\(\Lambda =\) 5.5130141 with \(d.f. =\) 2 and \(P\) = 0.0635. While the
+\(P\)-value for the test of the quadratic model for IPD \(z^2\)-values
+just misses the \(\leq 0.05\) significance cut off by the likelihood
+ratio test, the less conservative Wald test does show the quadratic term
+to be significant with a 95\% confidence interval of {[}-0.154,
+-0.014{]}, which does not overlap 0.
 
-$QMdf
-[1]  2 NA
+For the SAD, the primary driver of differences between METE predictions
+and observed patterns is that observed species abundances have both a
+higher proportion of singletons and a larger concentration of abundance
+in the most abundant species Figure~\ref{fig-how-z2} compared to METE.
+Taken together, this means that observed SADs are more uneven than those
+predicted by METE.
 
-$QMp
-[1] 5.772532e-07
-
-$btt
-[1] 2 3
-
-$k
-[1] 5
-
-$p
-[1] 3
-
-$m
-[1] 2
-
-$test
-[1] "z"
-
-$digits
-  est    se  test  pval    ci   var sevar   fit   het 
-    4     4     4     4     4     4     4     4     4 
-
-$type
-[1] "Wald.btt"
-
-$class
-[1] "rma.uni" "rma"    
-
-attr(,"class")
-[1] "anova.rma"
-\end{verbatim}
-
-\begin{itemize}
-\tightlist
-\item
-  deviations for SAD and IPD peak at middle age
-\item
-  deviations for IPD larger overall
-\item
-  deviations of SAD are because of more unevenness (more singletons and
-  more hyper abundant species)
-\item
-  no consistent relationship between IDP deviations and the extremes of
-  the distribution (deviation is in the middle)
-\end{itemize}
+For the IPD there is not a consistent relationship between deviations
+and the tails of the metabolic rate distribution
+Figure~\ref{fig-how-z2}. In terms of proportion of individuals with very
+low metabolisms, 19 samples showed theory over-predicting this
+proportion while 27 samples showed theory under-predicting this
+proportion. The difference was not significant by a binomial generalized
+linear model of over-versus-under prediction grouped by site (z =
+-1.173, \(P\) = \texttt{r}round(summary(p1\_mod)\$coefficients{[}4{]},
+3)`). In terms of concentration of metabolic rate in the most
+metabolically active individuals, 24 samples showed theory
+over-predicting this concentration while 24 samples showed theory
+under-predicting this concentration. With the two numbers exactly equal,
+the difference could not be significant.
 
 \begin{figure}
 
@@ -633,8 +618,8 @@ and METE predictions diverge.}
 
 \end{figure}%
 
-\subsection{\texorpdfstring{Deviations from METE predicted by non-native
-species and
+\subsubsection{\texorpdfstring{Deviations from METE predicted by
+non-native species and
 \(\beta\)-diversity}{Deviations from METE predicted by non-native species and \textbackslash beta-diversity}}\label{deviations-from-mete-predicted-by-non-native-species-and-beta-diversity}
 
 \begin{figure}
@@ -651,15 +636,36 @@ non-native species and \(\beta\)-diversity.}
 
 \end{figure}%
 
-\begin{itemize}
-\tightlist
-\item
-  deviations are predicted by proportion of non-natives
-\item
-  deviations are predicted by dissimilarity
-\end{itemize}
+The proportion of non-native species at a site has a significant linear
+relationship with both SAD and IPD \(z^2\)-values when excluding Kīlauea
+Figure~\ref{fig-pred}. For the SAD the LRT of the linear model with
+positive slope versus the intercept only model is \(\Lambda =\) 22.329
+with \(d.f. =\) 1 and \(P =\) \textless{} 0.001. For the IPD the LRT of
+the linear model with positive slope versus the intercept only model is
+\(\Lambda =\) 5.262 with \(d.f. =\) 1 and \(P =\) 0.022.
 
-\subsection{\texorpdfstring{Partitioning \(\beta\)-diversity across
+Kīlauea is an interesting outlier in both the SAD and IPD \(z^2\)-values
+relationships with proportion non-native species. In the case of the
+SAD, the 95\% confidence interval for the mean of Kīlauea \(z^2\)-values
+is well below the 95\% confidence envelope of the overall relationship
+Figure~\ref{fig-pred}. In the case of the IPD, the 95\% the mean of
+Kīlauea \(z^2\)-values is below the 95\% confidence envelope of the
+overall relationship, but the confidence interval and envelope do
+partially overlap Figure~\ref{fig-pred}. This is a strong suggestion
+that the effect of non-native species at Kīlauea is distinct from other
+sites. We unpack that possibility further in our analysis of
+\(\beta\)-diversity.
+
+Within site \(\beta\)-diversity has a significant positive linear
+relationship with the \(z^2\)-values of both the SAD and IPD. For the
+SAD the LRT of the linear model with positive slope versus the intercept
+only model is \(\Lambda =\) 29.9677751, \(d.f. =\) 1, and \(P\)
+\textless{} 0.0001. For the IPD the LRT of the linear model with
+positive slope versus the intercept only model is \(\Lambda =\)
+5.4708497, \(d.f. =\) 1, and \(P\) = 0.0193. There are no clear outlier
+sites in the relationship of \(z^2\)-values and \(\beta\)-diversity.
+
+\subsubsection{\texorpdfstring{Partitioning \(\beta\)-diversity across
 native and non-native
 species}{Partitioning \textbackslash beta-diversity across native and non-native species}}\label{partitioning-beta-diversity-across-native-and-non-native-species}
 
@@ -679,37 +685,105 @@ compared to chance.}
 
 \end{figure}%
 
-\begin{itemize}
-\tightlist
-\item
-  something is going on at Kīlauea
-\end{itemize}
+Kīlauea is an outlier in the relationship between proportion of
+non-native species and \(z^2\)-values but not an outlier in the
+relationship between \(\beta\)-diversity and \(z^2\)-values. To help
+understand why we partition native and non-native species' contributions
+to \(\beta\)-diversity. We find that while Kīlauea has a high proportion
+of non-native species, it also has a low \(\beta\)-diversity, and
+non-native species contribute negatively, compared to the null, to that
+low \(\beta\)-diversity Figure~\ref{fig-bray-part}. Taking these
+insights together, Kīlauea has many non-native species, but those
+species are distributed very homogenously across samples. The oldest
+site Alakaʻi reverses this pattern: native species contribute negatively
+to the overall (low) \(\beta\)-diversity at that site.
+
+The oldest (Alakaʻi) and youngest (Kīlauea) sites contrast with
+Laupāhoehoe, Kohala, and Kamakou sites where both native and non-native
+species make positive contributions to \(\beta\)-diversity. In Kohala
+and Kamakou the positive contribution of native species is substantially
+larger than non-natives, whereas in Laupāhoehoe the contribution of
+non-natives is larger.
 
 \subsection{Discussion}\label{discussion}
 
-\begin{itemize}
-\tightlist
-\item
-  dissimilarity as instability
-\item
-  possible causes of instability---adaptive radiation
-\item
-  presents future hypothesis to test with genetic data
-\item
-  hypotheses
+Real data deviate from both the METE-predicted SAD and IPD in consistent
+ways across the Hawaiʻi chronosequence Figure~\ref{fig-z2-chrono}. This
+is strong (sensu McGill 2003) evidence of meaningful departures from the
+steady state assumptions of METE due to biological processes not
+accounted for in the deliberately simple state variables of the theory.
+Deviations in the SAD are consistently in the direction of theory
+under-predicting unevenness Figure~\ref{fig-how-z2}. In one way, this
+result is surprising given that METE predicts a log-series distribution
+(Harte 2011) which is already one of the most uneven theoretical SAD
+shapes. However, recent extensive investigation of empirical SADs has
+found that deviations from statistical baselines akin to METE are often
+in the direction of more unevenness (Diaz \emph{et al.} 2021). As
+pointed out in Diaz \emph{et al.} (2021), deviations toward more
+unevenness could be accounted for by processes that increase the
+prevalence of rare species, and/or that increase the abundance of common
+species. Both niche-based (Chesson 2000; Yenni \emph{et al.} 2012) and
+stochastic dispersal-based (Gotelli 1991) mechanisms could be valid
+causes of such processes.
 
-  \begin{itemize}
-  \tightlist
-  \item
-    diversification drives divergence; diversification slowed down on
-    older flows
-  \item
-    invasion drives divergence
-  \item
-    both do and they interact, perhaps even conditions favoring
-    diversification favor invasion too
-  \end{itemize}
-\end{itemize}
+Both the proportion of non-native species and the geologic age of the
+lava flow at a site predict deviations from METE, but in subtly
+different yet important ways. Across four out of five sites (all but the
+geologically youngest) deviations from METE increase with the proportion
+of non-native species Figure~\ref{fig-pred}. The geologically youngest
+site, Kīlauea, breaks this pattern with a high proportion of non-native
+species but a small deviation from METE. Across all five sites
+deviations from METE are consistently predicted by within site
+\(\beta\)-diversity Figure~\ref{fig-pred}. Both \(\beta\)-diversity and
+proportion of non-native species point to instability being a driver of
+deviation from METE.
+
+The fact that geologic age seems to modulate the effect of proportion of
+non-native species but not within site \(\beta\)-diversity begs the
+question of how age, biological invasion, and \(\beta\)-diversity relate
+to each other. \(\beta\)-diversity partitions unequally between native
+and non-native species across the chronosequence
+Figure~\ref{fig-bray-part}. Kīlauea, the youngest site, sees non-native
+species contributing negatively (compared to the null) to overall
+\(\beta\)-diversity, leaving native species making the only positive
+contribution to overall \(\beta\)-diversity. The contributions of native
+and non-native species to the \(\beta\)-diversity at the oldest site
+Alakaʻi are reversed. But at both sites overall \(\beta\)-diversity is
+low. Thus low \(\beta\)-diversity seems responsible for the low
+deviation from METE at these sites. The high proportion of non-native
+species at Kīlauea is not consequential because those non-native species
+are very homogeneously distributed.
+
+The opposite \(\beta\)-diversity contributions of native and non-native
+species at opposite ends of the chronosequence hints at a mechanistic
+possibility to explain low \(\beta\)-diversity and low deviation from
+METE. The assembly of the young Kīlauea site could be dominated by
+dispersal, which would be consistent with its age, and if dispersal is
+high, also consistent with low \(\beta\)-diversity accounted for by
+native species. Conversely, the oldest Alakaʻi site could represent the
+outcome of \textgreater{} 4 million years of eco-evolutionary assembly
+resulting in assemblages that are stable due to niche partitioning and
+maximized fitness within niches (Barabás \emph{et al.} 2018; Chesson
+2000; Godoy \emph{et al.} 2014). This would again result in low
+\(\beta\)-diversity, with newly arriving non-native species mostly
+contributing to that low \(\beta\)-diversity, and result in steady state
+(i.e.~low deviation from METE).
+
+In between these mechanistic end points, our findings are consistent
+with the hypothesis that dispersal-assembled communities in an unstable
+steady state undergo a non-steady state transition via evolutionary
+diversification to a stable steady state. This hypothesis is consistent
+with our findings across the chronosequence from young to old sites.
+Young sites, by definition, have not had sufficient time for
+diversification and must be assembled by dispersal from source
+populations. This hypothesis is, however, only suggested by our work and
+would require further data collection and testing to support. In
+particular, extensive population genetic study would be needed to
+confirm the purported history of dispersal at young sites, population
+bifurcation leading to diversification at middle aged sites, and
+population stability at older sites. New molecular techniques may soon
+make such study a reality {[}e.g. Weitemier \emph{et al.} (2021);
+manel2025{]}.
 
 \subsection*{References}\label{references}
 \addcontentsline{toc}{subsection}{References}
@@ -721,6 +795,10 @@ Baldwin, B.G. \& Sanderson, M.J. (1998).
 \href{https://doi.org/10.1073/pnas.95.16.9402}{Age and rate of
 diversification of the {Hawaiian} silversword alliance ({Compositae})}.
 \emph{Proceedings of the National Academy of Sciences}, 95, 9402--9406.
+
+\bibitem[\citeproctext]{ref-barabas2018}
+Barabás, G., D'Andrea, R. \& Stump, S.M. (2018). Chesson's coexistence
+theory. \emph{Ecological monographs}, 88, 277--303.
 
 \bibitem[\citeproctext]{ref-barton2021}
 Barton, K.E., Westerband, A., Ostertag, R., Stacy, E., Winter, K.,
@@ -741,6 +819,15 @@ Chadwick, O.A., Derry, L.A., Vitousek, P.M., Huebert, B.J. \& Hedin,
 L.O. (1999). Changing sources of nutrients during four million years of
 ecosystem development. \emph{Nature}, 397, 491--497.
 
+\bibitem[\citeproctext]{ref-chesson2000}
+Chesson, P. (2000). Mechanisms of maintenance of species diversity.
+\emph{Annual review of Ecology and Systematics}, 31, 343--366.
+
+\bibitem[\citeproctext]{ref-diaz2021}
+Diaz, R.M., Ye, H. \& Ernest, S.M. (2021). Empirical abundance
+distributions are more uneven than expected given their statistical
+baseline. \emph{Ecology Letters}, 24, 2025--2039.
+
 \bibitem[\citeproctext]{ref-gillespie2004}
 Gillespie, R.G. (2004).
 \href{https://doi.org/10.1126/science.1091875}{Community assembly
@@ -759,12 +846,22 @@ and diversification of the {Hawaiian} lobeliads ({Asterales}:
 {Campanulaceae})}. \emph{Proceedings of the Royal Society B: Biological
 Sciences}, 276, 407--416.
 
+\bibitem[\citeproctext]{ref-godoy2014}
+Godoy, O., Kraft, N.J. \& Levine, J.M. (2014). Phylogenetic relatedness
+and the determinants of competitive outcomes. \emph{Ecology letters},
+17, 836--844.
+
 \bibitem[\citeproctext]{ref-gon2018}
 Gon, S.M., Tom, S.L. \& Woodside, U. (2018).
 \href{https://doi.org/10.3390/su10103420}{`Āina momona, honua au
 loli---{Productive} lands, changing world: Using the {Hawaiian}
 footprint to inform biocultural restoration and future sustainability in
 {Hawai`i}}. \emph{Sustainability}, 10, 3420.
+
+\bibitem[\citeproctext]{ref-gotelli1991}
+Gotelli, N.J. (1991). Metapopulation models: The rescue effect, the
+propagule rain, and the core-satellite hypothesis. \emph{The American
+Naturalist}, 138, 768--776.
 
 \bibitem[\citeproctext]{ref-graham2017}
 Graham, N.R., Gruner, D.S., Lim, J.Y. \& Gillespie, R.G. (2017). Island
@@ -906,6 +1003,16 @@ as a model system}. Princeton University Press, Princeton, NJ.
 \bibitem[\citeproctext]{ref-wagner-funk1995}
 Wagner, W.L. \& Funk, V.A. (1995). \emph{Hawaiian biogeography:
 Evolution on a hot spot archipelago}.
+
+\bibitem[\citeproctext]{ref-weitemier2021}
+Weitemier, K., Penaluna, B.E., Hauck, L.L., Longway, L.J., Garcia, T. \&
+Cronn, R. (2021). Estimating the genetic diversity of pacific salmon and
+trout using multigene eDNA metabarcoding. \emph{Molecular Ecology}, 30,
+4970--4990.
+
+\bibitem[\citeproctext]{ref-yenni2012}
+Yenni, G., Adler, P.B. \& Ernest, S.M. (2012). Strong self-limitation
+promotes the persistence of rare species. \emph{Ecology}, 93, 456--461.
 
 \end{CSLReferences}
 
