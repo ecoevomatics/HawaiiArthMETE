@@ -691,7 +691,7 @@ $$
 d_{kj} = \frac{\sum_i |x_{ij}^{(a)} - x_{ik}^{(a)}|}{\sum_{ij} x_{ij} + x_{ik}} + \frac{\sum_i |x_{ij}^{(b)} - x_{ik}^{(b)}|}{\sum_{ij} x_{ij} + x_{ik}}
 $$
 
-Now we can look separately at the contribution of group $(a)$ and group $(b)$ to the overall dissimilarity. We use this approach to compare the contributions of native and non-native taxa to overall dissimilarity. We again make use of a permutational null model to compare these contributions. This null model cannot be the same as the null model used to calculate z scores for overall dissimilarity because that null model shuffled species across samples and individuals across species. Instead, we want to shuffle group labels (native or non-native) across species. The custom function `bray_part_z` calculates these z scores using another custom function `cswap` from *HawaiiArthMETE*.
+Now we can look separately at the contribution of group $(a)$ and group $(b)$ to the overall dissimilarity. We use this approach to compare the contributions of native and non-native taxa to overall dissimilarity. We again make use of the `quasiswap_count` permutational null model to standardize these contributions. However, we must permute the two submatrices (one for native species, one for non-natives) separately in order to preserve the distribution of native and non-native individuals across sites. We can then combine these separately permuted submatrices and partition dissimilarity. Comparing observed Bray Curtis partitions to their null counterparts gives us a z-score standardized view of how native and non-native species contributed to overall dissimilarity. The custom function `bray_part_z` from *HawaiiArthMETE* calculates these z scores.
 
 
 ```{r}

@@ -64,6 +64,16 @@ knitr::opts_chunk$set(fig.width = 5.5, fig.height = 4,
 
 ```
 
+```{r}
+#| label: supp
+#| include: false
+#| cache: true
+#| cache.extra: !expr file.info("hawaii-arth-mete-supp.qmd")$mtime
+
+# render the supplement so can be referenced and used in main
+quarto::quarto_render("hawaii-arth-mete-supp.qmd", quiet = FALSE)
+```
+
 ## Introduction
 
 Biodiversity patterns are bound by two seemingly contradictory states: they show striking consistency in form across systems, and yet also must emerge in spite of, or because of, the constant flux and dynamic change of ecology and evolution. The near universality of biodiversity patterns includes the scaling of species richness with area, the ubiquity of rare spaces and scarcity of common species, and the highly skewed distribution of biomass or metabolic resource use across organisms. Debate has persisted for over a century as to whether these consistent patterns form because of ecological and evolutionary drivers that force systems into these configurations, or are largely the outcome of chance acting on large systems of constituent parts. The former gives rise to niche-based theories of coexistence, while that later has produced a number of neutral-like models.
@@ -229,7 +239,7 @@ We also quantify the difference between METE predictions and observed SADs and I
 
 
 
-## Statistical analysis of deviations from METE and potential explanatory variables
+### Statistical analysis of deviations from METE and potential explanatory variables
 
 We first evaluate how deviations from METE, as measured by $z^2$-values, vary across the chronosequence. We then test for relationships between $z^2$-values and proportion of non-native species at a site as well as within site, between sample dissimilarity or $\beta$-diversity.
 
@@ -239,7 +249,7 @@ When modeling deviations from METE, we have two statistical challenges to addres
 
 To address these challenges we model the site-level mean and variance rather than each individual sample within each site. This is the most conservative approach but runs the risk of being under-powered because while we have `r nrow(unique(arth[, c("site", "tree")]))` samples, we only have `r n_distinct(arth$site)` sites. Modeling mean and variance is the same technique used in meta-analyses. We therefore make use of the *metafor* package [@metafor] in fitting testing these models.
 
-## Calculating $\beta$-diversity
+### Calculating $\beta$-diversity
 
 To quantify within site, between sample $\beta$-diversity we first calculate mean Bray-Curtis dissimilarity between samples and then, to standardize $\beta$-diversity measures across sites, we normalize mean dissimilarity to a null model. We use the `quasiswap_count` algorithm implemented in *vegan* [@vegan] to generate null samples. This algorithm preserves row and column sums of a sample by species matrix and also seeks to maintain null matrix fill close to the observed fill thereby mimicking patchiness in the real data. We use 500 null sample by species matrices to generate null models for each site. Then normalized within site, between sample $\beta$-diversity was calculated as a z-score
 
@@ -249,9 +259,11 @@ $$
 
 where $BC_\text{obs}$ is the observed mean Bray-Curtis dissimilarity between samples within a site, $\mu_\text{null}$ is the mean of the null distribution, and $\sigma_\text{null}$ is the standard deviation of the null distribution.
 
-We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray Curtis dissimilarity between native and non-native groups of species. \ssec{sec-part} provides the mathematical and computational details of how we do this. The end result of partitioning Bray-Curtis dissimilarity between native and non-native species is that we have a ratio of within site $\beta$-diversity attributable to native species to that attributable to non-native species. We take the log of this ratio such that equal contributions of native and non-native species yields a log ratio of 0.
+We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray Curtis dissimilarity between native and non-native groups of species. The end result of partitioning Bray Curtis is two dissimilarity values (one for native species, one for non-natives) that add to the total dissimilarity at a site. \ssec{sec-part} provides the mathematical and computational details of how we do this. 
 
-We also compare this Bray Curtis dissimilarity partitioning to a null model. Here the `quasiswap_count` algorithm will not work because it permutes individuals across species as well as sites. Instead we want to only shuffle the label of each species: native or non-native. But we still need to maintain, at least probabilistically, attributes of the data that might confound null model analysis. Specifically, we should seek to maintain, in probability, the distribution of abundances of native and non-native species. We wrote a custom algorithm to do this in the *HawaiiArthMETE* package and described in \ssec{sec-bart}.
+We also compare this Bray Curtis dissimilarity partitioning to a null model. We again use the `quasiswap_count` algorithm but must constrain the algorithm to permute only inside submatrices (one for native species, another for non-natives). This additional constraint is to ensure that the distributions of native and non-native abundances across sites are preserved in permuted and observed site-by-species matrices. We wrote custom code to do this in the *HawaiiArthMETE* package and described in \ssec{sec-bart}.
+
+Comparing observed Bray Curtis dissimilarity partitions to their permutational null counterparts yields a z-score for the partitioned dissimilarities. While partitions of Bray Curtis dissimilarity perfectly add to equal the overall dissimilarity, these z-scores will not perfectly add to the previously described overall dissimilarity z-scores because the partitioned z-scores are calculated from a null model with additional constraints (considering native and non-native species) compared to the overall z-scores.
 
 ## Results
 
@@ -283,7 +295,8 @@ fig_z2_chrono
 
 Deviations from METE in the SAD an IPD are largely in agreement: samples with high $z^2$-values for the SAD tend to have high $z^2$-values for the IPD (see \sfig{fig-z2-cor}). The $z^2$-values for both distributions peak at middle aged sites along the chronosequence [@fig-z2-chrono]. For the SAD this is supported by a likelihood ratio test comparing a quadratic model of $z^2$-values to an intercept-only model with LRT statistic $\Lambda =$ `r sad_lrt_chrono$QM`, $d.f. =$ `r sad_lrt_chrono$QMdf[1]`, and $P$ `r ifelse(sad_lrt_chrono$QMp < 0.0001, "< 0.0001", paste("= ", round(sad_lrt_chrono$QMp, 4)))`. 
 
-The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values. Not surprisingly, for quadratic model of IPD $z^2$-values across the chronosequence, the LRT statistic is $\Lambda =$ `r ipd_lrt_chrono$QM` with $d.f. =$ `r ipd_lrt_chrono$QMdf[1]` and $P$ `r ifelse(ipd_lrt_chrono$QMp < 0.0001, "< 0.0001", paste("= ", round(ipd_lrt_chrono$QMp, 4)))`. While the $P$-value for the test of the quadratic model for IPD $z^2$-values just misses the $\leq 0.05$ significance cut off by the likelihood ratio test, the less conservative Wald test does show the quadratic term to be significant with a 95% confidence interval of `r confint(ipd_rma_chrono, fixed = TRUE, random = FALSE) |> (`[[`)("fixed") |> (`[`)(3, 2:3) |> round(3) |> paste(collapse = ", ") |> (\(x) sprintf("[%s]", x))()`, which does not overlap 0.
+The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values. Not surprisingly, for quadratic model of IPD $z^2$-values across the chronosequence, the LRT statistic is $\Lambda =$ `r ipd_lrt_chrono$QM` with $d.f. =$ `r ipd_lrt_chrono$QMdf[1]` and $P$ `r ifelse(ipd_lrt_chrono$QMp < 0.0001, "< 0.0001", paste("= ", round(ipd_lrt_chrono$QMp, 4)))`. While the $P$-value for the test of the quadratic model for IPD $z^2$-values just misses the $\leq 0.05$ significance cut off by the likelihood ratio test, the less conservative Wald test does show the quadratic term to be significant with a 95% confidence interval of `r confint(ipd_rma_chrono, fixed = TRUE, random = FALSE)[["fixed"]][3, 2:3] |> round(3) |> paste(collapse = ", ") |> (function(x) sprintf("[%s]", x))()`, which does not overlap 0.
+
 
 For the SAD, the primary driver of differences between METE predictions and observed patterns is that observed species abundances have both a higher proportion of singletons and a larger concentration of abundance in the most abundant species [@fig-how-z2] compared to METE. Taken together, this means that observed SADs are more uneven than those predicted by METE.
 
@@ -328,11 +341,11 @@ plot_grid(f_non, f_dis, rel_widths = c(1, 1.25))
 
 ```
 
-The proportion of non-native species at a site has a significant linear relationship with both SAD and IPD z2v when excluding Kīlauea [@fig-pred]. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$.
+The proportion of non-native species at a site has a significant linear relationship with both SAD and IPD $z^2$-values when excluding Kīlauea [@fig-pred]. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $\Lambda =$ `r round(sad_lrt_non$QM, 3)` with $d.f. =$ `r sad_lrt_non$QMdf[1]` and $P =$ `r ifelse(sad_lrt_non$QMp < 0.0001, "< 0.001", as.character(round(sad_lrt_non$QMp, 3)))`. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $\Lambda =$ `r round(ipd_lrt_non$QM, 3)` with $d.f. =$ `r ipd_lrt_non$QMdf[1]` and $P =$ `r ifelse(ipd_lrt_non$QMp < 0.0001, "< 0.001", as.character(round(ipd_lrt_non$QMp, 3)))`.
 
-Kīlauea is an interesting outlier in both the SAD and IPD z2v relationships with proportion non-native species. In the case of the SAD, the 95% confidence interval for the mean of Kīlauea z2v is well below the 95% confidence envelope of the overall relationship [@fig-pred]. In the case of the IPD, the 95% the mean of Kīlauea z2v is below the 95% confidence envelope of the overall relationship, but the confidence interval and envelope do partially overlap [@fig-pred]. This is a strong suggestion that the effect of non-native species at Kīlauea is distinct from other sites. We unpack that possibility further in our analysis of $\beta$-diversity.
+Kīlauea is an interesting outlier in both the SAD and IPD $z^2$-values relationships with proportion non-native species. In the case of the SAD, the 95% confidence interval for the mean of Kīlauea $z^2$-values is well below the 95% confidence envelope of the overall relationship [@fig-pred]. In the case of the IPD, the 95% the mean of Kīlauea $z^2$-values is below the 95% confidence envelope of the overall relationship, but the confidence interval and envelope do partially overlap [@fig-pred]. This is a strong suggestion that the effect of non-native species at Kīlauea is distinct from other sites. We unpack that possibility further in our analysis of $\beta$-diversity.
 
-The between sample $\beta$-diversity at a site has a significant positive linear relationship with the z2v of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$. There are no clear outlier sites in the relationship of z2v and $\beta$-diversity.
+The between sample $\beta$-diversity at a site has a significant positive linear relationship with the $z^2$-values of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$. There are no clear outlier sites in the relationship of $z^2$-values and $\beta$-diversity.
 
 ## Partitioning $\beta$-diversity across native and non-native species
 
@@ -349,9 +362,9 @@ The between sample $\beta$-diversity at a site has a significant positive linear
 fig_bray_part
 ```
 
-In an effort to understand why Kīlauea is an outlier in the relationship between proportion of non-native species and z2v but not an outlier in the relationship between $\beta$-diversity and z2v we partition native and non-native species' contributions to $\beta$-diversity. We find that while Kīlauea has a high proportion of non-native species, it also has a low between sample $\beta$-diversity, and non-native species contribute disproportionately more, compared to the null, to that low $\beta$-diversity. Taking these insights together, Kīlauea has many non-native species, but those species are distributed very homogenously across samples. 
+Kīlauea is an outlier in the relationship between proportion of non-native species and $z^2$-values but not an outlier in the relationship between $\beta$-diversity and $z^2$-values. To help understand why we partition native and non-native species' contributions to $\beta$-diversity. We find that while Kīlauea has a high proportion of non-native species, it also has a low between sample $\beta$-diversity, and non-native species contribute negatively, compared to the null, to that low $\beta$-diversity [@fig-bray-part]. Taking these insights together, Kīlauea has many non-native species, but those species are distributed very homogenously across samples. The oldest site Alakaʻi reverses this pattern: native species contribute negatively to the overall (low) $\beta$-diversity at that site.
 
-Kīlauea and Alakaʻi are similar in that they have low $\beta$-diversity, a disproportionate contribution of non-native species to what $\beta$-diversity they do have, and low overall deviation from METE. 
+The oldest (Alakaʻi) and youngest (Kīlauea) sites contrast with Laupāhoehoe, Kohala, and Kamakou sites where both native and non-native species make positive contributions to $\beta$-diversity. In Kohala and Kamakou the positive contribution of native species is substantially larger than non-natives, whereas in Laupāhoehoe the contribution of non-natives is larger.
 
 
 ## Discussion
