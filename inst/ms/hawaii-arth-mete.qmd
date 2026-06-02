@@ -315,7 +315,7 @@ fig_how_z2
 ```
 
 
-## Deviations from METE predicted by non-native species and $\beta$-diversity
+### Deviations from METE predicted by non-native species and $\beta$-diversity
 
 
 ```{r}
@@ -347,7 +347,7 @@ Kīlauea is an interesting outlier in both the SAD and IPD $z^2$-values relation
 
 The between sample $\beta$-diversity at a site has a significant positive linear relationship with the $z^2$-values of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$. There are no clear outlier sites in the relationship of $z^2$-values and $\beta$-diversity.
 
-## Partitioning $\beta$-diversity across native and non-native species
+### Partitioning $\beta$-diversity across native and non-native species
 
 
 ```{r}
