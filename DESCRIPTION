@@ -8,11 +8,22 @@ LazyData: true
 Encoding: UTF-8
 Depends:
     R (>= 4.0)
-Imports: 
+Imports:
     meteR,
-    dplyr, 
+    dplyr,
     ggplot2,
     scales,
-    cowplot
+    cowplot,
+    vegan,
+    metafor,
+    reformulas,
+    tidyselect
+Suggests:
+    ggh4x,
+    tidyr,
+    sf,
+    colorspace,
+    quarto,
+    knitr
 RoxygenNote: 7.3.2
 VignetteBuilder: knitr
