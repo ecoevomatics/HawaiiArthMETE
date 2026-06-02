@@ -596,7 +596,8 @@ sad_rma_diss <- site_means_lm(log(z2_sad) ~ mean_diss + (1 | site),
                               data = mete_by_diss)
 
 # sad likelihood ratio test
-anova(sad_rma_diss)
+sad_lrt_diss <- anova(sad_rma_diss)
+sad_lrt_diss
 
 
 # ipd regression 
@@ -604,8 +605,8 @@ ipd_rma_diss <- site_means_lm(log(z2_ipd) ~ mean_diss + (1 | site),
                               data = mete_by_diss)
 
 # ipd likelihood ratio test
-anova(ipd_rma_diss)
-
+ipd_lrt_diss <- anova(ipd_rma_diss)
+ipd_lrt_diss
 
 ```
 
