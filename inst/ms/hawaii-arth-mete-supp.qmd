@@ -1,5 +1,5 @@
 ---
-title: "Supplement to \"Eco-evolutionary deviations from steady state across the Hawaiian chronosequence from a maximum entropy perspective\""
+title: "Supplement to \"Eco-evolutionary deviations from steady state across the Hawaiʻi chronosequence revealed with a maximum entropy perspective\""
 format: 
   pdf:
     number-sections: true
