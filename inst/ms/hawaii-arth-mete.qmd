@@ -1,5 +1,5 @@
 ---
-title: "Eco-evolutionary deviations from steady state across the Hawaiian chronosequence revealed with a maximum entropy perspective"
+title: "Eco-evolutionary deviations from steady state across the Hawaiʻi chronosequence revealed with a maximum entropy perspective"
 author:
   - name: Andrew J. Rominger
     orcid: 0000-0003-3755-4480
@@ -74,13 +74,26 @@ knitr::opts_chunk$set(fig.width = 5.5, fig.height = 4,
 quarto::quarto_render("hawaii-arth-mete-supp.qmd", quiet = FALSE)
 ```
 
+```{r}
+#| label: supp-read
+#| include: false
+
+ff <- list.files("hawaii-arth-mete-supp_cache/pdf/", pattern = ".RData", 
+                 full.names = TRUE) |> 
+    gsub(".RData", "", x = _)
+
+for(f in ff) {
+    lazyLoad(f)
+}
+```
+
 ## Introduction
 
 Biodiversity patterns are bound by two seemingly contradictory states: they show striking consistency in form across systems, and yet also must emerge in spite of, or because of, the constant flux and dynamic change of ecology and evolution. The near universality of biodiversity patterns includes the scaling of species richness with area, the ubiquity of rare spaces and scarcity of common species, and the highly skewed distribution of biomass or metabolic resource use across organisms. Debate has persisted for over a century as to whether these consistent patterns form because of ecological and evolutionary drivers that force systems into these configurations, or are largely the outcome of chance acting on large systems of constituent parts. The former gives rise to niche-based theories of coexistence, while that later has produced a number of neutral-like models.
 
 Both deterministic and stochastic perspectives on the generation of universal biodiversity patterns most often make the choice of considering an ecosystem at "equilibrium" or steady state. However, ecosystems are known to be dynamic both through intrinsic eco-evolutionary processes and due to recent anthropogenic perturbation. Whether universal patterns are insensitive to non-steady-state processes or are a result of those processes remains addressed. To better understand the interaction of non-steady-state processes and universal patterns, we combine data from the highly dynamic ecosystems of the Hawaiian Archipelago with the intentionally minimalist steady state predictions of the Maximum Entropy Theory of Ecology.
 
-### The Hawaiian Chronosequence 
+### The Hawaiʻi Chronosequence 
 
 The Hawaiian Archipelago holds numerous examples of adaptive radiation [@gillespie2004; @knope2012; @baldwin1998; @magnacca2015; @givnish2009; @lerner2011; @bennett2013]. Those remarkable examples of diversification along with the geographic isolation and chronological geology of the archipelago have made it a focal point for the study of eco-evolutionary processes [@simon1987; @wagner-funk1995; @chadwick1999; @price2004; @gillespie_clague2009; @barton2021]. The manner in which the islands formed in chronological sequence [@fig-chrono] has allowed for the study of ecosystems in different stages of eco-evolutionary assembly [@vitusek2004; @gillespie2004; @rominger2016] by considering ecosystems on different aged substrates to be snapshots of eco-evolutionary processes at different time points.
 
@@ -185,7 +198,7 @@ Arthropods in Hawaiʻi represent both many adaptive radiations [@gillespie2004; 
 
 The Maximum Entropy Theory of Ecology (METE @harte2011) is a particularly useful tool for studying steady state biodiversity patterns because it produces multiple testable predictions, making falsifications of the theory more informative [@mcgill2003] including the distribution of abundances across species and the distribution of metabolic rates across individuals in a sample. METE arrives at some similar predictions to other null or neutral models of biodiversity such at the Unified Neutral Theory [@hubbell2001] but instead of being limited to a single neutral formulation, METE is grounded in the principles of statistical mechanics [@harte2011 @jaynes1957] drawing from the probabilistic properties of large, randomly assembled systems. Thus its predictions represent a community in statistical steady state. Statistical steady state means that a system is governed by only a few simple state variables, which constitute a state space, and that no additional processes limit the system's ability to freely explore this state space. The state variables of METE are total number of species $S_0$, total number of individuals $N_0$, and summed metabolic rate across all individuals $E_0$ [@harte2011]. METE posits that if state variables are in steady state, all biodiversity patterns are statistical outcomes from those state variables independently of the specific biological mechanisms governing the values of the state variables, so long as those mechanisms do not constitute information beyond the state variables themselves. Examples of such additional information could be rapid environmental change leading to mismatched niches with local environments, rapid diversification, or biological invasion. Under such scenarios the simple state variables of $S_0$, $N_0$, and $E_0$ would not likely constitute enough information to yield accurate predictions for biodiversity patterns such as the species abundance distribution or distribution of metabolic rates across individuals. Thus finding deviations between observed patterns of abundance and metabolic rate distributions compared to their METE predictions allows us to identify ecological systems out of statistical steady state [@harte2011; @rominger2016; @newman2020]. 
 
-In this study of arthropods communities across the Hawaiian chronosequence, we find consistent deviations from steady state at middle aged sites. Deviations are predicted by community dissimilarity which peaks at middle aged sites. This suggests these communities are unstable, perhaps due to their age being the right time for adaptive radiation to take off for arthropods [@gillespie2004; @bennett2013]. Deviations are also partially predicted by proportion of non-native species, except that the proportion of non-native species is high at the youngest site while this site also shows some of the lowest deviations from METE. This suggests the role of biological invasion is context dependent, at times producing stead state and at others driving deviation from it. More work connecting deviations from steady state to ecological and evolutionary drivers will be needed to further test these possibilities.
+In this study of arthropods communities across the Hawaiʻi chronosequence, we find consistent deviations from steady state at middle aged sites. Deviations are predicted by within site $\beta$-diversity which peaks at middle aged sites. This suggests these communities are unstable, perhaps due to their age being the right time for adaptive radiation to take off for arthropods [@gillespie2004; @bennett2013]. Deviations are also partially predicted by proportion of non-native species, except that the proportion of non-native species is high at the youngest site while this site also shows some of the lowest deviations from METE. This suggests the role of biological invasion is context dependent, at times producing stead state and at others driving deviation from it. More work connecting deviations from steady state to ecological and evolutionary drivers will be needed to further test these possibilities.
 
 
 ## Methods
@@ -194,7 +207,7 @@ In this study of arthropods communities across the Hawaiian chronosequence, we f
 
 A custom R package, *HawaiiArthMETE* [@HawaiiArthMETE], accompanies this paper and can be used to reproduce all results. All data analyzed here are available via the package as described in \ssec{sec-setup}. 
 
-Arthropod data come from the original publication by @gruner2007, a study that collected `r nrow(arth)` specimens across the Hawaiian chronosequence [@fig-chrono]. Study sites in @gruner2007 where standardized to be climatically homogeneous, seeking to capture differences in arthropod assemblages due to substrate age and not other abiotic factors. 
+Arthropod data come from the original publication by @gruner2007, a study that collected `r nrow(arth)` specimens across the Hawaiʻi chronosequence [@fig-chrono]. Study sites in @gruner2007 where standardized to be climatically homogeneous, seeking to capture differences in arthropod assemblages due to substrate age and not other abiotic factors. 
 
 Each specimen was identified to the species level (morpho species were used in `r round(100 * mean(grepl("sp_", arth$species)), 2)`% of specimens). Specimen lengths were measured to the nearest millimeter.  For METE analyses we need to estimate metabolic rate from these data. Because METE normalizes metabolic rates such that the lowest possible rate is 1 we use a simplified $3/4$ scaling rule to approximate metabolic rate $B$ from mass $M$ as $B \propto M^{3/4}$.
 
@@ -241,7 +254,7 @@ We also quantify the difference between METE predictions and observed SADs and I
 
 ### Statistical analysis of deviations from METE and potential explanatory variables
 
-We first evaluate how deviations from METE, as measured by $z^2$-values, vary across the chronosequence. We then test for relationships between $z^2$-values and proportion of non-native species at a site as well as within site, between sample dissimilarity or $\beta$-diversity.
+We first evaluate how deviations from METE, as measured by $z^2$-values, vary across the chronosequence. We then test for relationships between $z^2$-values and proportion of non-native species at a site as well as within site $\beta$-diversity.
 
 For all these analyses we fit linear models predicting log-transformed $z^2$-values responding to each explanatory variable: substrate age, proportion non-native species, and within site $\beta$-diversity. Log-transforming $z^2$-values brings them closer to the normal assumptions of a linear model. The need for log-transformation is not surprising: while $z^2$-values will be $\chi^2$ distributed if METE is true, deviations from METE add more probability to larger values, and taken together will lead to right-skewed distribution of $z^2$-values. Log-transformation brings right-skewed random variables closer to normal.
 
@@ -251,7 +264,7 @@ To address these challenges we model the site-level mean and variance rather tha
 
 ### Calculating $\beta$-diversity
 
-To quantify within site, between sample $\beta$-diversity we first calculate mean Bray-Curtis dissimilarity between samples and then, to standardize $\beta$-diversity measures across sites, we normalize mean dissimilarity to a null model. We use the `quasiswap_count` algorithm implemented in *vegan* [@vegan] to generate null samples. This algorithm preserves row and column sums of a sample by species matrix and also seeks to maintain null matrix fill close to the observed fill thereby mimicking patchiness in the real data. We use 500 null sample by species matrices to generate null models for each site. Then normalized within site, between sample $\beta$-diversity was calculated as a z-score
+To quantify within site $\beta$-diversity as the mean dissimilarity between samples within a site. We first calculate mean Bray-Curtis dissimilarity between samples and then, to standardize $\beta$-diversity measures across sites, we normalize mean dissimilarity to a null model. We use the `quasiswap_count` algorithm implemented in *vegan* [@vegan] to generate null samples. This algorithm preserves row and column sums of a sample by species matrix and also seeks to maintain null matrix fill close to the observed fill thereby mimicking patchiness in the real data. Within each site we use 500 null sample-by-species matrices to generate null models for each site. The final measure of within site $\beta$-diversity is then calculated as a z-score
 
 $$
 \text{Normalized }\beta = \frac{\text{BC}_\text{obs} - \mu_\text{null}}{\sigma_\text{null}}
@@ -266,19 +279,6 @@ We also compare this Bray Curtis dissimilarity partitioning to a null model. We 
 Comparing observed Bray Curtis dissimilarity partitions to their permutational null counterparts yields a z-score for the partitioned dissimilarities. While partitions of Bray Curtis dissimilarity perfectly add to equal the overall dissimilarity, these z-scores will not perfectly add to the previously described overall dissimilarity z-scores because the partitioned z-scores are calculated from a null model with additional constraints (considering native and non-native species) compared to the overall z-scores.
 
 ## Results
-
-```{r}
-#| label: supp-read
-#| include: false
-
-ff <- list.files("hawaii-arth-mete-supp_cache/pdf/", pattern = ".RData", 
-                 full.names = TRUE) |> 
-    gsub(".RData", "", x = _)
-
-for(f in ff) {
-    lazyLoad(f)
-}
-```
 
 ### Deviations from METE across the chronosequence
 
@@ -345,7 +345,7 @@ The proportion of non-native species at a site has a significant linear relation
 
 Kīlauea is an interesting outlier in both the SAD and IPD $z^2$-values relationships with proportion non-native species. In the case of the SAD, the 95% confidence interval for the mean of Kīlauea $z^2$-values is well below the 95% confidence envelope of the overall relationship [@fig-pred]. In the case of the IPD, the 95% the mean of Kīlauea $z^2$-values is below the 95% confidence envelope of the overall relationship, but the confidence interval and envelope do partially overlap [@fig-pred]. This is a strong suggestion that the effect of non-native species at Kīlauea is distinct from other sites. We unpack that possibility further in our analysis of $\beta$-diversity.
 
-The between sample $\beta$-diversity at a site has a significant positive linear relationship with the $z^2$-values of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $foo$. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $foo$. There are no clear outlier sites in the relationship of $z^2$-values and $\beta$-diversity.
+Within site $\beta$-diversity has a significant positive linear relationship with the $z^2$-values of both the SAD and IPD. For the SAD the LRT of the linear model with positive slope versus the intercept only model is $\Lambda =$ `r sad_lrt_diss$QM`, $d.f. =$ `r sad_lrt_diss$QMdf[1]`, and $P$ `r ifelse(sad_lrt_diss$QMp < 0.0001, "< 0.0001", paste("= ", round(sad_lrt_diss$QMp, 4)))`. For the IPD the LRT of the linear model with positive slope versus the intercept only model is $\Lambda =$ `r ipd_lrt_diss$QM`, $d.f. =$ `r ipd_lrt_diss$QMdf[1]`, and $P$ `r ifelse(ipd_lrt_diss$QMp < 0.0001, "< 0.0001", paste("= ", round(ipd_lrt_diss$QMp, 4)))`. There are no clear outlier sites in the relationship of $z^2$-values and $\beta$-diversity.
 
 ### Partitioning $\beta$-diversity across native and non-native species
 
@@ -362,19 +362,22 @@ The between sample $\beta$-diversity at a site has a significant positive linear
 fig_bray_part
 ```
 
-Kīlauea is an outlier in the relationship between proportion of non-native species and $z^2$-values but not an outlier in the relationship between $\beta$-diversity and $z^2$-values. To help understand why we partition native and non-native species' contributions to $\beta$-diversity. We find that while Kīlauea has a high proportion of non-native species, it also has a low between sample $\beta$-diversity, and non-native species contribute negatively, compared to the null, to that low $\beta$-diversity [@fig-bray-part]. Taking these insights together, Kīlauea has many non-native species, but those species are distributed very homogenously across samples. The oldest site Alakaʻi reverses this pattern: native species contribute negatively to the overall (low) $\beta$-diversity at that site.
+Kīlauea is an outlier in the relationship between proportion of non-native species and $z^2$-values but not an outlier in the relationship between $\beta$-diversity and $z^2$-values. To help understand why we partition native and non-native species' contributions to $\beta$-diversity. We find that while Kīlauea has a high proportion of non-native species, it also has a low $\beta$-diversity, and non-native species contribute negatively, compared to the null, to that low $\beta$-diversity [@fig-bray-part]. Taking these insights together, Kīlauea has many non-native species, but those species are distributed very homogenously across samples. The oldest site Alakaʻi reverses this pattern: native species contribute negatively to the overall (low) $\beta$-diversity at that site.
 
 The oldest (Alakaʻi) and youngest (Kīlauea) sites contrast with Laupāhoehoe, Kohala, and Kamakou sites where both native and non-native species make positive contributions to $\beta$-diversity. In Kohala and Kamakou the positive contribution of native species is substantially larger than non-natives, whereas in Laupāhoehoe the contribution of non-natives is larger.
 
 
 ## Discussion
 
-- dissimilarity as instability
-- possible causes of instability---adaptive radiation
-- presents future hypothesis to test with genetic data
-- hypotheses
-    - diversification drives divergence; diversification slowed down on older flows
-    - invasion drives divergence
-    - both do and they interact, perhaps even conditions favoring diversification favor invasion too
-    
+Real data deviate from both the METE-predicted SAD and IPD in consistent ways across the Hawaiʻi chronosequence [@fig-z2-chrono]. This is strong [sensu @mcgill2003] evidence of meaningful departures from the steady state assumptions of METE due to biological processes not accounted for in the deliberately simple state variables of the theory. Deviations in the SAD are consistently in the direction of theory under-predicting unevenness [@fig-how-z2]. In one way, this result is surprising given that METE predicts a log-series distribution [@harte2011] which is already one of the most uneven theoretical SAD shapes. However, recent extensive investigation of empirical SADs has found that deviations from statistical baselines akin to METE are often in the direction of more unevenness [@diaz2021]. As pointed out in @diaz2021, deviations toward more unevenness could be accounted for by processes that increase the prevalence of rare species, and/or that increase the abundance of common species. Both niche-based [@chesson2000; @yenni2012] and stochastic dispersal-based [@gotelli1991] mechanisms could be valid causes of such processes.
+
+Both the proportion of non-native species and the geologic age of the lava flow at a site predict deviations from METE, but in subtly different yet important ways. Across four out of five sites (all but the geologically youngest) deviations from METE increase with the proportion of non-native species [@fig-pred]. The geologically youngest site, Kīlauea, breaks this pattern with a high proportion of non-native species but a small deviation from METE. Across all five sites deviations from METE are consistently predicted by within site $\beta$-diversity [@fig-pred]. Both $\beta$-diversity and proportion of non-native species point to instability being a driver of deviation from METE. 
+
+The fact that geologic age seems to modulate the effect of proportion of non-native species but not within site $\beta$-diversity begs the question of how age, biological invasion, and $\beta$-diversity relate to each other. $\beta$-diversity partitions unequally between native and non-native species across the chronosequence [@fig-bray-part]. Kīlauea, the youngest site, sees non-native species contributing negatively (compared to the null) to overall $\beta$-diversity, leaving native species making the only positive contribution to overall $\beta$-diversity. The contributions of native and non-native species to the $\beta$-diversity at the oldest site Alakaʻi are reversed. But at both sites overall $\beta$-diversity is low. Thus low $\beta$-diversity seems responsible for the low deviation from METE at these sites. The high proportion of non-native species at Kīlauea is not consequential because those non-native species are very homogeneously distributed.
+
+The opposite $\beta$-diversity contributions of native and non-native species at opposite ends of the chronosequence hints at a mechanistic possibility to explain low $\beta$-diversity and low deviation from METE. The assembly of the young Kīlauea site could be dominated by dispersal, which would be consistent with its age, and if dispersal is high, also consistent with low $\beta$-diversity accounted for by native species. Conversely, the oldest Alakaʻi site could represent the outcome of > 4 million years of eco-evolutionary assembly resulting in assemblages that are stable due to niche partitioning and maximized fitness within niches [@chesson2000; @godoy2014; @barabas2018]. This would again result in low $\beta$-diversity, with newly arriving non-native species mostly contributing to that low $\beta$-diversity, and result in steady state (i.e. low deviation from METE).
+
+In between these mechanistic end points, our findings are consistent with the hypothesis that dispersal-assembled communities in an unstable steady state undergo a non-steady state transition via evolutionary diversification to a stable steady state. This hypothesis is consistent with our findings across the chronosequence from young to old sites. Young sites, by definition, have not had sufficient time for diversification and must be assembled by dispersal from source populations. This hypothesis is, however, only suggested by our work and would require further data collection and testing to support. In particular, extensive population genetic study would be needed to confirm the purported history of dispersal at young sites, population bifurcation leading to diversification at middle aged sites, and population stability at older sites. New molecular techniques may soon make such study a reality [e.g. @weitemier2021; manel2025].
+
+
 ## References
