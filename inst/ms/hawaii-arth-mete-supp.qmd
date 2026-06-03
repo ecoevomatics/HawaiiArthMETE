@@ -81,7 +81,7 @@ Comparison of the observed data to predictions from the Maximum Entropy Theory o
 - differences in proportion of rarity (number of singletons or normalized metabolic rate $\leq 2$) observed and expected
 - differences in proportion of dominance (sum of top three most abundant species or sum of top three highest normalized metabolic rates) observed and expected
 
-All metrics are calculated for both the species abundance distribution (SAD) and individual metabolic rate (or power) distribution (IPD).
+Note that rarity and dominance metrics differ between SAD and IPD; see Methods of the main text for definitions. All metrics are calculated for both the species abundance distribution (SAD) and individual metabolic rate (or power) distribution (IPD).
 
 ```{r}
 #| label: mete-calc
@@ -247,7 +247,7 @@ fig_z2_chrono
 
 ## How do observed patterns deviate from METE?
 
-As could be predicted from the analysis of METE deviations across the chronosequence, generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
+Generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
 
 ```{r}
 #| label: fig-z2-cor
@@ -347,7 +347,7 @@ fig_how_diff
 ```
 
 
-Looking across all samples (@fig-how-z2) we see that deviations between observed and theoretical SADs is consistently in the direction of under-predicted both rarity and dominance (i.e. observed SADs have more rarity and greater dominance than theoretical predictions). Indeed, only one sample shows a (small) over-prediction in dominance, and only two samples show a (small) over-prediction in rarity. This means that observed SADs are more uneven than the METE prediction. 
+Looking across all samples (@fig-how-z2-supp) we see that deviations between observed and theoretical SADs is consistently in the direction of under-predicted both rarity and dominance (i.e. observed SADs have more rarity and greater dominance than theoretical predictions). Indeed, only one sample shows a (small) over-prediction in dominance, and only two samples show a (small) over-prediction in rarity. This means that observed SADs are more uneven than the METE prediction. 
 
 
 ```{r}
@@ -778,7 +778,7 @@ Here we re-run all analyses using a single expected value of biomass derived fro
 #|    - z2-chrono-lrt
 #|    - fig-z2-chrono
 #|    - fig-how-diff
-#|    - fig-how-z2
+#|    - fig-how-z2-supp
 #|    - ipd-how-glm
 #|    - calc-dev-non
 #|    - fig-dev-non
