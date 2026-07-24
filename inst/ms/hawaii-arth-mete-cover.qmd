@@ -1,0 +1,33 @@
+---
+format:
+  pdf:
+    include-in-header: 
+      text: |
+        \usepackage{newunicodechar}
+        \newunicodechar{ʻ}{`} 
+        \pagenumbering{gobble}
+knitr:
+  opts_chunk: 
+    dev: cairo_pdf
+---
+
+
+
+Dear Editors,
+
+Thank you for considering our manuscript "A maximum entropy perspective reveals deviations from steady state during active diversification" for submission as a research article in *Global Ecology and Biogeography*. All authors have approved this submission and it has not been submitted elsewhere. 
+
+Ecosystems are rarely at steady state, yet most macroecological theory assumes they are. We test whether eco-evolutionary dynamics drive departures from steady state by combining arthropod community data from the Hawaiian Archipelago chronosequence with the Maximum Entropy Theory of Ecology (METE). Deviations from METE peak at geologically middle-aged sites, consistent with active active diversification. Within-site $\beta$-diversity predicts these deviations across all sites, while the proportion of non-native species predicts deviations only after excluding the youngest site. Partitioning $\beta$-diversity between native and non-native species resolves why the youngest site---despite high non-native representation---shows low deviation from METE. At the youngest site non-native species are distributed homogeneously and do not elevate $\beta$-diversity despite high proportional representation. Together, these results support a trajectory from dispersal-assembled communities near statistical steady state, through an eco-evolutionary non-steady-state transition driven by diversification, to a new stable steady state at the oldest sites.
+
+This manuscript makes three contributions that we believe are of broad interest to the *GEB* readership. First, we provide an empirical test of whether eco-evolutionary dynamics produce predictable departures from macroecological steady state, linking diversification rate to the violation of a well-specified null theory. Second, we demonstrate that $\beta$-diversity serves as a robust leading indicator of non-steady-state community structure, a finding with implications for how we interpret spatial community variation in actively diversifying biotas. Third, we show that the ecological consequences of biological invasion are modulated by the eco-evolutionary state of the receiving community, suggesting that windows of active diversification may represent periods of heightened invasibility. While some authors have published on METE and some have published on arthropods in Hawaiʻi, this article is distinct from all prior work. Never before have we been able to apply METE across such scales with one data set and combine insights from METE with proxies for community assembly processes like the chronosequence itself, biological invasion, and $\beta$-diversity.
+
+Thank you again for your consideration.
+
+Sincerely,
+
+Andrew J. Rominger and coauthors
+
+\pagebreak
+
+
+

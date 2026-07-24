@@ -17,7 +17,7 @@ knitr:
 crossref:
   fig-title: "Supplementary Figure"
   fig-prefix: "Supplementary Figure"
-csl: ecology-letters.csl
+csl: global-ecology-and-biogeography.csl
 bibliography: hawaii-arth-mete.bib
 ---
 
@@ -27,13 +27,19 @@ This supplement walks through the steps of recreating the entire analysis presen
 
 ## Computing setup {#sec-setup}
 
-Analyses are supported by a custom R package *HawaiiArthMETE* [@HawaiiArthMETE] which can be installed from github. 
+Analyses are supported by a custom R package *HawaiiArthMETE* which, for review purposes, is hosted on anonymous github: [https://anonymous.4open.science/r/HawaiiArthMETE-FB14](https://anonymous.4open.science/r/HawaiiArthMETE-FB14). It can be installed from anonymous github. 
 
 ```{r}
 #| label: pkg-install
 #| eval: false
 
-devtools::install_github("ecoevomatics/HawaiiArthMETE")
+tmp <- tempfile(fileext = ".zip")
+download.file(
+    "https://anonymous.4open.science/r/HawaiiArthMETE-FB14/zip",
+    destfile = tmp
+)
+
+remotes::install_local(tmp)
 ```
 
 The quarto [@quarto] document used to generate this supplement can be found with the R command `system.file("ms/hawaii-arth-mete-supp.qmd", package = "HawaiiArthMETE")`.

@@ -1,0 +1,60 @@
+---
+title: "A maximum entropy perspective reveals deviations from steady state during active diversification"
+author:
+  - name: Andrew J. Rominger [rominger@hawaii.edu]
+    affiliations:
+      - name: University of Hawaiʻi at Mānoa
+  - name: Katie Thai [katient@hawaii.edu]
+    affiliations:
+      - name: University of Hawaiʻi at Mānoa
+  - name: Rosemary G. Gillespie [gillespie@berkeley.edu]
+    affiliations:
+      - name: University of California Berkeley
+  - name: Daniel S. Gruner [dsgruner@umd.edu]
+    affiliations:
+      - name: University of Maryland
+  - name: John Harte [jharte@berkeley.edu]
+    affiliations:
+      - name: University of California Berkeley
+filters:
+  - authors-docx.lua
+format:
+  docx:
+    include-in-header: 
+      text: |
+        \usepackage{authblk}
+        \usepackage{orcidlink}
+        \usepackage{newunicodechar}
+        \newunicodechar{ʻ}{`} 
+        \usepackage{xr}
+        \usepackage{lineno}
+        \externaldocument{hawaii-arth-mete-supp}
+        \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
+        \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
+        \renewcommand{\sfdefault}{\rmdefault}
+        \pagenumbering{gobble}
+knitr:
+  opts_chunk: 
+    dev: cairo_pdf
+---
+
+<!-- data and code availability statement -->
+<!-- funding statement -->
+<!-- conflict of interest disclosure -->
+<!-- ethics approval statement -->
+<!-- patient consent statement -->
+<!-- permission to reproduce material from other sources -->
+<!-- clinical trial registration -->
+
+
+**Keywords:** macroecology, ecological theory, maximum entropy, diversification, adaptive radiation
+
+
+**Data accessibility statement:** All data and code used in this article are available at [https://anonymous.4open.science/r/HawaiiArthMETE-FB14](https://anonymous.4open.science/r/HawaiiArthMETE-FB14). Upon publication, this archive will be converted to a non-anonymous zenodo repository. The complete analysis is recorded in the supplement included with the main text.
+
+**Funding:** AJR was supported by NSF award DBI-2502569.
+
+**Conflict of interest disclosure:** The authors declare no conflicts of interest.
+
+
+

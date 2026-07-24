@@ -1,30 +1,30 @@
 ---
 title: "A maximum entropy perspective reveals deviations from steady state during active diversification"
-author:
-  - name: Andrew J. Rominger
-    orcid: 0000-0003-3755-4480
-    affiliations:
-      - name: University of Hawaiʻi at Mānoa
-  - name: Katie Thai
-    orcid: 0009-0006-1223-122X
-    affiliations:
-      - name: University of Hawaiʻi at Mānoa
-  - name: Rosemary G. Gillespie
-    orcid: 0000-0003-0086-7424
-    affiliations:
-      - name: University of California Berkeley
-  - name: Daniel S. Gruner
-    orcid: 0000-0002-3153-4297
-    affiliations:
-      - name: University of Maryland
-  - name: John Harte
-    orcid: 0000-0002-8794-5140
-    affiliations:
-      - name: University of California Berkeley
-filters:
-  - authors.lua
+# author:
+#   - name: Andrew J. Rominger
+#     orcid: 0000-0003-3755-4480
+#     affiliations:
+#       - name: University of Hawaiʻi at Mānoa
+#   - name: Katie Thai
+#     orcid: 0009-0006-1223-122X
+#     affiliations:
+#       - name: University of Hawaiʻi at Mānoa
+#   - name: Rosemary G. Gillespie
+#     orcid: 0000-0003-0086-7424
+#     affiliations:
+#       - name: University of California Berkeley
+#   - name: Daniel S. Gruner
+#     orcid: 0000-0002-3153-4297
+#     affiliations:
+#       - name: University of Maryland
+#   - name: John Harte
+#     orcid: 0000-0002-8794-5140
+#     affiliations:
+#       - name: University of California Berkeley
+# filters:
+#   - authors.lua
 format:
-  pdf:
+  docx:
     include-in-header: 
       text: |
         \usepackage{authblk}
@@ -32,14 +32,15 @@ format:
         \usepackage{newunicodechar}
         \newunicodechar{ʻ}{`} 
         \usepackage{xr}
+        \usepackage{lineno}
         \externaldocument{hawaii-arth-mete-supp}
-        \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
+        \newcommand{sfig}[1]{Supplementary Figure~\ref{#1}}
         \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
         \renewcommand{\sfdefault}{\rmdefault}
 knitr:
   opts_chunk: 
     dev: cairo_pdf
-csl: ecology-letters.csl
+csl: global-ecology-and-biogeography.csl
 bibliography: hawaii-arth-mete.bib
 ---
 
@@ -47,7 +48,6 @@ bibliography: hawaii-arth-mete.bib
 ```{r}
 #| label: setup
 #| include: false
-
 
 library(ggplot2)
 library(cowplot)
@@ -111,9 +111,38 @@ for(f in ff) {
 }
 ```
 
+\linenumbers
+
 ## Abstract
 
-Ecosystems are rarely at steady state, yet most theory predicting universal biodiversity patterns assumes they are. Here, we test whether and how eco-evolutionary dynamics drive departures from steady state by combining arthropod community data from the geologic chronosequence of the Hawaiian Archipelago with the Maximum Entropy Theory of Ecology (METE), a minimalist steady-state framework that simultaneously predicts species abundance distributions (SADs) and individual metabolic rate distributions (IPDs). The chronosequence of the Hawaiian Archipelago has yielded insights into eco-evolutionary processes because ecosystems growing on different aged substrates offer snapshots of community assembly with different histories. We find that deviations from METE peak at geologically middle-aged sites (150 Kya–1.4 Mya), consistent with active adaptive radiation pushing communities away from statistical steady state. Within-site $\beta$-diversity, which also peaks at middle-aged sites, robustly predicts deviations from METE across all sites, while the proportion of non-native species predicts deviations only after excluding the geologically youngest site. Partitioning $\beta$-diversity between native and non-native species resolves this discrepancy: at the youngest site, non-native species are distributed homogeneously and do not elevate $\beta$-diversity despite their high proportional representation. Together, these results are consistent with a trajectory from young, dispersal-assembled communities near statistical steady state, through an eco-evolutionary non-steady-state transition driven by diversification, to a new stable steady state at the oldest sites. Our findings suggest that periods of active diversification create windows of ecological instability that may facilitate biological invasion, with implications for understanding invasion dynamics in biodiversity hotspots.
+### Aim
+
+Ecosystems are rarely at steady state, yet most eco-evolutionary theory and modeling that predict universal biodiversity patterns assumes they are. Here, we test whether and how eco-evolutionary dynamics themselves drive departures from steady state.
+
+### Location
+
+Hawaiian Archipelago.
+
+### Time Period
+
+Current.
+
+### Major Taxa Studied 
+
+Arthropods.
+
+### Methods 
+
+We combined arthropod community data from the geologic chronosequence of the Hawaiian Archipelago with the Maximum Entropy Theory of Ecology (METE). The chronosequence of the Hawaiian Archipelago offers insights into eco-evolutionary processes because ecosystems growing on different aged substrates offer snapshots of community assembly with different histories. METE is a minimalist steady-state framework that simultaneously predicts species abundance distributions (SAD) and individual metabolic rate distributions (IPD). We quantify departures from steady state as the deviation of observed SADs and IPDs from there theoretical predictions under METE. We then test how those deviations are predicted by position along the chronosequence, proportion of non-native species, and $\beta$-diversity using metaregression. We also use null model analysis to understand how the contribution of non-native species to $\beta$-diversity changes across the chronosequence.
+
+### Results 
+
+Deviations from METE peak at geologically middle-aged sites (150 Kya–1.4 Mya), consistent with active adaptive radiation pushing communities away from statistical steady state. $\beta$-diversity, which also peaks at middle-aged sites, robustly predicts deviations from METE across all sites, while the proportion of non-native species predicts deviations only after excluding the geologically youngest site. Partitioning $\beta$-diversity between native and non-native species resolves this discrepancy. At the youngest site, non-native species are distributed homogeneously and do not elevate $\beta$-diversity despite their high proportional representation.
+
+
+### Main conclusions
+
+These results are consistent with a trajectory from young, dispersal-assembled communities near statistical steady state, through an eco-evolutionary non-steady-state transition driven by diversification, to a new stable steady state at the oldest sites. Our findings suggest that periods of active diversification create windows of ecological instability that may facilitate biological invasion.
 
 ## Introduction
 
@@ -246,7 +275,7 @@ n_reps <- summarize(arth, n_rep = n_distinct(tree), .by = site)
 
 ```
 
-A custom R package, *HawaiiArthMETE* [@HawaiiArthMETE], accompanies this paper and can be used to reproduce all results. All data analyzed here are available via the package as described in \ssec{sec-setup}. 
+A custom R package, *HawaiiArthMETE* accompanies this paper and can be used to reproduce all results. ssec{sec-setup} details how to access and install *HawaiiArthMETE*. All analysis scripts and data analyzed are available via the package.
 
 Arthropod data come from the original publication by @gruner2007, a study that collected `r nrow(arth)` specimens across the chronosequence [@fig-chrono]. The five study sites in @gruner2007 were standardized to be climatically homogeneous [@vitusek2004], seeking to capture differences in arthropod assemblages due to substrate age and not other abiotic factors. Arthropod assembledges were collected by canopy fogging from the endemic ʻōhiʻa lehua (*Metrosideros polymorpha* Gaud. Myrtaceae), which is the dominant tree in mesic to wet, mid-elevation forests the Hawaiian Archipelago. Each site contained between `r min(n_reps$n_rep)` and `r max(n_reps$n_rep)` replicate samples.
 
@@ -263,7 +292,7 @@ $$
 
 where $a$ and $b$ are estimated from data collected by @gruner2003 and vary by taxon and stage.
 
-Using these expected value masses based on length, the latter measured to the nearest millimeter, yields metabolic rate approximations that are artificially discretized (see the appendix "Sampling biomass estimates from allometric equations"). These discretizations in turn lead to spurious conclusions about the predictiveness of METE because METE assumes metabolic rates are continuous (see \ssec{sec-re-run}).
+Using these expected value masses based on length, the latter measured to the nearest millimeter, yields metabolic rate approximations that are artificially discretized (see the appendix "Sampling biomass estimates from allometric equations"). These discretizations in turn lead to spurious conclusions about the predictiveness of METE because METE assumes metabolic rates are continuous (see ssec{sec-re-run} and sfig{fig-ipd-both}).
 
 Therefore, instead of estimating mass as the expected value from an allometric relationship we sample masses as random draws from the full model relating mass to length
 
@@ -275,7 +304,7 @@ y &\sim \mathscr{N}(\widehat{\log(\text{mass})}, ~\sigma) \\
 \end{aligned}
 $$
 
-where $\sigma$ is the taxon- and stage-specific standard deviation of residuals. The full procedure for sampling masses is detailed in the appendix "Sampling biomass estimates from allometric equations" and the consequences of using random draws versus expected values on the METE analysis is thoroughly investigated in \ssec{sec-re-run}. We conclude that using random draws for mass estimates is largely similar to using expected values, and our overall conclusions are unchanged, but using draws avoids both spurious deviations from and conformations to METE that would be introduced by using expected values of mass.
+where $\sigma$ is the taxon- and stage-specific standard deviation of residuals. The full procedure for sampling masses is detailed in the appendix "Sampling biomass estimates from allometric equations" and the consequences of using random draws versus expected values on the METE analysis is thoroughly investigated in ssec{sec-re-run}. We conclude that using random draws for mass estimates is largely similar to using expected values, and our overall conclusions are unchanged, but using draws avoids both spurious deviations from and conformations to METE that would be introduced by using expected values of mass.
 
 ### METE analysis
 
@@ -313,9 +342,9 @@ $$
 
 where $BC_\text{obs}$ is the observed mean Bray-Curtis dissimilarity between samples within a site, $\mu_\text{null}$ is the mean of the null distribution, and $\sigma_\text{null}$ is the standard deviation of the null distribution.
 
-We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray-Curtis dissimilarity between native and non-native groups of species. The end result of partitioning Bray-Curtis is two dissimilarity values (one for native species, one for non-natives) that add to the total dissimilarity at a site. \ssec{sec-part} provides the mathematical and computational details of how we do this. 
+We are also interested in understanding how native and non-native species contribute to the overall mean dissimilarity at a site. We can do this by partitioning Bray-Curtis dissimilarity between native and non-native groups of species. The end result of partitioning Bray-Curtis is two dissimilarity values (one for native species, one for non-natives) that add to the total dissimilarity at a site. ssec{sec-part} provides the mathematical and computational details of how we do this. 
 
-We also compare this Bray-Curtis dissimilarity partitioning to a null model. We again use the `quasiswap_count` algorithm but must constrain the algorithm to permute only inside submatrices (one for native species, another for non-natives). This additional constraint is to ensure that the distributions of native and non-native abundances across sites are preserved in permuted and observed site-by-species matrices. We wrote custom code to do this in the *HawaiiArthMETE* package and described in \ssec{sec-part}.
+We also compare this Bray-Curtis dissimilarity partitioning to a null model. We again use the `quasiswap_count` algorithm but must constrain the algorithm to permute only inside submatrices (one for native species, another for non-natives). This additional constraint is to ensure that the distributions of native and non-native abundances across sites are preserved in permuted and observed site-by-species matrices. We wrote custom code to do this in the *HawaiiArthMETE* package and described in ssec{sec-part}.
 
 Comparing observed Bray-Curtis dissimilarity partitions to their permutational null counterparts yields a z-score for the partitioned dissimilarities. While partitions of Bray-Curtis dissimilarity perfectly add to equal the overall dissimilarity, these z-scores will not perfectly add to the previously described overall dissimilarity z-scores because the partitioned z-scores are calculated from a null model with additional constraints (considering native and non-native species) compared to the overall z-scores.
 
@@ -334,7 +363,7 @@ fig_z2_chrono
 
 ```
 
-Deviations from METE in the SAD and IPD are largely in agreement: samples with high $z^2$-values for the SAD tend to have high $z^2$-values for the IPD (see \sfig{fig-z2-cor}). The $z^2$-values for both distributions peak at middle aged sites along the chronosequence [@fig-z2-chrono]. For the SAD this is supported by a likelihood ratio test comparing a quadratic model of $z^2$-values to an intercept-only model with LRT statistic `r lrt_fmt(sad_lrt_chrono)`. 
+Deviations from METE in the SAD and IPD are largely in agreement: samples with high $z^2$-values for the SAD tend to have high $z^2$-values for the IPD (see sfig{fig-z2-cor}). The $z^2$-values for both distributions peak at middle aged sites along the chronosequence [@fig-z2-chrono]. For the SAD this is supported by a likelihood ratio test comparing a quadratic model of $z^2$-values to an intercept-only model with LRT statistic `r lrt_fmt(sad_lrt_chrono)`. 
 
 The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values. Not surprisingly, for quadratic model of IPD $z^2$-values across the chronosequence, the LRT statistic is `r lrt_fmt(ipd_lrt_chrono)`. While the $P$-value for the test of the quadratic model for IPD $z^2$-values just misses the $\leq 0.05$ significance cut off by the likelihood ratio test, the less conservative Wald test does show the quadratic term to be significant with a 95% confidence interval of `r confint(ipd_rma_chrono, fixed = TRUE, random = FALSE)[["fixed"]][3, 2:3] |> round(3) |> paste(collapse = ", ") |> (function(x) sprintf("[%s]", x))()`, which does not overlap 0.
 
@@ -439,7 +468,7 @@ The oldest (Alakaʻi) and youngest (Kīlauea) sites contrast with Laupāhoehoe, 
 
 Real data deviate from both the METE-predicted SAD and IPD in consistent ways across the chronosequence [@fig-z2-chrono]. This is strong [sensu @mcgill2003] evidence of meaningful departures from the steady state assumptions of METE due to biological processes not accounted for in the deliberately simple state variables of the theory. 
 
-Patterns of deviation in the IPD are more variable than those of the SAD. This is not surprising given that the estimation of metabolic rate from allometric relationships introduces more uncertainty than the direct observation of abundances in samples. The choice to use random samples from allometric relationships, rather than expected values, slightly reduces the variability of IPD patterns because expected values introduce artificial discretization of metabolic rate estimates that are inconsistent with METE and indeed the reality that metabolic rates are continuous (see \ssec{sec-re-run} and the appendix "Sampling biomass estimates from allometric equations"). Nonetheless, re-running all IPD analyses using expected values from allometric relationships does not substantially change our findings (\ssec{sec-re-run}).
+Patterns of deviation in the IPD are more variable than those of the SAD. This is not surprising given that the estimation of metabolic rate from allometric relationships introduces more uncertainty than the direct observation of abundances in samples. The choice to use random samples from allometric relationships, rather than expected values, slightly reduces the variability of IPD patterns because expected values introduce artificial discretization of metabolic rate estimates that are inconsistent with METE and indeed the reality that metabolic rates are continuous (see ssec{sec-re-run} and the appendix "Sampling biomass estimates from allometric equations"). Nonetheless, re-running all IPD analyses using expected values from allometric relationships does not substantially change our findings (ssec{sec-re-run}).
 
 Deviations from the IPD are not consistent in any one direction. Theory both under- and over-predicts the shape of the tails of the IPD in roughly equal proportion. Conversely, deviations in the SAD are consistently in the direction of theory under-predicting unevenness [@fig-how-z2 and @fig-rad]. In one way, this result is surprising given that METE predicts a log-series distribution [@harte2011] which is already one of the most uneven theoretical SAD shapes. However, recent extensive investigation of empirical SADs has found that deviations from statistical baselines akin to METE are often in the direction of more unevenness [@diaz2021]. As pointed out in @diaz2021, deviations toward more unevenness could be accounted for by processes that increase the prevalence of rare species, and/or that increase the abundance of common species. Both niche-based [@chesson2000; @yenni2012] and stochastic dispersal-based [@gotelli1991] mechanisms could be valid causes of such processes. Complementary to those possible mechanisms is the possibility that adaptive radiation or elevated neutral speciation could produce both many rare species---young and incipient lineages---and a few highly dominant species---those that have found a successful strategy and/or are more established [@hubbell2001; @schluter2000; @stroud2016; @gillespie2025]. This possibility becomes relevant in hypothesizing mechanisms for the nature of deviations from METE across the chronosequence.
 
