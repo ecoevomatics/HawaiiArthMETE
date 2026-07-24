@@ -255,15 +255,23 @@ in support of and to contextualize results in the main text.
 \section{Computing setup}\label{sec-setup}
 
 Analyses are supported by a custom R package \emph{HawaiiArthMETE}
-(Rominger \& Thai 2026) which can be installed from github.
+which, for review purposes, is hosted on anonymous github:
+\url{https://anonymous.4open.science/r/HawaiiArthMETE-FB14}. It can be
+installed from anonymous github.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{devtools}\SpecialCharTok{::}\FunctionTok{install\_github}\NormalTok{(}\StringTok{"ecoevomatics/HawaiiArthMETE"}\NormalTok{)}
+\NormalTok{tmp }\OtherTok{\textless{}{-}} \FunctionTok{tempfile}\NormalTok{(}\AttributeTok{fileext =} \StringTok{".zip"}\NormalTok{)}
+\FunctionTok{download.file}\NormalTok{(}
+    \StringTok{"https://anonymous.4open.science/r/HawaiiArthMETE{-}FB14/zip"}\NormalTok{,}
+    \AttributeTok{destfile =}\NormalTok{ tmp}
+\NormalTok{)}
+
+\NormalTok{remotes}\SpecialCharTok{::}\FunctionTok{install\_local}\NormalTok{(tmp)}
 \end{Highlighting}
 \end{Shaded}
 
-The quarto (Allaire \emph{et al.} 2025) document used to generate this
+The quarto (Allaire \emph{et al.}, 2025) document used to generate this
 supplement can be found with the R command
 \texttt{system.file("ms/hawaii-arth-mete-supp.qmd",\ package\ =\ "HawaiiArthMETE")}.
 
@@ -406,7 +414,7 @@ The data used in all analyses is available with the
 
 Comparison of the observed data to predictions from the Maximum Entropy
 Theory of Ecology (METE) is performed with package \emph{meteR}
-(Rominger \& Merow 2017). The following code records information about
+(Rominger \& Merow, 2017). The following code records information about
 each sample (name, flow age, proportion non-native presence) as well as
 several metrics of deviation between theory and observation:
 
@@ -1526,17 +1534,13 @@ In both cases, the 95\% CIs contain a majority of positive values.
 \begin{CSLReferences}{1}{0}
 \bibitem[\citeproctext]{ref-quarto}
 Allaire, J.J., Teague, C., Scheidegger, C., Xie, Y., Dervieux, C. \&
-Woodhull, G. (2025).
+Woodhull, G. (2025)
 \href{https://github.com/quarto-dev/quarto-cli}{{Quarto}}.
 
 \bibitem[\citeproctext]{ref-rominger-merow2016}
-Rominger, A.J. \& Merow, C. (2017). meteR: An r package for testing the
+Rominger, A.J. \& Merow, C. (2017) meteR: An r package for testing the
 maximum entropy theory of ecology. \emph{Methods in Ecology and
-Evolution}, 8, 241--247.
-
-\bibitem[\citeproctext]{ref-HawaiiArthMETE}
-Rominger, A. \& Thai, K. (2026).
-\href{https://github.com/ecoevomatics/HawaiiArthMETE}{{HawaiiArthMETE}}.
+Evolution}, \textbf{8}, 241--247.
 
 \end{CSLReferences}
 

@@ -1,11 +1,11 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.6.2)  22 JUN 2026 11:21
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.7.14)  23 JUL 2026 09:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **hawaii-arth-mete-supp.tex
 (./hawaii-arth-mete-supp.tex
 LaTeX2e <2026-06-01>
-L3 programming layer <2026-05-26>
+L3 programming layer <2026-06-18>
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/koma-script/scrartcl.cls
 Document Class: scrartcl 2026/02/02 v3.49.2 KOMA-Script document class (article)
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/koma-script/scrkbase.sty
@@ -215,7 +215,7 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 )) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/generic/iftex/iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/unicode-math/unicode-math.sty (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/l3kernel/expl3.sty
-Package: expl3 2026-05-26 L3 programming layer (loader) 
+Package: expl3 2026-06-18 L3 programming layer (loader) 
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
 File: l3backend-xetex.def 2026-02-18 L3 backend support: XeTeX
 \g__graphics_track_int=\count294
@@ -592,7 +592,7 @@ Package caption Info: New subtype `subtable' on input line 238.
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2026-05-21 v1.32 PDF bookmarks (HO)
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hyperref.sty
-Package: hyperref 2026-04-24 v7.01q Hypertext links for LaTeX
+Package: hyperref 2026-06-17 v7.01r Hypertext links for LaTeX
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
@@ -628,13 +628,13 @@ Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO)
 \Hy@linkcounter=\count336
 \Hy@pagecounter=\count337
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/hyperref/pd1enc.def
-File: pd1enc.def 2026-04-24 v7.01q Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2026-06-17 v7.01r Hyperref: PDFDocEncoding definition (HO)
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
 \Hy@SavedSpaceFactor=\count338
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/hyperref/puenc.def
-File: puenc.def 2026-04-24 v7.01q Hyperref: PDF Unicode definition (HO)
+File: puenc.def 2026-06-17 v7.01r Hyperref: PDF Unicode definition (HO)
 )
 Package hyperref Info: Option `unicode' set `true' on input line 4070.
 Package hyperref Info: Hyper figures OFF on input line 4199.
@@ -672,7 +672,7 @@ Package hyperref Info: PDF/A mode OFF on input line 6121.
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/hyperref/hxetex.def
-File: hxetex.def 2026-04-24 v7.01q Hyperref driver for XeTeX
+File: hxetex.def 2026-06-17 v7.01r Hyperref driver for XeTeX
 \pdfm@box=\box70
 \c@Hy@AnnotLevel=\count344
 \HyField@AnnotCount=\count345
@@ -967,68 +967,71 @@ Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
 Package hyperref Info: Link coloring ON on input line 247.
-[1
-
-
-] [2]
-Overfull \hbox (237.34103pt too wide) in paragraph at lines 393--393
-[]\TU/lmtt/m/n/10.95 BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib[] 
- []
-
-
-Overfull \hbox (202.84853pt too wide) in paragraph at lines 393--393
-[]\TU/lmtt/m/n/10.95 LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1[] 
- []
-
-
-Overfull \hbox (1.64236pt too wide) in paragraph at lines 393--393
-[] \TU/lmtt/m/n/10.95 [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1[] 
- []
-
-
-Overfull \hbox (7.39111pt too wide) in paragraph at lines 393--393
-[]\TU/lmtt/m/n/10.95 [21] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         rstudioapi_0.17.1[] 
- []
-
-[3]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.665pt on input line 416.
+(Font)              scaled to size 7.665pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.475pt on input line 416.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 416.
+(Font)              scaled to size 5.475pt on input line 259.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 259.
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.95099pt on input line 416.
+(Font)              scaled to size 10.95099pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.66568pt on input line 416.
+(Font)              scaled to size 7.66568pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.4755pt on input line 416.
+(Font)              scaled to size 5.4755pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 10.94882pt on input line 416.
+(Font)              scaled to size 10.94882pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.66417pt on input line 416.
+(Font)              scaled to size 7.66417pt on input line 259.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.47441pt on input line 416.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 416.
+(Font)              scaled to size 5.47441pt on input line 259.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 259.
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 416.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 259.
 (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (/Users/ajr/Library/TinyTeX/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
-)
+) [1
+
+
+] [2]
+Overfull \hbox (237.34103pt too wide) in paragraph at lines 401--401
+[]\TU/lmtt/m/n/10.95 BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib[] 
+ []
+
+
+Overfull \hbox (202.84853pt too wide) in paragraph at lines 401--401
+[]\TU/lmtt/m/n/10.95 LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1[] 
+ []
+
+
+Overfull \hbox (1.64236pt too wide) in paragraph at lines 401--401
+[] \TU/lmtt/m/n/10.95 [1] gtable_0.3.6       jsonlite_2.0.0     compiler_4.5.2     tidyselect_1.2.1[] 
+ []
+
+
+Overfull \hbox (7.39111pt too wide) in paragraph at lines 401--401
+[]\TU/lmtt/m/n/10.95 [21] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         rstudioapi_0.17.1[] 
+ []
+
+[3]
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 435.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 443.
 [4] [5] [6]
+Overfull \vbox (2.50754pt too high) detected at line 611
+ []
+
+[7]
 File: hawaii-arth-mete-supp_files/figure-pdf/fig-z2-chrono-supp-1.pdf Graphic file (type pdf)
 <use hawaii-arth-mete-supp_files/figure-pdf/fig-z2-chrono-supp-1.pdf>
-[7] [8]
+[8]
 File: hawaii-arth-mete-supp_files/figure-pdf/fig-z2-cor-1.pdf Graphic file (type pdf)
 <use hawaii-arth-mete-supp_files/figure-pdf/fig-z2-cor-1.pdf>
 [9] [10] [11]
@@ -1038,15 +1041,15 @@ File: hawaii-arth-mete-supp_files/figure-pdf/fig-how-diff-1.pdf Graphic file (ty
 File: hawaii-arth-mete-supp_files/figure-pdf/fig-how-z2-supp-1.pdf Graphic file (type pdf)
 <use hawaii-arth-mete-supp_files/figure-pdf/fig-how-z2-supp-1.pdf>
 [13]
-Overfull \vbox (0.48209pt too high) detected at line 842
+Overfull \vbox (0.48209pt too high) detected at line 850
  []
 
 [14] [15] [16] [17]
-Underfull \vbox (badness 10000) detected at line 1055
+Underfull \vbox (badness 10000) detected at line 1063
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1055
+Underfull \vbox (badness 10000) detected at line 1063
  []
 
 [18]
@@ -1065,23 +1068,23 @@ File: hawaii-arth-mete-supp_files/figure-pdf/fig-ipd-both-1.pdf Graphic file (ty
 File: hawaii-arth-mete-supp_files/figure-pdf/fig-diff-both-1.pdf Graphic file (type pdf)
 <use hawaii-arth-mete-supp_files/figure-pdf/fig-diff-both-1.pdf>
 
-Overfull \hbox (13.2588pt too wide) in paragraph at lines 1455--1461
+Overfull \hbox (13.2588pt too wide) in paragraph at lines 1463--1469
 []\TU/lmr/m/n/10.95 The primary effect of increased variability in IPD $[][]$-values and spurious deviations/conformations
  []
 
 [30] [31] [32] (./hawaii-arth-mete-supp.aux)
  ***********
 LaTeX2e <2026-06-01>
-L3 programming layer <2026-05-26>
+L3 programming layer <2026-06-18>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 24177 strings out of 469775
- 472362 string characters out of 5466921
- 1194670 words of memory out of 5000000
- 52847 multiletter control sequences out of 15000+600000
+ 24182 strings out of 469776
+ 472486 string characters out of 5466934
+ 1195307 words of memory out of 5000000
+ 52851 multiletter control sequences out of 15000+600000
  632364 words of font info for 75 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 108i,8n,114p,11243b,574s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,8n,114p,11243b,590s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on hawaii-arth-mete-supp.pdf (32 pages).
