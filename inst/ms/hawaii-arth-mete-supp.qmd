@@ -191,6 +191,8 @@ The following code produces the visualization reported in the main text of devia
 #| fig-height: 6
 #| fig-cap: |
 #|     Deviations from METE as measured by $z^2$ across the chronosequence. 
+#|     Horizontal dashed line represents the $\alpha = 0.05$ critical value 
+#|     above which METE is rejected.
 #| dependson: mete-calc, z2-chrono-lm
 
 # prepare data frame of predicted values for plotting
@@ -244,7 +246,8 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
           strip.background = element_blank(), 
           strip.placement = "outside")
 
-fig_z2_chrono
+fig_z2_chrono +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
 
 ```
 
@@ -260,28 +263,34 @@ Generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
 #| fig-cap: |
 #|     Relationship between deviations of SAD and IPD. Slighlty enlarged, 
 #|     circled points are those used as examples of low and high deviation 
-#|     from METE
+#|     from METE. Horizontal and vertical dashed lines represent the 
+#|     $\alpha = 0.05$ critical value above which METE is rejected.
 
-expl <- data.frame(site = c("VO", "KH"), 
-                   site_name = c("Kīlauea", "Kohala"),
-                   tree = c(7, 1), 
+expl <- data.frame(site = c("VO", "LA"), 
+                   site_name = c("Kīlauea", "Laupāhoehoe"),
+                   tree = c(7, 2), 
                    deviation = c("lo", "hi"))
 
 
 ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
+    geom_point(data = select(arth_mete, z2_sad, z2_ipd), 
+               mapping = aes(z2_sad, z2_ipd), color = "gray") +
     geom_point() +
-    geom_point(data = left_join(expl, arth_mete), 
-               mapping = aes(z2_sad, z2_ipd), 
-               size = 6, 
+    geom_point(data = left_join(expl, arth_mete),
+               mapping = aes(z2_sad, z2_ipd),
+               size = 6,
                show.legend = FALSE) +
-    geom_point(data = left_join(expl, arth_mete), 
-               mapping = aes(z2_sad, z2_ipd), 
+    geom_point(data = left_join(expl, arth_mete),
+               mapping = aes(z2_sad, z2_ipd),
                size = 6, shape = 1, color = "black",
                stroke = 1.5,
                show.legend = FALSE) +
     xlab(expression("SAD"~z^2*"-values")) +
     ylab(expression("IPD"~z^2*"-values")) +
-    this_ms_look(log_x = TRUE, log_y = TRUE)
+    this_ms_look(log_x = TRUE, log_y = TRUE) +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
+    geom_vline(xintercept = qchisq(0.95, 1), linetype = 2) +
+    facet_wrap(vars(site_name))
 
 
 ```
@@ -362,7 +371,9 @@ Looking across all samples (@fig-how-z2-supp) we see that deviations between obs
 #| fig-height: 6
 #| fig-cap: |
 #|     Relationship between $z^2$ measure of deviation from METE and different
-#|     metrics describing how observed data and METE predictions diverge.
+#|     metrics describing how observed data and METE predictions diverge. 
+#|     Horizontal dashed line represents the $\alpha = 0.05$ critical value 
+#|     above which METE is rejected.
 #| dependson: 
 #|     - mete-calc
 
@@ -395,7 +406,8 @@ fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name,
           strip.text.y = element_text(size = 14))
 
 
-fig_how_z2
+fig_how_z2 +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
 ```
 
 
@@ -486,7 +498,8 @@ The below code is used for visualizing the results. Note that Kīlauea is consid
 #|     METE. Kīlauea was excluded from the overall analysis to be able to 
 #|     compare it separately to the overall trend. Gray regreions represent
 #|     95% confidence envelopes (or confidence interval for Kīlauea) and solid 
-#|     lines are expected values.
+#|     lines are expected values. Horizontal and vertical dashed lines represent 
+#|     the $\alpha = 0.05$ critical value above which METE is rejected.
 #| dependson: 
 #|     - mete-calc
 #|     - calc-dev-non
@@ -567,7 +580,8 @@ fig_dev_non <- pivot_longer(mete_by_non, starts_with("z2"),
 
 
 
-fig_dev_non
+fig_dev_non +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
 ```
 
 
@@ -824,7 +838,9 @@ The first thing to notice is that IPD $z^2$-values are correlated under both ana
 #| label: fig-ipd-both
 #| fig-cap: |
 #|     Relationship between IPD $z^2$-values when calculated using random draws
-#|     of expected values of biomass. The solid line is the 1:1 line.
+#|     of expected values of biomass. The solid line is the 1:1 line. Horizontal 
+#|     and vertical dashed lines represent the $\alpha = 0.05$ critical value 
+#|     above which METE is rejected.
 
 data.frame(ipd_draw = arth_mete$z2_ipd, 
            ipd_expt = scr_env$arth_mete$z2_ipd) |> 
@@ -833,7 +849,9 @@ data.frame(ipd_draw = arth_mete$z2_ipd,
     this_ms_look(log_x = TRUE, log_y = TRUE) +
     geom_abline(intercept = 0, slope = 1) +
     xlab(expression("Random draw IPD"~z^2)) +
-    ylab(expression("Expected value IPD"~z^2))
+    ylab(expression("Expected value IPD"~z^2)) +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
+    geom_vline(xintercept = qchisq(0.95, 1), linetype = 2)
 
 ```
 
