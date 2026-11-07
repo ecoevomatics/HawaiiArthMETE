@@ -132,6 +132,52 @@ arth_mete <- do.call(rbind, arth_mete)
 ```
 
 
+Separate from the summary statistics we also calculate observed versus expected rank distributions. These will be used for visualizing how observed and predicted SAD and IPD differ.
+
+```{r}
+#| label: mete-dist-calc
+#| message: false
+#| output: false
+
+arth_dist <- split(arth, arth[, c("site", "tree")], drop = TRUE) |> 
+    lapply(function(x) {
+        # the esf for this grouping
+        esf <- meteESF(spp = x$species_code, 
+                       abund = x$abundance, 
+                       power = x$metabolic_rate)
+        
+        # sad and ipd
+        s <- sad(esf)
+        p <- ipd(esf)
+        
+        # observed rank distributions
+        obs_sad <- s$data
+        obs_ipd <- p$data
+        
+        # predicted rank distributions
+        pred_sad <- meteDist2Rank(s)
+        pred_ipd <- meteDist2Rank(p)
+        
+        data.frame(
+            # sample info
+            site = x$site[1],
+            site_name = x$site_name[1],
+            tree = x$tree[1],
+            flow_age_my = x$flow_age_my[1],
+            
+            # sad and ipd will be in long format, so record dist type
+            dist = rep(c("sad", "ipd"), c(length(obs_sad), length(obs_ipd))),
+            
+            obs = c(obs_sad, obs_ipd),
+            pred = c(pred_sad, pred_ipd)
+        )
+    })
+
+arth_dist <- do.call(rbind, arth_dist)
+
+```
+
+
 ## Deviations from METE across the chronosequence
 
 Now we analyze how deviations from METE behave across the chronosequence. The following code produces the analysis of a hump-shaped versus flat relationship between METE deviation and flow age.
@@ -244,10 +290,10 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
     this_ms_look(log_x = TRUE, log_y = TRUE) +
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
-          strip.placement = "outside")
-
-fig_z2_chrono +
+          strip.placement = "outside") +
     geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
+
+fig_z2_chrono 
 
 ```
 
@@ -256,7 +302,7 @@ fig_z2_chrono +
 
 ## How do observed patterns deviate from METE?
 
-Generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
+Generally $z^2$-values of the SAD and IPD are correlated [@fig-z2-cor].
 
 ```{r}
 #| label: fig-z2-cor
@@ -266,21 +312,29 @@ Generally $z^2$-values of the SAD and IPD are correlated @fig-z2-cor.
 #|     from METE. Horizontal and vertical dashed lines represent the 
 #|     $\alpha = 0.05$ critical value above which METE is rejected.
 
-expl <- data.frame(site = c("VO", "LA"), 
-                   site_name = c("Kīlauea", "Laupāhoehoe"),
-                   tree = c(7, 2), 
-                   deviation = c("lo", "hi"))
 
+expl <- filter(arth_mete, 
+               (site == "VO" & tree == 7) | (site == "LA" & tree == 2)) |> 
+    mutate(deviation = case_when(site == "LA" ~ "hi", 
+                                 site == "VO" ~ "lo"))
+
+# expl <- data.frame(site = c("VO", "LA"), 
+#                    site_name = c("Kīlauea", "Laupāhoehoe"),
+#                    tree = c(7, 2), 
+#                    deviation = c("lo", "hi"))
 
 ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
-    geom_point(data = select(arth_mete, z2_sad, z2_ipd), 
+    geom_point(data = select(arth_mete, z2_sad, z2_ipd),
                mapping = aes(z2_sad, z2_ipd), color = "gray") +
+    geom_point(data = select(expl, !site_name), 
+               mapping = aes(z2_sad, z2_ipd), 
+               size = 6, color = "gray") +
     geom_point() +
-    geom_point(data = left_join(expl, arth_mete),
+    geom_point(data = expl,
                mapping = aes(z2_sad, z2_ipd),
                size = 6,
                show.legend = FALSE) +
-    geom_point(data = left_join(expl, arth_mete),
+    geom_point(data = expl,
                mapping = aes(z2_sad, z2_ipd),
                size = 6, shape = 1, color = "black",
                stroke = 1.5,
@@ -290,10 +344,45 @@ ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
     this_ms_look(log_x = TRUE, log_y = TRUE) +
     geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
     geom_vline(xintercept = qchisq(0.95, 1), linetype = 2) +
-    facet_wrap(vars(site_name))
+    facet_grid(cols = vars(site_name)) +
+    geom_smooth(method = "lm", se = FALSE) +
+    theme(legend.position = "none")
 
 
 ```
+
+This is supported by a product-moment correlation test
+
+```{r}
+#| label: z2-cor-test
+
+# correlation of z2 values across all samples
+z2_cor <- cor.test(arth_mete$z2_sad, arth_mete$z2_ipd)
+z2_cor
+```
+
+Within sites, correlations are still positive, but only Laupāhoehoe shows a statistically significant internal correlation [tbl-z2-cor-site].
+
+```{r}
+#| tbl-z2-cor-site
+#| tbl-cap: |
+#|     Product-moment correlation estimates and tests of SAD and IPD 
+#|     $z^2$-values within sites.
+
+# correlation of z2 values within sites
+z2_cor_site <- split(arth_mete, arth_mete$site_name) |> 
+    lapply(function(x) {
+        r <- cor.test(x$z2_sad, x$z2_ipd)
+        
+        unlist(r[c("estimate", "parameter", "p.value")])
+    }) |> 
+    bind_rows(.id = "site_name") |> 
+    setNames(c("Site Name", "r", "d.f.", "P-value"))
+
+knitr::kable(z2_cor_site)
+```
+
+
 
 Next we determine how the observed data deviate from the METE predictions. To begin we look at two exemplar SADs and two exemplar IPDs representing low and high deviation from METE (@fig-how-diff). The high and low $z^2$-values of these samples are highlighted in @fig-z2-cor. Specific samples were chosen such that they have comparable state variables.
 
@@ -359,6 +448,16 @@ fig_how_diff <- ggplot(expl_samps, aes(rank, m)) +
           strip.text.y = element_text(size = 14))
 
 fig_how_diff
+
+
+ggplot(arth_dist, aes(pred, obs, color = site_name)) +
+    geom_point() +
+    this_ms_look(log_x = TRUE, log_y = TRUE) +
+    facet_grid(cols = vars(site_name), 
+               rows = vars(tree)) +
+    geom_abline(intercept = 0, slope = 1)
+
+
 ```
 
 
@@ -376,6 +475,10 @@ Looking across all samples (@fig-how-z2-supp) we see that deviations between obs
 #|     above which METE is rejected.
 #| dependson: 
 #|     - mete-calc
+
+
+# TO DO!!!! add large-size dots to this fig showing which samples are exemplars
+# as indicated by `expl`
 
 fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name, 
                        z2 = z2_sad, rar_diff = n1_diff, dom_diff = nmax_diff),
@@ -403,11 +506,13 @@ fig_how_z2 <- bind_rows(sad = select(arth_mete, site_name,
     geom_vline(xintercept = 0, color = "gray") +
     theme(strip.background = element_blank(), 
           strip.placement = "outside",
-          strip.text.y = element_text(size = 14))
+          strip.text.y = element_text(size = 14)) +
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) 
+
+pivot_longer(expl, z2_sad:z2_ipd)
 
 
-fig_how_z2 +
-    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
+fig_how_z2
 ```
 
 
@@ -576,12 +681,12 @@ fig_dev_non <- pivot_longer(mete_by_non, starts_with("z2"),
     this_ms_look(log_y = TRUE) +
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
-          strip.placement = "outside")
-
-
-
-fig_dev_non +
+          strip.placement = "outside") +
     geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
+
+
+
+fig_dev_non
 ```
 
 
