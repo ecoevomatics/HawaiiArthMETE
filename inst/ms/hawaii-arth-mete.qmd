@@ -24,7 +24,7 @@ title: "A maximum entropy perspective reveals deviations from steady state durin
 # filters:
 #   - authors.lua
 format:
-  docx:
+  pdf:
     include-in-header: 
       text: |
         \usepackage{authblk}
@@ -34,7 +34,8 @@ format:
         \usepackage{xr}
         \usepackage{lineno}
         \externaldocument{hawaii-arth-mete-supp}
-        \newcommand{sfig}[1]{Supplementary Figure~\ref{#1}}
+        \newcommand{\sfig}[1]{Supplementary Figure~\ref{#1}}
+        \newcommand{\stbl}[1]{Supplementary Table~\ref{#1}}
         \newcommand{\ssec}[1]{Supplementary Section~\ref{#1}}
         \renewcommand{\sfdefault}{\rmdefault}
 knitr:
