@@ -175,7 +175,7 @@ Fixed.
 ::: {.callout-note icon=false}
 ## Response
 
-Fixed. fooooo
+Fixed. 
 :::
 
 
