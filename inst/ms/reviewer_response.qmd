@@ -1,0 +1,199 @@
+---
+title: "Reviewer Response"
+format: pdf
+---
+
+## Handeling editor
+
+Dear Authors,
+        
+I have now received 2 reviews of your manuscript. As you can see, both referees found the manuscript to be interesting and well executed but also raised a number of concerns. These involve a need for more detail on the evidence for some claims (e.g. the effect of diversification on beta diversity), improved explanation of methods (e.g. random effects), consideration of possible confounders, and suggestions around statistical analyses/results reporting to improve clarity.
+
+::: {.callout-note icon=false}
+## Response
+
+We thank the editor and reviewers for their work in providing all feedback.
+:::
+
+All of these should be, in my view, addressable in a revised version, which I look forward to seeing.
+
+::: {.callout-note icon=false}
+## Response
+
+Please see below how we address all points.
+:::
+
+I have one additional point - I appreciate the custom package to carry out the analysis, and having it on GitHub is fine for peer review, but please note that GitHub does not meet GEB's policies on stable access for Code and Data (see: https://onlinelibrary.wiley.com/page/journal/14668238/homepage/forauthors.html), so you will need to have an alternative should the paper be accepted.
+
+::: {.callout-note icon=false}
+## Response
+
+Understood and not to worry, our plan is to release the R package via zenodo 
+
+:::
+
+
+## Reviewer 1
+
+The authors collected arthropod abundance and body size data across regions of different geological age over the Hawaiian Archipelago and examined the observed species abundance distribution and the individual power distribution (the metabolic rate across individuals) against the expected distribution under the Maximum Entropy Theory of Ecology. They found that deviations from the METE expectation strengthens in regions of middle age, which have increased beta-diversity. The authors attributed the deviation from the METE expectation, which is made under the assumption of equilibrium, to adaptive radiation and the introduction of non-native species.
+
+I much appreciate the authors effort to not only check the observed macroecological patterns against the METE expectation, but also associate the deviation from the METE expectation to environmental and ecological factors. However, I have some minor concerns regarding the presented results:
+
+::: {.callout-note icon=false}
+## Response
+
+We thank the reviewer for their assessment of our manuscript and identification of areas in need of attention
+
+:::
+
+
+1. The authors' main quantification of the deviation from METE was the z^2 value calculated from the observed log likelihood of data and the log likelihood of data simulated under METE. They associated the deviation from METE to environmental and ecological factors by applying linear regressions on log-transformed z^2. The authors also quantified the deviation using difference in dominance or rarity. I wonder if the authors may consider the adjusted R^2 as described by Shoemaker et al (https://doi.org/10.1038/s41559-017-0107) where the predicted rank-abundance distribution is compared against the observed one as an alternative and potentially more intuitive, straightforward quantification for illustration and statistical analysis.
+
+
+::: {.callout-note icon=false}
+## Response
+
+We respectfully choose to retain the analysis with z^2 values. While the $r^2_m$ metric used by Shoemaker et al does have the advantage of an intuitive interpretation, it has several less obvious draw backs. First, the same absolute deviations between observed and predicted values could lead to very different $r^2_m$ values depending on the spread of observed values (spread = the denominator of the $r^2_m$ equation). Next, the $r^2_m$ metric, because it compares observed data to a single central prediction will be more sensitive to outliers compared to the $z^2$ metric which, being based on the likelihood, takes into account stochasticity in the data. Lastly, the $r^2_m$ metric compares ranked data to predicted ranked quantiles (i.e. the predicted rank abundance or metabolic rate distribution). When used with METE, which is constrained to match the mean and covariance of the distributions, $r^2_m$ values are themselves constrained to be close to 1. This can be seen, e.g., in the first paper to use $r^2_m$ with METE: White et al. 2012 (https://doi.org/10.1890/11-2177.1). The limited variability of $r^2_m$ when used with METE distributions perhaps can also be expected given that $r^2_m$ was designed (as Nash-Sutcliffe efficiency) to describe how well forecast models predict future data---a situation where wildly incorrect predictions ($r^2_m \approx -1$) are plausible alongside the possibility of better predictions ($r^2_m \rightarrow 1$). Wildly incorrect predictions with METE (when viewed with ranked data) are not very plausible.
+
+:::
+
+
+
+
+
+2. The authors checked the deviation against METE, but appeared to not show any statistics on whether METE can sufficiently describe the observed pattern? If I understand the z^2 correctly, 95% of the time a simulated data under METE will have a z^2 <3.84, which the z^2 from many sites fell below. The significance of deviation from METE would be very helpful to establish the basis for following association with environmental and ecological factors. It would also be interesting to see if the deviation of SAD and IPD from METE within each site is correlated.
+
+::: {.callout-note icon=false}
+## Response
+
+The reviewer is indeed correct in interpreting that 95% of data simulated from METE will have a z^2 < 3.84. We have now added a horizontal line in all plots containing z^2 values that shows this critical value cut off. Considering this "rejection of METE as the null" is indeed useful for interpretation, we add discussion of it in lines boooo, including commentary that failing to reject METE at a significance level of 0.05 does not mean that METE perfectly describes the data, which is why we also analyze other measures of deviation such as dominance and rarity (which were also included in the first submission Fig. 4). To the final point about within site correlation, we have modified Supp Fig S2 and added a supplemental table (and discuss it in the main text; lines boooo) to more clearly show both within and across site correlations.
+:::
+
+
+3. For Figure 3, the authors showed two exemplar cases to show deviation. I wonder if the authors may use the rank-paired scatter plot as used by Shoemaker et al or Gao et al (https://doi.org/10.1038/s41467-025-59253-9) to show the difference across all cases (e.g., faceted by sites)? This would be a good addition to show the deviation from METE expectations.
+
+::: {.callout-note icon=false}
+## Response
+
+Here we again respectfully decline the proposed use of rank-paired scatter plots of observed and predicted distributions (as in Shoemaker et al), along the same lines of why we choose to not use $r^2_m$. Comparing rank data and rank predictions for METE can hide patterns of deviation as readily as it reveals them. Take again the White et al. (2012) example (https://doi.org/10.1890/11-2177.1). Their Fig. 2 shows rank-paired scatter plots which mostly seem to indicate that the METE-predicted SAD fits almost all data. But their Fig. 4 shows that METE systematically under or over predicts rarity for different systems. The more dramatically divergent rank-paired plots of Shoemaker et al. likely arise because they deliberately look at ill-fitting probability distributions and use microbial abundance data which often have hard-to-account-for surplus of rare taxa (whether real or sequencing/bioinformatics artifacts, see, e.g. Sogin et al. https://doi.org/10.1073/pnas.060512710; Lynch & Neufeld https://doi.org/10.1038/nrmicro3400; and discussion in Shoemaker et al.)
+
+Instead, our approach to showing how observation and prediction deviate across all cases is implemented in our Fig. 4, which shows how predicted and observed rarity and dominance deviate for all samples. This is well aligned with the approach of Gao et al. who also show how predicated and observed rarity and dominance differ (rather than plotting the entire rank distributions). While Gao et al. show these differences in relation to the 1:1 line (their Fig 1) we collapse the comparison to a single dimension (observed relative to predicted). Doing so allows us to also show (again in Fig 4) that $z^2$ values correlate with these measures of how the distributions deviate from METE predictions. 
+
+Faceting our Fig. 4 by site would yield a 20-panel figure, so we opt to keep sites color-coded within the same panel (acknowledging the reviewer's suggestion would not have produced a 20-panel figure but instead a 10-panel figure, 5 panels for each METE distribution). We retain Fig. 3 to serve the purpose of illustrating what deviations in rarity and dominance look like in terms of actual observed and predicted distributions. We now make that intention more clear in lines booo and the caption of Fig. 4.
+
+:::
+
+
+## Reviewer 2 
+ 
+Thank you for the opportunity to review this manuscript. This is a very interesting study that uses an elegant approach to leverage Maximum Entropy Theory of Ecology (METE) predictions to infer mechanisms of biodiversity maintenance. The core finding—that rapid diversification disrupts island arthropod communities and leaves detectable signals in species abundance distributions (SADs) and individual power distributions (IPDs)—is conceptually compelling.
+
+Overall, I appreciate the general approach, but I have reservations about whether the results are robust to potential confounding factors. My primary concern with the overall framework is that the evidence for rapid diversification is quite indirect and rests heavily on β‑diversity. Yet β‑diversity is known to be shaped by several important drivers other than diversification, such as island area, dispersal rate, and elevational range. The authors should address these confounding factors more explicitly, either through additional analyses or by more thoroughly citing prior studies that have already evaluated these issues.
+
+::: {.callout-note icon=false}
+## Response
+
+We thank the reviewer for their interest in our work and their constructive feedback. We respond to that feedback below.
+
+:::
+
+### Major comments
+
+1. Relationship between β‑diversity and diversification rate
+
+The authors should elaborate further on the mechanistic link between β‑diversity and diversification rate. For example, it is not clearly stated in the text whether β‑diversity exhibits a hump‑shaped relationship with island age. Clarifying this spatial pattern and its theoretical connection to diversification dynamics would substantially strengthen the core argument of the paper.
+
+::: {.callout-note icon=false}
+## Response
+
+We now clarify that $\beta$-diversity indeed has a hump-shaped relationship with island age (lines boooo and captions of Figs. 5 and 6). We also now clarify that we do not rule out other possible drivers of $\beta$-diversity, in fact dispersal rate is of direct interest both in the context of diversification and biological invasion, and we now discuss that more clearly (lines booo). Other drivers such as area and elevation, as well as the already presently-considered geologic age, are indeed interesting to consider for both their direct effects on $\beta$-diversity and their indirect effects via their role in shaping diversification (lines booooo). We bring more literature to bear on all these topics. We also now make more clear that increased diversification rate is one potential driver of $\beta$-diversity that, together with the METE results, leads to interesting hypotheses regarding non-equilibrium eco-evolutionary dynamics worthy of further study (lines booo). 
+
+:::
+
+2. Confounding island characteristics and microclimate
+Although the sampling design was intentionally standardized to minimize abiotic differences across sites, I remain uncertain about the magnitude of microclimatic variation among islands. In addition, these islands differ not only in position along the chronosequence, but also in geographic area and degree of isolation. It is unclear how much these island‑specific characteristics themselves influence β‑diversity, and whether they could explain the observed deviation patterns instead of diversification processes.
+
+::: {.callout-note icon=false}
+## Response
+
+The literature on diversification across the age gradient in Hawai\`i is extensive, and we now discuss its implications for our study more thoroughly (lines booooo). From this literature, geologic age has emerged as the prevailing driver. In volcanic archipelago generally, potentially confounding characteristics such as area and topographic complexity co-vary with age. The central role of age in both direct and indirect effects on diversification (direct: time for speciation, indirect: geologic weathering leading to topographic complexity) has been codified in work such as the General Dynamics Model (many papers on this from Whittaker's group, but starting with https://doi.org/10.1111/j.1365-2699.2008.01892.x), which we now also discuss in relation to our work (lines boooo). The extreme isolation of Hawaiʻi from continents means that this form of isolation is effectively identical. The consistent colonization from older to younger volcanoes (known as the progression rule and now discussed in lines booo) also means within archipelago isolation is similar for all island, except possibly Kauaʻi, which we now discuss in lines boooo
+
+:::
+
+
+3. Rationale for the null model choice
+The authors use one specific null model (the quasiswap algorithm, which fixes both row and column sums of the species‑by‑sample matrix) for the β‑diversity standardization. Please provide more justification for this choice, and explain why you did not test null models that fix only row sums or only column sums. These different null model formulations correspond to distinct ecological scenarios and could meaningfully affect the results and their interpretation.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed-fixed null models are known to have good type I error (Ulrich & Gotelli 2010 https://doi.org/10.1890/09-2157.1), but are assumed to be potentially overly conservative (i.e. high type II error) based on work with binary matrices (Gotelli 2000 https://doi.org/10.1890/0012-9658(2000)081[2606:NMAOSC]2.0.CO;2; Ulrich & Gotelli 2012 https://doi.org/10.1016/j.ecolmodel.2012.06.030). We did not find reason to be concerned with the potential conservatism of the fixed-fixed models because we were not seeking to reject a null hypothesis with $\beta$-diversity (e.g. ***not*** like Kraft et al. https://www.science.org/doi/10.1126/science.1208584). Rather we wanted a measure of $\beta$-diversity that disentangles true patterns from confounding sampling effects of unevenness in species abundance and unevenness in distribution of individuals across sites, exactly the use case for a fixed-fixed null. We have now included this type of added context and justification to the manuscript (lines boooo).
+
+:::
+
+
+### Minor comments
+
+1. Line 97: Please correct the formatting of the citation `(METE Harte (2011))`. The standard in‑text format would be: *the Maximum Entropy Theory of Ecology (METE; Harte, 2011)*.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed. 
+:::
+
+
+2. Line 105: The Engen & Lande (1996a,b) citation formatting is inconsistent; please standardize the in‑text citation style.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed.
+:::
+
+
+3. Line 113: `such at` should be `such as`.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed.
+:::
+
+
+4. The Jaynes (1957) citation should be placed inside the parenthetical phrase, not outside the sentence clause.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed.
+:::
+
+
+5. Several characters and diacritics throughout the text (e.g., Hawaiian place names, some mathematical notation) do not render correctly. Please proofread and ensure all characters display properly.
+
+::: {.callout-note icon=false}
+## Response
+
+Fixed. fooooo
+:::
+
+
+6. Line 188: Please explain in more detail why you chose to use a random sampling method to estimate metabolic rates, rather than deriving the expected body length distribution directly from METE. Given that these parameters are linked via allometric scaling, it would seem more intuitive to derive predictions conditional on the observed data structure.
+
+::: {.callout-note icon=false}
+## Response
+
+We now explain two aspects relevant to this feedback (lines boooo). First, METE predicts metabolic rate distributions, not length distributions, because METE is constrained by total metabolic rate and not total length. Second, rescaling the METE-predicted metabolic rate distribution to a length distribution is not possible because that allometric scaling relationship depends on taxonomy and stage, neither of which are predicted by METE. Put another way, METE does not know what the taxonomy and stage are for an organism with metabolic rate $b$, thus we cannot convert that rate to a length with the taxon and stage-specific allometric relationships we have. Now that we establish more clearly why metabolic rate must be estimated from the data, the need for random sampling remains the same as originally described in the first submission: converting 1 mm length measurements with the regression expectation makes the data artificially discrete, whereas METE assumes continuous values.
+
+:::
+
+7. Line 241: The description of the meta‑analytical modeling approach is unclear to readers unfamiliar with the method. Please briefly explain why you model site‑level means and variances rather than individual samples, and how this approach addresses issues of pseudo‑replication within sites.
+
+::: {.callout-note icon=false}
+## Response
+
+This is indeed important to make clear. We now explicitly name which meta-analytic method we use (meta-regression), define it, and explain its utility. Meta-regression is the method that allows us to make a regression model using only means and variances for each site. We took this approach of making a regression models for site-level means to ensure we avoided inflating our statistical significance through pseudo-replication. Because some explanatory variables (e.g. geologic age) only had one unique measurement per site, we avoided mixed-effects models which would have struggled with confounded fixed and random effects. See lines booooo.
+
+
+:::
