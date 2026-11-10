@@ -473,6 +473,50 @@ rate (or power) distribution (IPD).
 \end{Highlighting}
 \end{Shaded}
 
+Separate from the summary statistics we also calculate observed versus
+expected rank distributions. These will be used for visualizing how
+observed and predicted SAD and IPD differ.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{arth\_dist }\OtherTok{\textless{}{-}} \FunctionTok{split}\NormalTok{(arth, arth[, }\FunctionTok{c}\NormalTok{(}\StringTok{"site"}\NormalTok{, }\StringTok{"tree"}\NormalTok{)], }\AttributeTok{drop =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{lapply}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(x) \{}
+        \CommentTok{\# the esf for this grouping}
+\NormalTok{        esf }\OtherTok{\textless{}{-}} \FunctionTok{meteESF}\NormalTok{(}\AttributeTok{spp =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{species\_code, }
+                       \AttributeTok{abund =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{abundance, }
+                       \AttributeTok{power =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{metabolic\_rate)}
+        
+        \CommentTok{\# sad and ipd}
+\NormalTok{        s }\OtherTok{\textless{}{-}} \FunctionTok{sad}\NormalTok{(esf)}
+\NormalTok{        p }\OtherTok{\textless{}{-}} \FunctionTok{ipd}\NormalTok{(esf)}
+        
+        \CommentTok{\# observed rank distributions}
+\NormalTok{        obs\_sad }\OtherTok{\textless{}{-}}\NormalTok{ s}\SpecialCharTok{$}\NormalTok{data}
+\NormalTok{        obs\_ipd }\OtherTok{\textless{}{-}}\NormalTok{ p}\SpecialCharTok{$}\NormalTok{data}
+        
+        \CommentTok{\# predicted rank distributions}
+\NormalTok{        pred\_sad }\OtherTok{\textless{}{-}} \FunctionTok{meteDist2Rank}\NormalTok{(s)}
+\NormalTok{        pred\_ipd }\OtherTok{\textless{}{-}} \FunctionTok{meteDist2Rank}\NormalTok{(p)}
+        
+        \FunctionTok{data.frame}\NormalTok{(}
+            \CommentTok{\# sample info}
+            \AttributeTok{site =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{site[}\DecValTok{1}\NormalTok{],}
+            \AttributeTok{site\_name =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{site\_name[}\DecValTok{1}\NormalTok{],}
+            \AttributeTok{tree =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{tree[}\DecValTok{1}\NormalTok{],}
+            \AttributeTok{flow\_age\_my =}\NormalTok{ x}\SpecialCharTok{$}\NormalTok{flow\_age\_my[}\DecValTok{1}\NormalTok{],}
+            
+            \CommentTok{\# sad and ipd will be in long format, so record dist type}
+            \AttributeTok{dist =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"sad"}\NormalTok{, }\StringTok{"ipd"}\NormalTok{), }\FunctionTok{c}\NormalTok{(}\FunctionTok{length}\NormalTok{(obs\_sad), }\FunctionTok{length}\NormalTok{(obs\_ipd))),}
+            
+            \AttributeTok{obs =} \FunctionTok{c}\NormalTok{(obs\_sad, obs\_ipd),}
+            \AttributeTok{pred =} \FunctionTok{c}\NormalTok{(pred\_sad, pred\_ipd)}
+\NormalTok{        )}
+\NormalTok{    \})}
+
+\NormalTok{arth\_dist }\OtherTok{\textless{}{-}} \FunctionTok{do.call}\NormalTok{(rbind, arth\_dist)}
+\end{Highlighting}
+\end{Shaded}
+
 \section{Deviations from METE across the
 chronosequence}\label{deviations-from-mete-across-the-chronosequence}
 
@@ -604,9 +648,10 @@ of deviation from METE across flow ages.
     \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_x =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{(),}
           \AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
-          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{)}
+          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
 
-\NormalTok{fig\_z2\_chrono}
+\NormalTok{fig\_z2\_chrono }
 \end{Highlighting}
 \end{Shaded}
 
@@ -619,7 +664,8 @@ of deviation from METE across flow ages.
 }
 
 \caption{\label{fig-z2-chrono-supp}Deviations from METE as measured by
-\(z^2\) across the chronosequence.}
+\(z^2\) across the chronosequence. Horizontal dashed line represents the
+\(\alpha = 0.05\) critical value above which METE is rejected.}
 
 \end{figure}%
 
@@ -631,32 +677,45 @@ Figure~\ref{fig-z2-cor}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{expl }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{site =} \FunctionTok{c}\NormalTok{(}\StringTok{"VO"}\NormalTok{, }\StringTok{"KH"}\NormalTok{), }
-                   \AttributeTok{site\_name =} \FunctionTok{c}\NormalTok{(}\StringTok{"Kīlauea"}\NormalTok{, }\StringTok{"Kohala"}\NormalTok{),}
-                   \AttributeTok{tree =} \FunctionTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{1}\NormalTok{), }
-                   \AttributeTok{deviation =} \FunctionTok{c}\NormalTok{(}\StringTok{"lo"}\NormalTok{, }\StringTok{"hi"}\NormalTok{))}
+\NormalTok{expl }\OtherTok{\textless{}{-}} \FunctionTok{filter}\NormalTok{(arth\_mete, }
+\NormalTok{               (site }\SpecialCharTok{==} \StringTok{"VO"} \SpecialCharTok{\&}\NormalTok{ tree }\SpecialCharTok{==} \DecValTok{7}\NormalTok{) }\SpecialCharTok{|}\NormalTok{ (site }\SpecialCharTok{==} \StringTok{"LA"} \SpecialCharTok{\&}\NormalTok{ tree }\SpecialCharTok{==} \DecValTok{2}\NormalTok{)) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{deviation =} \FunctionTok{case\_when}\NormalTok{(site }\SpecialCharTok{==} \StringTok{"LA"} \SpecialCharTok{\textasciitilde{}} \StringTok{"hi"}\NormalTok{, }
+\NormalTok{                                 site }\SpecialCharTok{==} \StringTok{"VO"} \SpecialCharTok{\textasciitilde{}} \StringTok{"lo"}\NormalTok{))}
 
+\CommentTok{\# expl \textless{}{-} data.frame(site = c("VO", "LA"), }
+\CommentTok{\#                    site\_name = c("Kīlauea", "Laupāhoehoe"),}
+\CommentTok{\#                    tree = c(7, 2), }
+\CommentTok{\#                    deviation = c("lo", "hi"))}
 
 \FunctionTok{ggplot}\NormalTok{(arth\_mete, }\FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd, }\AttributeTok{color =}\NormalTok{ site\_name)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =} \FunctionTok{select}\NormalTok{(arth\_mete, z2\_sad, z2\_ipd),}
+               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd), }\AttributeTok{color =} \StringTok{"gray"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =} \FunctionTok{select}\NormalTok{(expl, }\SpecialCharTok{!}\NormalTok{site\_name), }
+               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd), }
+               \AttributeTok{size =} \DecValTok{6}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray"}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
-    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =} \FunctionTok{left\_join}\NormalTok{(expl, arth\_mete), }
-               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd), }
-               \AttributeTok{size =} \DecValTok{6}\NormalTok{, }
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ expl,}
+               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd),}
+               \AttributeTok{size =} \DecValTok{6}\NormalTok{,}
                \AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =} \FunctionTok{left\_join}\NormalTok{(expl, arth\_mete), }
-               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd), }
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ expl,}
+               \AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(z2\_sad, z2\_ipd),}
                \AttributeTok{size =} \DecValTok{6}\NormalTok{, }\AttributeTok{shape =} \DecValTok{1}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{,}
                \AttributeTok{stroke =} \FloatTok{1.5}\NormalTok{,}
                \AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{xlab}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"SAD"}\SpecialCharTok{\textasciitilde{}}\NormalTok{z}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{*}\StringTok{"{-}values"}\NormalTok{)) }\SpecialCharTok{+}
     \FunctionTok{ylab}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"IPD"}\SpecialCharTok{\textasciitilde{}}\NormalTok{z}\SpecialCharTok{\^{}}\DecValTok{2}\SpecialCharTok{*}\StringTok{"{-}values"}\NormalTok{)) }\SpecialCharTok{+}
-    \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_x =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{)}
+    \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_x =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{facet\_grid}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{vars}\NormalTok{(site\_name)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-Joining with `by = join_by(site, site_name, tree)`
-Joining with `by = join_by(site, site_name, tree)`
+`geom_smooth()` using formula = 'y ~ x'
 \end{verbatim}
 
 \begin{figure}[H]
@@ -669,9 +728,76 @@ Joining with `by = join_by(site, site_name, tree)`
 
 \caption{\label{fig-z2-cor}Relationship between deviations of SAD and
 IPD. Slighlty enlarged, circled points are those used as examples of low
-and high deviation from METE}
+and high deviation from METE. Horizontal and vertical dashed lines
+represent the \(\alpha = 0.05\) critical value above which METE is
+rejected.}
 
 \end{figure}%
+
+This is supported by a product-moment correlation test
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation of z2 values across all samples}
+\NormalTok{z2\_cor }\OtherTok{\textless{}{-}} \FunctionTok{cor.test}\NormalTok{(arth\_mete}\SpecialCharTok{$}\NormalTok{z2\_sad, arth\_mete}\SpecialCharTok{$}\NormalTok{z2\_ipd)}
+\NormalTok{z2\_cor}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+    Pearson's product-moment correlation
+
+data:  arth_mete$z2_sad and arth_mete$z2_ipd
+t = 4.0134, df = 46, p-value = 0.0002185
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ 0.2632105 0.6931031
+sample estimates:
+      cor 
+0.5092591 
+\end{verbatim}
+
+Within sites, correlations are still positive, but only Laupāhoehoe
+shows a statistically significant internal correlation
+{[}tbl-z2-cor-site{]}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# correlation of z2 values within sites}
+\NormalTok{z2\_cor\_site }\OtherTok{\textless{}{-}} \FunctionTok{split}\NormalTok{(arth\_mete, arth\_mete}\SpecialCharTok{$}\NormalTok{site\_name) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{lapply}\NormalTok{(}\ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{        r }\OtherTok{\textless{}{-}} \FunctionTok{cor.test}\NormalTok{(x}\SpecialCharTok{$}\NormalTok{z2\_sad, x}\SpecialCharTok{$}\NormalTok{z2\_ipd)}
+        
+        \FunctionTok{unlist}\NormalTok{(r[}\FunctionTok{c}\NormalTok{(}\StringTok{"estimate"}\NormalTok{, }\StringTok{"parameter"}\NormalTok{, }\StringTok{"p.value"}\NormalTok{)])}
+\NormalTok{    \}) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{bind\_rows}\NormalTok{(}\AttributeTok{.id =} \StringTok{"site\_name"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{setNames}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Site Name"}\NormalTok{, }\StringTok{"r"}\NormalTok{, }\StringTok{"d.f."}\NormalTok{, }\StringTok{"P{-}value"}\NormalTok{))}
+
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(z2\_cor\_site)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrr@{}}
+
+\caption{\label{tbl-z2-cor-site}Product-moment correlation estimates and
+tests of SAD and IPD \(z^2\)-values within sites.}
+
+\tabularnewline
+
+\toprule\noalign{}
+Site Name & r & d.f. & P-value \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Alakaʻi & 0.1741235 & 8 & 0.6304446 \\
+Kamakou & 0.0539976 & 8 & 0.8822240 \\
+Kohala & 0.1181182 & 9 & 0.7294257 \\
+Laupāhoehoe & 0.9169643 & 6 & 0.0013437 \\
+Kīlauea & 0.2543954 & 7 & 0.5088920 \\
+
+\end{longtable}
 
 Next we determine how the observed data deviate from the METE
 predictions. To begin we look at two exemplar SADs and two exemplar IPDs
@@ -714,7 +840,7 @@ variables.
 \end{Shaded}
 
 \begin{verbatim}
-Joining with `by = join_by(site, site_name, tree)`
+Joining with `by = join_by(site, site_name, tree, flow_age_my)`
 Joining with `by = join_by(rank)`
 Joining with `by = join_by(rank)`
 Joining with `by = join_by(rank)`
@@ -776,16 +902,28 @@ than the METE prediction.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{fig\_how\_z2 }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}\AttributeTok{sad =} \FunctionTok{select}\NormalTok{(arth\_mete, site\_name, }
-                       \AttributeTok{z2 =}\NormalTok{ z2\_sad, }\AttributeTok{rar\_diff =}\NormalTok{ n1\_diff, }\AttributeTok{dom\_diff =}\NormalTok{ nmax\_diff),}
-          \AttributeTok{ipd =} \FunctionTok{select}\NormalTok{(arth\_mete, site\_name, }
-                       \AttributeTok{z2 =}\NormalTok{ z2\_ipd, }\AttributeTok{rar\_diff =}\NormalTok{ p1\_diff, }\AttributeTok{dom\_diff =}\NormalTok{ pmax\_diff),}
-          \AttributeTok{.id =} \StringTok{"dist"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
-    \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{ends\_with}\NormalTok{(}\StringTok{"diff"}\NormalTok{), }
-                 \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"comp"}\NormalTok{, }\StringTok{".value"}\NormalTok{), }
-                 \AttributeTok{names\_sep =} \StringTok{"\_"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
-    \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(diff, z2, }\AttributeTok{color =}\NormalTok{ site\_name)) }\SpecialCharTok{+}
+\CommentTok{\# reshape z2 and differences to long format}
+\NormalTok{long\_z2 }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+    \FunctionTok{bind\_rows}\NormalTok{(}\AttributeTok{sad =} \FunctionTok{select}\NormalTok{(x, site\_name, }
+                           \AttributeTok{z2 =}\NormalTok{ z2\_sad, }\AttributeTok{rar\_diff =}\NormalTok{ n1\_diff, }
+                           \AttributeTok{dom\_diff =}\NormalTok{ nmax\_diff),}
+              \AttributeTok{ipd =} \FunctionTok{select}\NormalTok{(x, site\_name, }
+                           \AttributeTok{z2 =}\NormalTok{ z2\_ipd, }\AttributeTok{rar\_diff =}\NormalTok{ p1\_diff, }
+                           \AttributeTok{dom\_diff =}\NormalTok{ pmax\_diff),}
+              \AttributeTok{.id =} \StringTok{"dist"}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+        \FunctionTok{pivot\_longer}\NormalTok{(}\FunctionTok{ends\_with}\NormalTok{(}\StringTok{"diff"}\NormalTok{), }
+                     \AttributeTok{names\_to =} \FunctionTok{c}\NormalTok{(}\StringTok{"comp"}\NormalTok{, }\StringTok{".value"}\NormalTok{), }
+                     \AttributeTok{names\_sep =} \StringTok{"\_"}\NormalTok{)}
+\NormalTok{\}}
+
+\NormalTok{z2\_long }\OtherTok{\textless{}{-}} \FunctionTok{long\_z2}\NormalTok{(arth\_mete)}
+\NormalTok{expl\_long }\OtherTok{\textless{}{-}} \FunctionTok{long\_z2}\NormalTok{(expl)}
+
+\NormalTok{fig\_how\_z2 }\OtherTok{\textless{}{-}} \FunctionTok{ggplot}\NormalTok{(z2\_long, }\FunctionTok{aes}\NormalTok{(diff, z2, }\AttributeTok{color =}\NormalTok{ site\_name)) }\SpecialCharTok{+}
     \FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ expl\_long, }\AttributeTok{size =} \DecValTok{6}\NormalTok{, }\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{data =}\NormalTok{ expl\_long, }\AttributeTok{size =} \DecValTok{6}\NormalTok{, }\AttributeTok{shape =} \DecValTok{1}\NormalTok{, }\AttributeTok{color =} \StringTok{"black"}\NormalTok{,}
+               \AttributeTok{stroke =} \FloatTok{1.5}\NormalTok{, }\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{facet\_grid2}\NormalTok{(}\AttributeTok{rows =} \FunctionTok{vars}\NormalTok{(dist), }\AttributeTok{cols =} \FunctionTok{vars}\NormalTok{(comp), }
                 \AttributeTok{scales =} \StringTok{"free"}\NormalTok{, }\AttributeTok{independent =} \StringTok{"x"}\NormalTok{, }
                 \AttributeTok{labeller =} \FunctionTok{as\_labeller}\NormalTok{(}
@@ -802,8 +940,8 @@ than the METE prediction.
     \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray"}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
           \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{,}
-          \AttributeTok{strip.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{14}\NormalTok{))}
-
+          \AttributeTok{strip.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{14}\NormalTok{)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }
 
 \NormalTok{fig\_how\_z2}
 \end{Highlighting}
@@ -819,7 +957,10 @@ than the METE prediction.
 
 \caption{\label{fig-how-z2-supp}Relationship between \(z^2\) measure of
 deviation from METE and different metrics describing how observed data
-and METE predictions diverge.}
+and METE predictions diverge. Horizontal dashed line represents the
+\(\alpha = 0.05\) critical value above which METE is rejected. Large,
+circled points are the samples used as examples of low and high
+deviation from METE.}
 
 \end{figure}%
 
@@ -1054,7 +1195,8 @@ pattern.
     \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{(),}
           \AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
-          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{)}
+          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
 
 
 
@@ -1074,7 +1216,9 @@ pattern.
 non-native species and deviation from METE. Kīlauea was excluded from
 the overall analysis to be able to compare it separately to the overall
 trend. Gray regreions represent 95\% confidence envelopes (or confidence
-interval for Kīlauea) and solid lines are expected values.}
+interval for Kīlauea) and solid lines are expected values. Horizontal
+and vertical dashed lines represent the \(\alpha = 0.05\) critical value
+above which METE is rejected.}
 
 \end{figure}%
 
@@ -1383,7 +1527,9 @@ under both analysis scenarios Supplementary Figure~\ref{fig-ipd-both}
     \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_x =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{intercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{slope =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{xlab}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"Random draw IPD"}\SpecialCharTok{\textasciitilde{}}\NormalTok{z}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)) }\SpecialCharTok{+}
-    \FunctionTok{ylab}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"Expected value IPD"}\SpecialCharTok{\textasciitilde{}}\NormalTok{z}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{))}
+    \FunctionTok{ylab}\NormalTok{(}\FunctionTok{expression}\NormalTok{(}\StringTok{"Expected value IPD"}\SpecialCharTok{\textasciitilde{}}\NormalTok{z}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1397,7 +1543,9 @@ under both analysis scenarios Supplementary Figure~\ref{fig-ipd-both}
 
 \caption{\label{fig-ipd-both}Relationship between IPD \(z^2\)-values
 when calculated using random draws of expected values of biomass. The
-solid line is the 1:1 line.}
+solid line is the 1:1 line. Horizontal and vertical dashed lines
+represent the \(\alpha = 0.05\) critical value above which METE is
+rejected.}
 
 \end{figure}%
 
