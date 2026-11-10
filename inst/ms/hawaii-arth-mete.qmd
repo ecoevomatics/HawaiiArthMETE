@@ -319,7 +319,7 @@ $$
 
 where $\hat{\mu}_{\log\mathscr{L}_\text{METE}}$ is the mean of the log likelihood of data drawn from METE itself, and $\hat{\sigma}_{\log\mathscr{L}_\text{METE}}$ is the standard deviation of the log likelihood of data drawn from METE itself.
 
-If METE is truly correct in describing the data, $z^2$ will asymptotically have a $\chi^2$ distribution with $d.f. = 1$ [@rominger-merow2016]. If METE does not truly describe the data, the $z^2$-value is likely to be large. When visualizing $z^2$-values we show the 0.05 significance critical value cut off (`r round(qchisq(0.95, 1), 3)`). This cut off represents the minimum $z^2$-value required to reject METE as the model generating the data. It should be noted that failing to reject METE at a significance level of 0.05 does not mean that METE perfectly describes the data, rather that METE is plausible from the perspective of its likelihood function. 
+If METE is truly correct in describing the data, $z^2$ will asymptotically have a $\chi^2$ distribution with $d.f. = 1$ [@rominger-merow2016]. If METE does not truly describe the data, the $z^2$-value is likely to be large. When visualizing $z^2$-values we show the 0.05 significance critical value cut off (`r round(qchisq(0.95, 1), 3)`). This cut off marks the $z^2$-value above which the observed log likelihood would have a $\leq 0.05$ probability of being observed if the data were directly sampled from METE. We emphasize, however, that we use $z^2$ primarily as a standardized, continuous measure of departure from METE: larger values indicate greater departure and smaller values indicate closer conformity, and we are interested in how that departure varies across the chronosequence rather than in a binary decision about METE. Failing to exceed the critical value is not the same as accepting METE. A $z^2$-value below the cut off means only that METE is more plausible than if the $z^2$ value were above the cut off, not that METE perfectly describes the data. That $z^2$ measures real departure from METE regardless of proximity to the critical value is shown directly by relating $z^2$ to the differences between observed and predicted rarity and dominance (see below). 
 
 To further understand differences between METE predictions and observed SADs and IPDs, beyond what the $z^2$ statistic alone can tell us, we compare the extrema of the observed and predicted distributions. These extrema can be especially informative about the nature of deviations [@harte2011]. For the SAD we compare rarity as the log ratio of observed proportion of singletons to the predicted proportion of singletons, and we compare dominance as log ratio of observed total abundance of the top three most abundant species to the predicted total abundance of the top three most abundant species. For the IPD we compare metrics similar to rarity and dominance: the log ratio of observed proportion of individuals with a scaled metabolism of less than 3 to its prediction, and the log ratio of the observed sum of metabolic rates for the top 10 individuals to its prediction.
 
@@ -362,7 +362,8 @@ Comparing observed Bray-Curtis dissimilarity partitions to their permutational n
 #| fig-cap: |
 #|     Deviations from METE across the chronosequence as measured by 
 #|     $z^2$-values. Colors represent sites and match the color coding of 
-#|     substrate age in @fig-chrono.
+#|     substrate age in @fig-chrono. The horizontal dashed line is the 
+#|     $\alpha = 0.05$ critical value of $z^2$.
 
 fig_z2_chrono
 
@@ -403,7 +404,8 @@ For the IPD there is not a consistent relationship between deviations and the ta
 #|     Relationship between $z^2$ measure of deviation from METE and different
 #|     metrics describing how observed data and METE predictions diverge. Larger
 #|     dots correspond to samples used in @fig-rad to exemplify greater and 
-#|     lesser deviation from METE.
+#|     lesser deviation from METE. The horizontal dashed line is the 
+#|     $\alpha = 0.05$ critical value of $z^2$.
 
 fig_how_z2
 ```
@@ -421,7 +423,8 @@ fig_how_z2
 #|     predictor variables: proportion of non-native species and 
 #|     $\beta$-diversity. Highest $\beta$-diversity levels are found at sites 
 #|     of intermediate age, while proportion of non-native species is less
-#|     consitent across the chronosequence.
+#|     consitent across the chronosequence. Horizontal dashed lines are the 
+#|     $\alpha = 0.05$ critical value of $z^2$.
 
 f_non <- fig_dev_non +
     theme(legend.position = "none", 
@@ -478,7 +481,7 @@ The oldest (Alakaʻi) and youngest (Kīlauea) sites contrast with Laupāhoehoe, 
 
 ## Discussion
 
-Real data deviate from both the METE-predicted SAD and IPD in consistent ways across the chronosequence [@fig-z2-chrono]. This is strong [sensu @mcgill2003] evidence of meaningful departures from the steady state assumptions of METE due to biological processes not accounted for in the deliberately simple state variables of the theory. 
+Real data deviate from the METE-predicted SAD and IPD in consistent ways across the chronosequence, with the greatest departures at middle-aged sites [@fig-z2-chrono]. These larger departures are consistent with there being processes not accounted for in the deliberately simple state variables of the theory.  
 
 Patterns of deviation in the IPD are more variable than those of the SAD. This is not surprising given that the estimation of metabolic rate from allometric relationships introduces more uncertainty than the direct observation of abundances in samples. The choice to use random samples from allometric relationships, rather than expected values, slightly reduces the variability of IPD patterns because expected values introduce artificial discretization of metabolic rate estimates that are inconsistent with METE and indeed the reality that metabolic rates are continuous (see ssec{sec-re-run} and the appendix "Sampling biomass estimates from allometric equations"). Nonetheless, re-running all IPD analyses using expected values from allometric relationships does not substantially change our findings (ssec{sec-re-run}).
 

@@ -237,8 +237,7 @@ The following code produces the visualization reported in the main text of devia
 #| fig-height: 6
 #| fig-cap: |
 #|     Deviations from METE as measured by $z^2$ across the chronosequence. 
-#|     Horizontal dashed line represents the $\alpha = 0.05$ critical value 
-#|     above which METE is rejected.
+#|     Horizontal dashed line is the $\alpha = 0.05$ critical value of $z^2$.
 #| dependson: mete-calc, z2-chrono-lm
 
 # prepare data frame of predicted values for plotting
@@ -309,8 +308,8 @@ Generally $z^2$-values of the SAD and IPD are correlated [@fig-z2-cor].
 #| fig-cap: |
 #|     Relationship between deviations of SAD and IPD. Slighlty enlarged, 
 #|     circled points are those used as examples of low and high deviation 
-#|     from METE. Horizontal and vertical dashed lines represent the 
-#|     $\alpha = 0.05$ critical value above which METE is rejected.
+#|     from METE. Horizontal and vertical dashed lines are the 
+#|     $\alpha = 0.05$ critical value of $z^2$.
 
 
 expl <- filter(arth_mete, 
@@ -461,8 +460,8 @@ Looking across all samples (@fig-how-z2-supp) we see that deviations between obs
 #| fig-cap: |
 #|     Relationship between $z^2$ measure of deviation from METE and different
 #|     metrics describing how observed data and METE predictions diverge. 
-#|     Horizontal dashed line represents the $\alpha = 0.05$ critical value 
-#|     above which METE is rejected. Large, circled points are the samples 
+#|     Horizontal dashed line is the $\alpha = 0.05$ critical value of $z^2$. 
+#|     Large, circled points are the samples 
 #|     used as examples of low and high deviation from METE.
 #| dependson: 
 #|     - mete-calc
@@ -600,8 +599,8 @@ The below code is used for visualizing the results. Note that Kīlauea is consid
 #|     METE. Kīlauea was excluded from the overall analysis to be able to 
 #|     compare it separately to the overall trend. Gray regreions represent
 #|     95% confidence envelopes (or confidence interval for Kīlauea) and solid 
-#|     lines are expected values. Horizontal and vertical dashed lines represent 
-#|     the $\alpha = 0.05$ critical value above which METE is rejected.
+#|     lines are expected values. Horizontal and vertical dashed lines are 
+#|     the $\alpha = 0.05$ critical value of $z^2$.
 #| dependson: 
 #|     - mete-calc
 #|     - calc-dev-non
@@ -941,8 +940,8 @@ The first thing to notice is that IPD $z^2$-values are correlated under both ana
 #| fig-cap: |
 #|     Relationship between IPD $z^2$-values when calculated using random draws
 #|     of expected values of biomass. The solid line is the 1:1 line. Horizontal 
-#|     and vertical dashed lines represent the $\alpha = 0.05$ critical value 
-#|     above which METE is rejected.
+#|     and vertical dashed lines are the $\alpha = 0.05$ critical value of 
+#|     $z^2$.
 
 data.frame(ipd_draw = arth_mete$z2_ipd, 
            ipd_expt = scr_env$arth_mete$z2_ipd) |> 
