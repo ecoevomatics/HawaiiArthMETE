@@ -57,6 +57,18 @@ library(tidyr)
 library(metafor)
 library(HawaiiArthMETE)
 
+# adds bold panel letters to a corner of each facet panel ("tl", "tr", "bl"
+# or "br"); `tags` is a data frame with the faceting variable(s) and a `tag` 
+# column
+panel_tags <- function(tags, corner = "tl") {
+    pos <- list(tl = list(x = -Inf, y = Inf, hjust = -0.6, vjust = 1.6), 
+                tr = list(x = Inf, y = Inf, hjust = 1.6, vjust = 1.6), 
+                bl = list(x = -Inf, y = -Inf, hjust = -0.6, vjust = -0.6), 
+                br = list(x = Inf, y = -Inf, hjust = 1.6, vjust = -0.6))[[corner]]
+    geom_text(data = tags, mapping = aes(label = tag), 
+              x = pos$x, y = pos$y, hjust = pos$hjust, vjust = pos$vjust, 
+              fontface = "bold", size = 5, inherit.aes = FALSE)
+}
 
 knitr::opts_chunk$set(
     # default figure dims
@@ -236,8 +248,10 @@ The following code produces the visualization reported in the main text of devia
 #| label: fig-z2-chrono-supp
 #| fig-height: 6
 #| fig-cap: |
-#|     Deviations from METE as measured by $z^2$ across the chronosequence. 
-#|     Horizontal dashed line is the $\alpha = 0.05$ critical value of $z^2$.
+#|     Deviations from the Maximum Entropy Theory of Ecology (METE) as measured 
+#|     by $z^2$ across the chronosequence for the individual power 
+#|     distribution (IPD; A) and species abundance distribution (SAD; B). Horizontal dashed lines are the 
+#|     $\alpha = 0.05$ critical value of $z^2$.
 #| dependson: mete-calc, z2-chrono-lm
 
 # prepare data frame of predicted values for plotting
@@ -290,7 +304,8 @@ fig_z2_chrono <- pivot_longer(arth_mete, c(z2_sad, z2_ipd),
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
           strip.placement = "outside") +
-    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
+    panel_tags(data.frame(metric = c("z2_ipd", "z2_sad"), tag = c("A", "B")))
 
 fig_z2_chrono 
 
@@ -305,8 +320,13 @@ Generally $z^2$-values of the SAD and IPD are correlated [@fig-z2-cor].
 
 ```{r}
 #| label: fig-z2-cor
+#| fig-width: 8
+#| fig-height: 3
 #| fig-cap: |
-#|     Relationship between deviations of SAD and IPD. Slighlty enlarged, 
+#|     Relationship between deviations of the species abundance distribution 
+#|     (SAD) and individual power distribution (IPD) from the Maximum Entropy 
+#|     Theory of Ecology (METE), with one panel for each
+#|     site (A--E, left to right). Slighlty enlarged, 
 #|     circled points are those used as examples of low and high deviation 
 #|     from METE. Horizontal and vertical dashed lines are the 
 #|     $\alpha = 0.05$ critical value of $z^2$.
@@ -345,7 +365,10 @@ ggplot(arth_mete, aes(z2_sad, z2_ipd, color = site_name)) +
     geom_vline(xintercept = qchisq(0.95, 1), linetype = 2) +
     facet_grid(cols = vars(site_name)) +
     geom_smooth(method = "lm", se = FALSE) +
-    theme(legend.position = "none")
+    theme(legend.position = "none") +
+    panel_tags(data.frame(site_name = factor(levels(arth_mete$site_name), 
+                                             levels = levels(arth_mete$site_name)), 
+                          tag = LETTERS[seq_along(levels(arth_mete$site_name))]))
 
 
 ```
@@ -365,7 +388,8 @@ Within sites, correlations are still positive, but only Laupāhoehoe shows a sta
 ```{r}
 #| label: tbl-z2-cor-site
 #| tbl-cap: |
-#|     Product-moment correlation estimates and tests of SAD and IPD 
+#|     Product-moment correlation estimates and tests of species abundance 
+#|     distribution (SAD) and individual power distribution (IPD) 
 #|     $z^2$-values within sites.
 
 # correlation of z2 values within sites
@@ -388,7 +412,9 @@ Next we determine how the observed data deviate from the METE predictions. To be
 ```{r}
 #| label: fig-how-diff
 #| fig-cap: |
-#|     Two exemplar IPDs and SADs showing high and low deviation from METE.
+#|     Two exemplar individual power distributions (IPDs; A, B) and species 
+#|     abundance distributions (SADs; C, D) showing high (A, C) and low 
+#|     (B, D) deviation from the Maximum Entropy Theory of Ecology (METE).
 #|     The low deviation distributions come from the same sample at the 
 #|     Alakaʻi site while the high deviation distributions come from the
 #|     same sample at the Kamakou site. Samples were choosen to represent
@@ -444,7 +470,11 @@ fig_how_diff <- ggplot(expl_samps, aes(rank, m)) +
     this_ms_look(log_y = TRUE) +
     theme(strip.background.y = element_blank(), 
           strip.placement.y = "outside",
-          strip.text.y = element_text(size = 14))
+          strip.text.y = element_text(size = 14)) +
+    panel_tags(data.frame(dist = c("ipd", "ipd", "sad", "sad"), 
+                          deviation = c("hi", "lo", "hi", "lo"), 
+                          tag = LETTERS[1:4]), 
+                corner = "tr")
 
 fig_how_diff
 ```
@@ -458,9 +488,13 @@ Looking across all samples (@fig-how-z2-supp) we see that deviations between obs
 #| fig-width: 7.5
 #| fig-height: 6
 #| fig-cap: |
-#|     Relationship between $z^2$ measure of deviation from METE and different
-#|     metrics describing how observed data and METE predictions diverge. 
-#|     Horizontal dashed line is the $\alpha = 0.05$ critical value of $z^2$. 
+#|     Relationship between $z^2$ measure of deviation from the Maximum Entropy 
+#|     Theory of Ecology (METE) and different
+#|     metrics describing how observed data and METE predictions diverge: 
+#|     difference in dominance (A, C) and in rarity (B, D) for the individual 
+#|     power distribution (IPD; A, B) and species abundance distribution 
+#|     (SAD; C, D). 
+#|     Horizontal dashed lines are the $\alpha = 0.05$ critical value of $z^2$. 
 #|     Large, circled points are the samples 
 #|     used as examples of low and high deviation from METE.
 #| dependson: 
@@ -506,7 +540,11 @@ fig_how_z2 <- ggplot(z2_long, aes(diff, z2, color = site_name)) +
     theme(strip.background = element_blank(), 
           strip.placement = "outside",
           strip.text.y = element_text(size = 14)) +
-    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) 
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
+    panel_tags(data.frame(dist = c("ipd", "ipd", "sad", "sad"), 
+                          comp = c("dom", "rar", "dom", "rar"), 
+                          tag = LETTERS[1:4]), 
+                corner = "bl")
 
 fig_how_z2
 ```
@@ -596,7 +634,8 @@ The below code is used for visualizing the results. Note that Kīlauea is consid
 #| fig-height: 6
 #| fig-cap: |
 #|     Relationship between proportion of non-native species and deviation from 
-#|     METE. Kīlauea was excluded from the overall analysis to be able to 
+#|     the Maximum Entropy Theory of Ecology (METE) for the individual power 
+#|     distribution (IPD; A) and species abundance distribution (SAD; B). Kīlauea was excluded from the overall analysis to be able to 
 #|     compare it separately to the overall trend. Gray regreions represent
 #|     95% confidence envelopes (or confidence interval for Kīlauea) and solid 
 #|     lines are expected values. Horizontal and vertical dashed lines are 
@@ -678,7 +717,8 @@ fig_dev_non <- pivot_longer(mete_by_non, starts_with("z2"),
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
           strip.placement = "outside") +
-    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2)
+    geom_hline(yintercept = qchisq(0.95, 1), linetype = 2) +
+    panel_tags(data.frame(dist = c("ipd", "sad"), tag = c("A", "B")))
 
 
 
@@ -740,7 +780,9 @@ The below code visualizes the results of the meta regression or SAD and IPD $z^2
 #| label: fig-diss-z
 #| fig-height: 6
 #| fig-cap: |
-#|     Relationship between dissimilarity and deviation from METE. Gray 
+#|     Relationship between dissimilarity and deviation from the Maximum Entropy 
+#|     Theory of Ecology (METE) for the individual power distribution (IPD; A) 
+#|     and species abundance distribution (SAD; B). Gray 
 #|     regreions represent 95% confidence envelopes and solid lines are 
 #|     expected values.
 #| dependson: 
@@ -791,7 +833,8 @@ fig_diss_z <- pivot_longer(mete_by_diss, starts_with("z2"),
     this_ms_look(log_y = TRUE) +
     theme(axis.title.y = element_blank(),
           strip.background = element_blank(), 
-          strip.placement = "outside")
+          strip.placement = "outside") +
+    panel_tags(data.frame(dist = c("ipd", "sad"), tag = c("A", "B")))
 
 fig_diss_z
 
@@ -879,7 +922,8 @@ fig_bray_part <- site_bray_z |>
     guide = guide_legend(override.aes = list(fill = c("grey30", "grey80"),
                                              alpha = 1))) +
     xlab("Mean dissimilarity") +
-    theme(axis.title.y = element_blank())
+    theme(axis.title.y = element_blank()) +
+    geom_vline(xintercept = 0, linetype = 2)
 
 fig_bray_part
 ```
@@ -938,7 +982,8 @@ The first thing to notice is that IPD $z^2$-values are correlated under both ana
 ```{r}
 #| label: fig-ipd-both
 #| fig-cap: |
-#|     Relationship between IPD $z^2$-values when calculated using random draws
+#|     Relationship between individual power distribution (IPD) $z^2$-values 
+#|     when calculated using random draws
 #|     of expected values of biomass. The solid line is the 1:1 line. Horizontal 
 #|     and vertical dashed lines are the $\alpha = 0.05$ critical value of 
 #|     $z^2$.
@@ -966,9 +1011,10 @@ This increased variability is not surprising given the artificial descritization
 #| label: fig-diff-both
 #| fig-cap: |
 #|     Example rank distributions of individual metabolic rate showing both
-#|     high and low deviations from METE as well as metabolic rate estimates
-#|     based on random draws from allometric relationships versus the expected
-#|     values of those relationships. Note that with expected values artificial
+#|     high (A, B) and low (C, D) deviations from the Maximum Entropy Theory of 
+#|     Ecology (METE) as well as metabolic 
+#|     rate estimates based on random draws from allometric relationships (A, C)
+#|     versus the expected values of those relationships (B, D). Note that with expected values artificial
 #|     descritization causes both spurious deviation from METE (as in the low
 #|     deviation example) and spurios conformations to METE (as in the high
 #|     deviation example).
@@ -994,7 +1040,11 @@ bind_rows(draws = expl_samps,
     ) +
     xlab("Rank") +
     ylab("Metabolic rate") +
-    this_ms_look(log_y = TRUE)
+    this_ms_look(log_y = TRUE) +
+    panel_tags(data.frame(deviation = c("hi", "hi", "lo", "lo"), 
+                          biomass = c("draws", "exptd", "draws", "exptd"), 
+                          tag = LETTERS[1:4]), 
+                corner = "tr")
 ```
 
 

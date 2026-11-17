@@ -24,7 +24,7 @@ title: "A maximum entropy perspective reveals deviations from steady state durin
 # filters:
 #   - authors.lua
 format:
-  pdf:
+  docx:
     include-in-header: 
       text: |
         \usepackage{authblk}
@@ -165,9 +165,9 @@ The Hawaiian Archipelago holds numerous examples of adaptive radiation [@gillesp
 #|     north west on Kauaʻi and youngest flows to the south east on Hawaiʻi. 
 #|     Substrate age data from @sherrod2021. The five sites are indicated with 
 #|     dots on the map and arrows indicating their flow ages on the legend. 
-#|     From oldest to youngest sites are: Alakaʻi (Kauaʻi: 4.1 Mya), Kamakou 
-#|     (Molokaʻi: 1.4 Mya), Kohala, Laupāhoehoe, Kīlauea (Hawaiʻi: 0.5 Mya, 
-#|     150 Kya, 300 ya).
+#|     From oldest to youngest sites are: Alakaʻi (Kauaʻi: 4.1 million years ago), Kamakou 
+#|     (Molokaʻi: 1.4 million years ago), Kohala, Laupāhoehoe, Kīlauea 
+#|     (Hawaiʻi: 0.5 million years ago, 150 thousand years ago, 300 years ago).
 
 x <- st_read("../hi_geol/hawaii_state_geol_ageClean.shp") |> 
     filter(!is.na(age_mid)) 
@@ -321,7 +321,7 @@ where $\hat{\mu}_{\log\mathscr{L}_\text{METE}}$ is the mean of the log likelihoo
 
 If METE is truly correct in describing the data, $z^2$ will asymptotically have a $\chi^2$ distribution with $d.f. = 1$ [@rominger-merow2016]. If METE does not truly describe the data, the $z^2$-value is likely to be large. When visualizing $z^2$-values we show the 0.05 significance critical value cut off (`r round(qchisq(0.95, 1), 3)`). This cut off marks the $z^2$-value above which the observed log likelihood would have a $\leq 0.05$ probability of being observed if the data were directly sampled from METE. We emphasize, however, that we use $z^2$ primarily as a standardized, continuous measure of departure from METE: larger values indicate greater departure and smaller values indicate closer conformity. We are interested in how that departure varies across the chronosequence rather than in a binary decision about METE. Failing to exceed the critical value is not the same as accepting METE. A $z^2$-value below the cut off means only that METE is more plausible than if the $z^2$ value were above the cut off, not that METE perfectly describes the data. That $z^2$ measures real departure from METE regardless of proximity to the critical value is shown directly by relating $z^2$ to the differences between observed and predicted rarity and dominance (see below). 
 
-To further understand differences between METE predictions and observed SADs and IPDs, beyond what the $z^2$ statistic alone can tell us, we compare the extrema of the observed and predicted distributions. These extrema can be especially informative about the nature of deviations [@harte2011]. For the SAD we compare rarity as the log ratio of observed proportion of singletons to the predicted proportion of singletons, and we compare dominance as log ratio of observed total abundance of the top three most abundant species to the predicted total abundance of the top three most abundant species. For the IPD we compare metrics similar to rarity and dominance: the log ratio of observed proportion of individuals with a scaled metabolism of less than 3 to its prediction, and the log ratio of the observed sum of metabolic rates for the top 10 individuals to its prediction.
+To further understand differences between METE predictions and observed SADs and IPDs, beyond what the $z^2$ statistic alone can tell us, we compare the extrema of the observed and predicted distributions. These extrema can be especially informative about the nature of deviations [@harte2011]. For the SAD we compare rarity as the log ratio of observed proportion of singletons to the predicted proportion of singletons, and we compare dominance as log ratio of observed total abundance of the top 10 most abundant species to the predicted total abundance of the top 10 most abundant species. For the IPD we compare metrics similar to rarity and dominance: the log ratio of observed proportion of individuals with a scaled metabolism of less than 3 to its prediction, and the log ratio of the observed sum of metabolic rates for the top 10 individuals to its prediction.
 
 
 
@@ -360,9 +360,11 @@ Comparing observed Bray-Curtis dissimilarity partitions to their permutational n
 ```{r}
 #| label: fig-z2-chrono
 #| fig-cap: |
-#|     Deviations from METE across the chronosequence as measured by 
-#|     $z^2$-values. Colors represent sites and match the color coding of 
-#|     substrate age in @fig-chrono. The horizontal dashed line is the 
+#|     Deviations from the Maximum Entropy Theory of Ecology (METE) across the 
+#|     chronosequence as measured by $z^2$-values for the individual power 
+#|     distribution (IPD; A) and species abundance distribution (SAD; B). Colors represent sites and 
+#|     match the color coding of substrate age in @fig-chrono. The 
+#|     horizontal dashed lines are the 
 #|     $\alpha = 0.05$ critical value of $z^2$.
 
 fig_z2_chrono
@@ -379,7 +381,9 @@ The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values.
 ```{r}
 #| label: fig-rad
 #| fig-cap: |
-#|     Two exemplar IPDs and SADs showing high and low deviation from METE.
+#|     Two exemplar individual power distributions (IPDs; A, B) and species 
+#|     abundance distributions (SADs; C, D) showing high (A, C) and low 
+#|     (B, D) deviation from the Maximum Entropy Theory of Ecology (METE).
 #|     The low deviation distributions come from the same sample at the 
 #|     Alakaʻi site while the high deviation distributions come from the
 #|     same sample at the Kamakou site. The black dots show the observed data
@@ -391,7 +395,7 @@ fig_how_diff
 ```
 
 
-@fig-rad shows two exemplar SADs and IPDs with low and high deviation from METE predictions. These exemplars show how METE under-predicts rarity for the SAD and how middle values of metabolic rate can be incorrectly predicted by METE. However, these are only two examples, @fig-how-z2 shows that for the SAD, the primary driver of differences between METE predictions and observed patterns is indeed that observed species abundances have both a higher proportion of singletons and a larger concentration of abundance in the most abundant species compared to METE. Taken together, this means that observed SADs are more uneven than those predicted by METE.
+@fig-rad shows two exemplar SADs and IPDs with low and high deviation from METE predictions. These exemplars show how METE under-predicts rarity for the SAD and how middle values of metabolic rate can be incorrectly predicted by METE. However, these are only two examples, @fig-how-z2 shows how each sample deviates from METE predictions. For the SAD, the primary driver of differences between METE predictions and observed patterns is indeed that observed species abundances have both a higher proportion of singletons and a larger concentration of abundance in the most abundant species compared to METE. Taken together, this means that observed SADs are more uneven than those predicted by METE.
 
 For the IPD there is not a consistent relationship between deviations and the tails of the metabolic rate distribution [@fig-how-z2]. In terms of proportion of individuals with very low metabolisms, `r sum(ipd_diff[, "n_over_rar"])` samples showed theory over-predicting this proportion while `r sum(ipd_diff[, "n_undr_rar"])` samples showed theory under-predicting this proportion. The difference was not significant by a binomial generalized linear model of over-versus-under prediction grouped by site (z = `r round(summary(p1_mod)$coefficients[3], 3)`, $P$ = `r round(summary(p1_mod)$coefficients[4], 3)`). In terms of concentration of metabolic rate in the most metabolically active individuals, `r sum(ipd_diff[, "n_over_dom"])` samples showed theory over-predicting this concentration while `r sum(ipd_diff[, "n_undr_dom"])` samples showed theory under-predicting this concentration. With the two numbers exactly equal, any $P$-value will never be significant.
 
@@ -401,10 +405,14 @@ For the IPD there is not a consistent relationship between deviations and the ta
 #| fig-width: 7
 #| fig-height: 5
 #| fig-cap: |
-#|     Relationship between $z^2$ measure of deviation from METE and different
-#|     metrics describing how observed data and METE predictions diverge. Larger
+#|     Relationship between $z^2$ measure of deviation from the Maximum Entropy 
+#|     Theory of Ecology (METE) and different
+#|     metrics describing how observed data and METE predictions diverge: 
+#|     difference in dominance (A, C) and in rarity (B, D) for the individual 
+#|     power distribution (IPD; A, B) and species abundance distribution 
+#|     (SAD; C, D). Larger
 #|     dots correspond to samples used in @fig-rad to exemplify greater and 
-#|     lesser deviation from METE. The horizontal dashed line is the 
+#|     lesser deviation from METE. The horizontal dashed lines are the 
 #|     $\alpha = 0.05$ critical value of $z^2$.
 
 fig_how_z2
@@ -419,18 +427,26 @@ fig_how_z2
 #| fig-width: 7
 #| fig-height: 5
 #| fig-cap: |
-#|     Relationship between $z^2$ measure of deviation from METE and different
-#|     predictor variables: proportion of non-native species and 
-#|     $\beta$-diversity. Highest $\beta$-diversity levels are found at sites 
+#|     Relationship between $z^2$ measure of deviation from the Maximum Entropy 
+#|     Theory of Ecology (METE) and different
+#|     predictor variables: proportion of non-native species (A, C) and 
+#|     $\beta$-diversity (B, D), for the individual power distribution 
+#|     (IPD; A, B) and species abundance distribution (SAD; C, D). Highest $\beta$-diversity levels are found at sites 
 #|     of intermediate age, while proportion of non-native species is less
 #|     consitent across the chronosequence. Horizontal dashed lines are the 
 #|     $\alpha = 0.05$ critical value of $z^2$.
 
-f_non <- fig_dev_non +
+# panel letters read across rows in the combined figure: replace the 
+# letters of the individual supplement figures
+f_non <- fig_dev_non
+f_non$layers[[length(f_non$layers)]]$data$tag <- c("A", "C")
+f_non <- f_non +
     theme(legend.position = "none", 
           plot.margin = unit(c(7, 1, 7, 7), "pt"))
 
-f_dis <- fig_diss_z +
+f_dis <- fig_diss_z
+f_dis$layers[[length(f_dis$layers)]]$data$tag <- c("B", "D")
+f_dis <- f_dis +
     theme(axis.text.y = element_blank(), 
           axis.ticks.length.y = unit(0, "npc"), 
           strip.text = element_blank(), 
@@ -464,7 +480,8 @@ fcap <- c("Difference in contribution of native and non-native species to ",
           "contribution of non-native species at Kamakou is small and positive (",
           round(site_bray_z$bp_non[site_bray_z$site_name == "Kamakou"], 4),
           "). The contribution of non-native species at Kīlauea is negative ",
-          "and the  contribution of native species at Alakaʻi is negative.")
+          "and the  contribution of native species at Alakaʻi is negative.", 
+          "Dashed verticle line is the 0-line.")
 ```
 
 ```{r}
