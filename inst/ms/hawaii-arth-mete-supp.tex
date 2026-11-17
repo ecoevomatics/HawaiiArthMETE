@@ -358,6 +358,19 @@ The following object is masked from 'package:meteR':
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\# adds bold panel letters to a corner of each facet panel ("tl", "tr", "bl"}
+\CommentTok{\# or "br"); \textasciigrave{}tags\textasciigrave{} is a data frame with the faceting variable(s) and a \textasciigrave{}tag\textasciigrave{} }
+\CommentTok{\# column}
+\NormalTok{panel\_tags }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(tags, }\AttributeTok{corner =} \StringTok{"tl"}\NormalTok{) \{}
+\NormalTok{    pos }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{tl =} \FunctionTok{list}\NormalTok{(}\AttributeTok{x =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \SpecialCharTok{{-}}\FloatTok{0.6}\NormalTok{, }\AttributeTok{vjust =} \FloatTok{1.6}\NormalTok{), }
+                \AttributeTok{tr =} \FunctionTok{list}\NormalTok{(}\AttributeTok{x =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \FloatTok{1.6}\NormalTok{, }\AttributeTok{vjust =} \FloatTok{1.6}\NormalTok{), }
+                \AttributeTok{bl =} \FunctionTok{list}\NormalTok{(}\AttributeTok{x =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \SpecialCharTok{{-}}\FloatTok{0.6}\NormalTok{, }\AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.6}\NormalTok{), }
+                \AttributeTok{br =} \FunctionTok{list}\NormalTok{(}\AttributeTok{x =} \ConstantTok{Inf}\NormalTok{, }\AttributeTok{y =} \SpecialCharTok{{-}}\ConstantTok{Inf}\NormalTok{, }\AttributeTok{hjust =} \FloatTok{1.6}\NormalTok{, }\AttributeTok{vjust =} \SpecialCharTok{{-}}\FloatTok{0.6}\NormalTok{))[[corner]]}
+    \FunctionTok{geom\_text}\NormalTok{(}\AttributeTok{data =}\NormalTok{ tags, }\AttributeTok{mapping =} \FunctionTok{aes}\NormalTok{(}\AttributeTok{label =}\NormalTok{ tag), }
+              \AttributeTok{x =}\NormalTok{ pos}\SpecialCharTok{$}\NormalTok{x, }\AttributeTok{y =}\NormalTok{ pos}\SpecialCharTok{$}\NormalTok{y, }\AttributeTok{hjust =}\NormalTok{ pos}\SpecialCharTok{$}\NormalTok{hjust, }\AttributeTok{vjust =}\NormalTok{ pos}\SpecialCharTok{$}\NormalTok{vjust, }
+              \AttributeTok{fontface =} \StringTok{"bold"}\NormalTok{, }\AttributeTok{size =} \DecValTok{5}\NormalTok{, }\AttributeTok{inherit.aes =} \ConstantTok{FALSE}\NormalTok{)}
+\NormalTok{\}}
+
 \NormalTok{knitr}\SpecialCharTok{::}\NormalTok{opts\_chunk}\SpecialCharTok{$}\FunctionTok{set}\NormalTok{(}
     \CommentTok{\# default figure dims}
     \AttributeTok{fig.width =} \FloatTok{5.5}\NormalTok{, }\AttributeTok{fig.height =} \DecValTok{4}\NormalTok{, }
@@ -649,7 +662,8 @@ of deviation from METE across flow ages.
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{(),}
           \AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
           \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{metric =} \FunctionTok{c}\NormalTok{(}\StringTok{"z2\_ipd"}\NormalTok{, }\StringTok{"z2\_sad"}\NormalTok{), }\AttributeTok{tag =} \FunctionTok{c}\NormalTok{(}\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{)))}
 
 \NormalTok{fig\_z2\_chrono }
 \end{Highlighting}
@@ -663,8 +677,10 @@ of deviation from METE across flow ages.
 
 }
 
-\caption{\label{fig-z2-chrono-supp}Deviations from METE as measured by
-\(z^2\) across the chronosequence. Horizontal dashed line is the
+\caption{\label{fig-z2-chrono-supp}Deviations from the Maximum Entropy
+Theory of Ecology (METE) as measured by \(z^2\) across the
+chronosequence for the individual power distribution (IPD; A) and
+species abundance distribution (SAD; B). Horizontal dashed lines are the
 \(\alpha = 0.05\) critical value of \(z^2\).}
 
 \end{figure}%
@@ -710,7 +726,10 @@ Figure~\ref{fig-z2-cor}.
     \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{facet\_grid}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{vars}\NormalTok{(site\_name)) }\SpecialCharTok{+}
     \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{site\_name =} \FunctionTok{factor}\NormalTok{(}\FunctionTok{levels}\NormalTok{(arth\_mete}\SpecialCharTok{$}\NormalTok{site\_name), }
+                                             \AttributeTok{levels =} \FunctionTok{levels}\NormalTok{(arth\_mete}\SpecialCharTok{$}\NormalTok{site\_name)), }
+                          \AttributeTok{tag =}\NormalTok{ LETTERS[}\FunctionTok{seq\_along}\NormalTok{(}\FunctionTok{levels}\NormalTok{(arth\_mete}\SpecialCharTok{$}\NormalTok{site\_name))]))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -726,10 +745,13 @@ Figure~\ref{fig-z2-cor}.
 
 }
 
-\caption{\label{fig-z2-cor}Relationship between deviations of SAD and
-IPD. Slighlty enlarged, circled points are those used as examples of low
-and high deviation from METE. Horizontal and vertical dashed lines are
-the \(\alpha = 0.05\) critical value of \(z^2\).}
+\caption{\label{fig-z2-cor}Relationship between deviations of the
+species abundance distribution (SAD) and individual power distribution
+(IPD) from the Maximum Entropy Theory of Ecology (METE), with one panel
+for each site (A--E, left to right). Slighlty enlarged, circled points
+are those used as examples of low and high deviation from METE.
+Horizontal and vertical dashed lines are the \(\alpha = 0.05\) critical
+value of \(z^2\).}
 
 \end{figure}%
 
@@ -780,7 +802,8 @@ shows a statistically significant internal correlation
 \begin{longtable}[]{@{}lrrr@{}}
 
 \caption{\label{tbl-z2-cor-site}Product-moment correlation estimates and
-tests of SAD and IPD \(z^2\)-values within sites.}
+tests of species abundance distribution (SAD) and individual power
+distribution (IPD) \(z^2\)-values within sites.}
 
 \tabularnewline
 
@@ -867,7 +890,11 @@ Joining with `by = join_by(rank)`
     \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.background.y =} \FunctionTok{element\_blank}\NormalTok{(), }
           \AttributeTok{strip.placement.y =} \StringTok{"outside"}\NormalTok{,}
-          \AttributeTok{strip.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{14}\NormalTok{))}
+          \AttributeTok{strip.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{14}\NormalTok{)) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dist =} \FunctionTok{c}\NormalTok{(}\StringTok{"ipd"}\NormalTok{, }\StringTok{"ipd"}\NormalTok{, }\StringTok{"sad"}\NormalTok{, }\StringTok{"sad"}\NormalTok{), }
+                          \AttributeTok{deviation =} \FunctionTok{c}\NormalTok{(}\StringTok{"hi"}\NormalTok{, }\StringTok{"lo"}\NormalTok{, }\StringTok{"hi"}\NormalTok{, }\StringTok{"lo"}\NormalTok{), }
+                          \AttributeTok{tag =}\NormalTok{ LETTERS[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{]), }
+                \AttributeTok{corner =} \StringTok{"tr"}\NormalTok{)}
 
 \NormalTok{fig\_how\_diff}
 \end{Highlighting}
@@ -881,10 +908,12 @@ Joining with `by = join_by(rank)`
 
 }
 
-\caption{\label{fig-how-diff}Two exemplar IPDs and SADs showing high and
-low deviation from METE. The low deviation distributions come from the
-same sample at the Alakaʻi site while the high deviation distributions
-come from the same sample at the Kamakou site. Samples were choosen to
+\caption{\label{fig-how-diff}Two exemplar individual power distributions
+(IPDs; A, B) and species abundance distributions (SADs; C, D) showing
+high (A, C) and low (B, D) deviation from the Maximum Entropy Theory of
+Ecology (METE). The low deviation distributions come from the same
+sample at the Alakaʻi site while the high deviation distributions come
+from the same sample at the Kamakou site. Samples were choosen to
 represent ranges of deviation while still being similar in state
 variables}
 
@@ -940,7 +969,11 @@ than the METE prediction.
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
           \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{,}
           \AttributeTok{strip.text.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{size =} \DecValTok{14}\NormalTok{)) }\SpecialCharTok{+}
-    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dist =} \FunctionTok{c}\NormalTok{(}\StringTok{"ipd"}\NormalTok{, }\StringTok{"ipd"}\NormalTok{, }\StringTok{"sad"}\NormalTok{, }\StringTok{"sad"}\NormalTok{), }
+                          \AttributeTok{comp =} \FunctionTok{c}\NormalTok{(}\StringTok{"dom"}\NormalTok{, }\StringTok{"rar"}\NormalTok{, }\StringTok{"dom"}\NormalTok{, }\StringTok{"rar"}\NormalTok{), }
+                          \AttributeTok{tag =}\NormalTok{ LETTERS[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{]), }
+                \AttributeTok{corner =} \StringTok{"bl"}\NormalTok{)}
 
 \NormalTok{fig\_how\_z2}
 \end{Highlighting}
@@ -955,8 +988,11 @@ than the METE prediction.
 }
 
 \caption{\label{fig-how-z2-supp}Relationship between \(z^2\) measure of
-deviation from METE and different metrics describing how observed data
-and METE predictions diverge. Horizontal dashed line is the
+deviation from the Maximum Entropy Theory of Ecology (METE) and
+different metrics describing how observed data and METE predictions
+diverge: difference in dominance (A, C) and in rarity (B, D) for the
+individual power distribution (IPD; A, B) and species abundance
+distribution (SAD; C, D). Horizontal dashed lines are the
 \(\alpha = 0.05\) critical value of \(z^2\). Large, circled points are
 the samples used as examples of low and high deviation from METE.}
 
@@ -1194,7 +1230,8 @@ pattern.
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{(),}
           \AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
           \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
+    \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \FunctionTok{qchisq}\NormalTok{(}\FloatTok{0.95}\NormalTok{, }\DecValTok{1}\NormalTok{), }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dist =} \FunctionTok{c}\NormalTok{(}\StringTok{"ipd"}\NormalTok{, }\StringTok{"sad"}\NormalTok{), }\AttributeTok{tag =} \FunctionTok{c}\NormalTok{(}\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{)))}
 
 
 
@@ -1211,8 +1248,10 @@ pattern.
 }
 
 \caption{\label{fig-dev-non}Relationship between proportion of
-non-native species and deviation from METE. Kīlauea was excluded from
-the overall analysis to be able to compare it separately to the overall
+non-native species and deviation from the Maximum Entropy Theory of
+Ecology (METE) for the individual power distribution (IPD; A) and
+species abundance distribution (SAD; B). Kīlauea was excluded from the
+overall analysis to be able to compare it separately to the overall
 trend. Gray regreions represent 95\% confidence envelopes (or confidence
 interval for Kīlauea) and solid lines are expected values. Horizontal
 and vertical dashed lines are the \(\alpha = 0.05\) critical value of
@@ -1335,7 +1374,8 @@ IPD \(z^2\)-values against dissimilarity.
     \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{(),}
           \AttributeTok{strip.background =} \FunctionTok{element\_blank}\NormalTok{(), }
-          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{)}
+          \AttributeTok{strip.placement =} \StringTok{"outside"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dist =} \FunctionTok{c}\NormalTok{(}\StringTok{"ipd"}\NormalTok{, }\StringTok{"sad"}\NormalTok{), }\AttributeTok{tag =} \FunctionTok{c}\NormalTok{(}\StringTok{"A"}\NormalTok{, }\StringTok{"B"}\NormalTok{)))}
 
 \NormalTok{fig\_diss\_z}
 \end{Highlighting}
@@ -1350,8 +1390,10 @@ IPD \(z^2\)-values against dissimilarity.
 }
 
 \caption{\label{fig-diss-z}Relationship between dissimilarity and
-deviation from METE. Gray regreions represent 95\% confidence envelopes
-and solid lines are expected values.}
+deviation from the Maximum Entropy Theory of Ecology (METE) for the
+individual power distribution (IPD; A) and species abundance
+distribution (SAD; B). Gray regreions represent 95\% confidence
+envelopes and solid lines are expected values.}
 
 \end{figure}%
 
@@ -1441,7 +1483,8 @@ species to within-site, between-sample dissimilarity.
     \AttributeTok{guide =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{override.aes =} \FunctionTok{list}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{c}\NormalTok{(}\StringTok{"grey30"}\NormalTok{, }\StringTok{"grey80"}\NormalTok{),}
                                              \AttributeTok{alpha =} \DecValTok{1}\NormalTok{))) }\SpecialCharTok{+}
     \FunctionTok{xlab}\NormalTok{(}\StringTok{"Mean dissimilarity"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{())}
+    \FunctionTok{theme}\NormalTok{(}\AttributeTok{axis.title.y =} \FunctionTok{element\_blank}\NormalTok{()) }\SpecialCharTok{+}
+    \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1539,10 +1582,11 @@ under both analysis scenarios Supplementary Figure~\ref{fig-ipd-both}
 
 }
 
-\caption{\label{fig-ipd-both}Relationship between IPD \(z^2\)-values
-when calculated using random draws of expected values of biomass. The
-solid line is the 1:1 line. Horizontal and vertical dashed lines are the
-\(\alpha = 0.05\) critical value of \(z^2\).}
+\caption{\label{fig-ipd-both}Relationship between individual power
+distribution (IPD) \(z^2\)-values when calculated using random draws of
+expected values of biomass. The solid line is the 1:1 line. Horizontal
+and vertical dashed lines are the \(\alpha = 0.05\) critical value of
+\(z^2\).}
 
 \end{figure}%
 
@@ -1583,7 +1627,11 @@ Figure~\ref{fig-diff-both}.
 \NormalTok{    ) }\SpecialCharTok{+}
     \FunctionTok{xlab}\NormalTok{(}\StringTok{"Rank"}\NormalTok{) }\SpecialCharTok{+}
     \FunctionTok{ylab}\NormalTok{(}\StringTok{"Metabolic rate"}\NormalTok{) }\SpecialCharTok{+}
-    \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{)}
+    \FunctionTok{this\_ms\_look}\NormalTok{(}\AttributeTok{log\_y =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{panel\_tags}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(}\AttributeTok{deviation =} \FunctionTok{c}\NormalTok{(}\StringTok{"hi"}\NormalTok{, }\StringTok{"hi"}\NormalTok{, }\StringTok{"lo"}\NormalTok{, }\StringTok{"lo"}\NormalTok{), }
+                          \AttributeTok{biomass =} \FunctionTok{c}\NormalTok{(}\StringTok{"draws"}\NormalTok{, }\StringTok{"exptd"}\NormalTok{, }\StringTok{"draws"}\NormalTok{, }\StringTok{"exptd"}\NormalTok{), }
+                          \AttributeTok{tag =}\NormalTok{ LETTERS[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{]), }
+                \AttributeTok{corner =} \StringTok{"tr"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1596,12 +1644,13 @@ Figure~\ref{fig-diff-both}.
 }
 
 \caption{\label{fig-diff-both}Example rank distributions of individual
-metabolic rate showing both high and low deviations from METE as well as
-metabolic rate estimates based on random draws from allometric
-relationships versus the expected values of those relationships. Note
-that with expected values artificial descritization causes both spurious
-deviation from METE (as in the low deviation example) and spurios
-conformations to METE (as in the high deviation example).}
+metabolic rate showing both high (A, B) and low (C, D) deviations from
+the Maximum Entropy Theory of Ecology (METE) as well as metabolic rate
+estimates based on random draws from allometric relationships (A, C)
+versus the expected values of those relationships (B, D). Note that with
+expected values artificial descritization causes both spurious deviation
+from METE (as in the low deviation example) and spurios conformations to
+METE (as in the high deviation example).}
 
 \end{figure}%
 
