@@ -15,8 +15,10 @@
 #' @returns 
 #' a \code{metafor::rma} object
 #' 
-#' @importFrom dplyr group_by summarize across
+#' @importFrom dplyr group_by summarize across ungroup first n
 #' @importFrom tidyselect where
+#' @importFrom ggplot2 .data
+#' @importFrom stats model.frame as.formula sd update
 #'
 #' @export
 
@@ -75,6 +77,8 @@ site_means_lm <- function(formula, data) {
 #' @returns 
 #' a \code{metafor::predict.rma} object, similar to a data frame or list with 
 #' elements for \code{pred}, \code{se}, \code{ci.lb}, and \code{ci.ub}
+#'
+#' @importFrom stats formula terms predict
 #'
 #' @export
 

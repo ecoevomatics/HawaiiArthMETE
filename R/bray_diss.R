@@ -24,6 +24,8 @@
 #'
 #' @rdname bray_part
 #' 
+#' @importFrom stats sd simulate
+#'
 #' @export
 
 bray_part <- function(x, grp) {
@@ -142,6 +144,8 @@ cswap <- function(x, g) {
 #' 
 #' @returns 
 #' a single numeric value representing the z-score
+#'
+#' @importFrom stats sd simulate
 #'
 #' @export
 

@@ -7,22 +7,28 @@ Author: Andrew Rominger, Katie Thai
 LazyData: true
 Encoding: UTF-8
 Depends:
-    R (>= 4.0)
+    R (>= 4.2.0)
 Imports:
-    meteR,
-    dplyr,
-    ggplot2,
-    scales,
+    meteR (>= 1.2),
+    dplyr (>= 1.1.0),
+    ggplot2 (>= 3.5.0),
+    scales (>= 1.2.0),
     cowplot,
-    vegan,
-    metafor,
+    vegan (>= 2.5-0),
+    metafor (>= 3.0-0),
     reformulas,
-    tidyselect
+    tidyselect (>= 1.2.0),
+    stats
 Suggests:
     ggh4x,
     tidyr,
     sf,
     colorspace,
+    grid,
+    officer,
+    tinytex,
+    remotes,
+    devtools,
     quarto,
     knitr
 RoxygenNote: 7.3.2

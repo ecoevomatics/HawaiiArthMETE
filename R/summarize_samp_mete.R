@@ -16,6 +16,7 @@
 #' \code{lo} and \code{hi} for 95% CI bounds
 #' 
 #' @importFrom dplyr bind_rows summarize mutate
+#' @importFrom stats quantile
 #'
 #' @export
 

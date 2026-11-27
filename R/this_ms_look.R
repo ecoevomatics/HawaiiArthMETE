@@ -7,6 +7,7 @@
 #' @param log_y boolean, if the y-axis is to be logged, default is FALSE
 #'
 #' @importFrom ggplot2 scale_color_viridis_d theme element_blank element_rect
+#' @importFrom ggplot2 scale_fill_viridis_d
 #' @importFrom ggplot2 scale_x_log10 scale_y_log10 guides guide_axis_logticks
 #'
 #' @export
