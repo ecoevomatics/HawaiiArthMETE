@@ -4,5 +4,7 @@
 .Ruserdata
 .DS_Store
 ?Icon
-inst/ms/.*_cache$
-inst/ms/.*_files$
+*.docx
+inst/ms/*_cache/
+inst/ms/*_files/
+.Rproj.user/
