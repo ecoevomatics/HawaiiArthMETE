@@ -416,8 +416,8 @@ Next we determine how the observed data deviate from the METE predictions. To be
 #|     abundance distributions (SADs; C, D) showing high (A, C) and low 
 #|     (B, D) deviation from the Maximum Entropy Theory of Ecology (METE).
 #|     The low deviation distributions come from the same sample at the 
-#|     Alakaʻi site while the high deviation distributions come from the
-#|     same sample at the Kamakou site. Samples were choosen to represent
+#|     Kīlauea site while the high deviation distributions come from the
+#|     same sample at the Laupāhoehoe site. Samples were choosen to represent
 #|     ranges of deviation while still being similar in state variables
 #| dependson: 
 #|     - mete-calc

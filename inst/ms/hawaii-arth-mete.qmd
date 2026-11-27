@@ -333,7 +333,7 @@ For all these analyses we fit linear models predicting log-transformed $z^2$-val
 
 When modeling deviations from METE, we have two statistical challenges to address: (1) samples within sites could represent pseudo replicates if each was given equal weight in a fixed effects model. However, (2) a mixed-effects model (one method to account for otherwise pseudo replication) presents its own challenges: because explanatory variables are site-level characteristics with only one unique measurement per site and there are only five sites, site-level random effects will be poorly estimated leading to poorly estimated uncertainty around our effect sizes of explanatory variables. 
 
-To address these challenges we aggregate within site replicates into single means and variances per site. We then model these site-level means and variances using fixed effects meta-regression. Compared to models that would use all data points (i.e., not summarized as means and variances) this is a conservative approach and could run the risk of being under-powered because while we have `r nrow(unique(arth[, c("site", "tree")]))` samples, we only have `r n_distinct(arth$site)` sites. Meta-regression was originally developed for meta-analysis applications and produces a linear model using maximum likelihood, or (equivalently under normallity assumptions) weighted least squares where the weight of each site mean is the inverse of its site variance. Because these methods are well established in meta-analysis, we use the meta-analysis-focused *metafor* package [@metafor] for fitting and testing these models.
+To address these challenges we aggregate within site replicates into single means and variances per site. We then model these site-level means and variances using fixed effects meta-regression. Compared to models that would use all data points (i.e., not summarized as means and variances) this is a conservative approach and could run the risk of being under-powered because while we have `r nrow(unique(arth[, c("site", "tree")]))` samples, we only have `r n_distinct(arth$site)` sites. Meta-regression was originally developed for meta-analysis applications and produces a linear model using maximum likelihood, or (equivalently under normality assumptions) weighted least squares where the weight of each site mean is the inverse of its site variance. Because these methods are well established in meta-analysis, we use the meta-analysis-focused *metafor* package [@metafor] for fitting and testing these models.
 
 ### Calculating $\beta$-diversity
 
@@ -385,8 +385,8 @@ The overall spread of IPD $z^2$-values is greater than that of SAD $z^2$-values.
 #|     abundance distributions (SADs; C, D) showing high (A, C) and low 
 #|     (B, D) deviation from the Maximum Entropy Theory of Ecology (METE).
 #|     The low deviation distributions come from the same sample at the 
-#|     Alakaʻi site while the high deviation distributions come from the
-#|     same sample at the Kamakou site. The black dots show the observed data
+#|     Kīlauea site while the high deviation distributions come from the
+#|     same sample at the Laupāhoehoe site. The black dots show the observed data
 #|     while the blue line and shadded blue region show the central tendency and 
 #|     95% confidence envelopes of 1,000 random draws of data from the SAD and 
 #|     IPD predicted by METE.
@@ -471,7 +471,7 @@ fcap <- c("Difference in contribution of native and non-native species to ",
           "$\\beta$-diversity compared to null. The total height of bars ",
           "(taking into account negative heights as well) is equal to the ",
           "overall $\\beta$-diversity z-score for a site. These overall ",
-          "$\\beta$-diversity values are same in  pattern, following a", 
+          "$\\beta$-diversity values are same in  pattern, following a ", 
           "hump-shaped curve across geologic age, but different in ",
           "exact value, to those in @fig-pred because the  null model used ",
           "here is more restrictive (see methods). Lighter colors  represent ",
@@ -480,7 +480,7 @@ fcap <- c("Difference in contribution of native and non-native species to ",
           "contribution of non-native species at Kamakou is small and positive (",
           round(site_bray_z$bp_non[site_bray_z$site_name == "Kamakou"], 4),
           "). The contribution of non-native species at Kīlauea is negative ",
-          "and the  contribution of native species at Alakaʻi is negative.", 
+          "and the  contribution of native species at Alakaʻi is negative. ", 
           "Dashed verticle line is the 0-line.")
 ```
 
