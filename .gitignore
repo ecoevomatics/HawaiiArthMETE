@@ -4,3 +4,5 @@
 .Ruserdata
 .DS_Store
 ?Icon
+^inst/ms/.*_cache$
+^inst/ms/.*_files$
