@@ -24,7 +24,7 @@ title: "A maximum entropy perspective reveals deviations from steady state durin
 # filters:
 #   - authors.lua
 format:
-  docx:
+  pdf:
     include-in-header: 
       text: |
         \usepackage{authblk}
