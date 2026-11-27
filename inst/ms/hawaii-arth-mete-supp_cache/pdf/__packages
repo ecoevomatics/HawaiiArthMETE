@@ -1,0 +1,17 @@
+base
+methods
+datasets
+utils
+grDevices
+graphics
+stats
+meteR
+ggplot2
+ggh4x
+dplyr
+tidyr
+Matrix
+metadat
+numDeriv
+metafor
+HawaiiArthMETE
