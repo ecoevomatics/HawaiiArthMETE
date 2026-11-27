@@ -40,6 +40,8 @@ download.file(
 )
 
 remotes::install_local(tmp)
+
+devtools::install_github("ecoevomatics/HawaiiArthMETE")
 ```
 
 The quarto [@quarto] document used to generate this supplement can be found with the R command `system.file("ms/hawaii-arth-mete-supp.qmd", package = "HawaiiArthMETE")`.
