@@ -27,21 +27,16 @@ This supplement walks through the steps of recreating the entire analysis presen
 
 ## Computing setup {#sec-setup}
 
-Analyses are supported by a custom R package *HawaiiArthMETE* which, for review purposes, is hosted on anonymous github: [https://anonymous.4open.science/r/HawaiiArthMETE-FB14](https://anonymous.4open.science/r/HawaiiArthMETE-FB14). It can be installed from anonymous github. 
+Analyses are supported by a custom R package *HawaiiArthMETE* which is hosted on zenodo: [https://doi.org/10.5281/zenodo.20319087](https://doi.org/10.5281/zenodo.20319087). It can be installed from zenodo: 
 
 ```{r}
 #| label: pkg-install
 #| eval: false
 
-tmp <- tempfile(fileext = ".zip")
-download.file(
-    "https://anonymous.4open.science/r/HawaiiArthMETE-FB14/zip",
-    destfile = tmp
-)
+base_url <- "https://zenodo.org/records/24581647/files/"
+pkg_zip <- "ecoevomatics/HawaiiArthMETE-beta.zip"
 
-remotes::install_local(tmp)
-
-remotes::install_github("ecoevomatics/HawaiiArthMETE", build = FALSE)
+remotes::install_url(paste0(base_url, pkg_zip))
 ```
 
 The quarto [@quarto] document used to generate this supplement can be found with the R command `system.file("ms/hawaii-arth-mete-supp.qmd", package = "HawaiiArthMETE")`.
